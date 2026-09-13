@@ -296,6 +296,24 @@
   .progress-empty b{display:block;color:var(--muted);font-family:Archivo,sans-serif;font-weight:600;
     font-size:1rem;margin-bottom:0.3rem}
 
+  /* ---------------- pantalla de acceso ---------------- */
+  .auth-gate{position:fixed;inset:0;background:var(--ground);z-index:2000;
+    display:flex;align-items:center;justify-content:center;padding:1.5rem}
+  .auth-card{max-width:22rem;width:100%}
+  .auth-title{font-family:Archivo,sans-serif;font-weight:800;font-size:1.7rem;
+    letter-spacing:-0.02em;margin:0.3rem 0 0.7rem}
+  .auth-sub{color:var(--muted);font-size:0.9rem;margin:0 0 1.5rem;line-height:1.5}
+  #auth-form{display:flex;flex-direction:column;gap:0.7rem}
+  .auth-input{font-family:"Source Serif 4",serif;font-size:1rem;padding:0.75rem 0.9rem;
+    border:1.5px solid var(--rule);background:var(--surface);color:var(--ink);width:100%}
+  .auth-input:focus{outline:none;border-color:var(--accent)}
+  .auth-btn{width:100%;padding:0.75rem;font-size:0.85rem}
+  .auth-btn:disabled{opacity:0.5;cursor:default}
+  .auth-status{margin-top:1rem;font-family:"JetBrains Mono",monospace;font-size:0.78rem;
+    color:var(--muted);min-height:1.2em}
+  .auth-status.ok{color:var(--ok)}
+  .auth-status.err{color:var(--rojo)}
+
   .item-detail{display:none;padding:0.75rem 0.9rem 0.9rem;background:var(--rule-soft);
     border-bottom:1px solid var(--rule-soft);font-size:0.83rem}
   .item-detail:last-child{border-bottom:0}
@@ -394,6 +412,17 @@
 
     <!-- ---------------- TAB: AJUSTES ---------------- -->
     <section class="panel" data-panel="ajustes">
+      <p class="eyebrow2">Cuenta</p>
+      <div class="settings-block">
+        <div class="ctrl-row">
+          <div>
+            <div>Sesión</div>
+            <div class="desc" id="account-email">Cargando…</div>
+          </div>
+          <button class="btn" id="btn-logout">Salir</button>
+        </div>
+      </div>
+
       <p class="eyebrow2">Avisos</p>
       <div class="settings-block">
         <div class="ctrl-row">
@@ -469,8 +498,22 @@
   </nav>
 </div>
 
+<div class="auth-gate" id="auth-gate" style="display:none">
+  <div class="auth-card">
+    <p class="eyebrow">Sistema de Coaches</p>
+    <h1 class="auth-title">Rutina de hoy</h1>
+    <p class="auth-sub">Entra con tu correo para que el progreso se guarde contigo, no solo en este navegador.</p>
+    <form id="auth-form">
+      <input type="email" id="auth-email" class="auth-input" placeholder="tu@correo.com" required autocomplete="email">
+      <button type="submit" class="btn auth-btn" id="auth-submit">Enviar enlace de acceso</button>
+    </form>
+    <p class="auth-status" id="auth-status"></p>
+  </div>
+</div>
+
 <div id="toast-stack"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
   "use strict";
@@ -597,6 +640,142 @@
     if(val) progressData[key][evId] = true; else delete progressData[key][evId];
     if(Object.keys(progressData[key]).length === 0) delete progressData[key];
     saveProgress();
+    syncDoneToSupabase(key, evId, val);
+  }
+
+  // ==================== Supabase: login y persistencia entre dispositivos ====================
+  // localStorage sigue siendo la caché instantánea (arriba); esto es la capa que
+  // hace que el mismo progreso se vea desde cualquier móvil o navegador, una vez
+  // hay sesión iniciada. Sin sesión, la app funciona igual pero solo en local.
+  var SUPABASE_URL = "https://udtilykbaoojofyqsngd.supabase.co";
+  var SUPABASE_ANON_KEY = "sb_publishable_Pznf2EoOynhxW0AbKl_-LQ_KWdDpNrO";
+  var sb = (window.supabase && window.supabase.createClient)
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    : null;
+  var currentUser = null;
+
+  var authGate = document.getElementById("auth-gate");
+  var authForm = document.getElementById("auth-form");
+  var authEmail = document.getElementById("auth-email");
+  var authSubmit = document.getElementById("auth-submit");
+  var authStatus = document.getElementById("auth-status");
+
+  function showAuthGate(){ authGate.style.display = "flex"; }
+  function hideAuthGate(){ authGate.style.display = "none"; }
+  function setAuthStatus(msg, kind){
+    authStatus.textContent = msg || "";
+    authStatus.className = "auth-status" + (kind ? " " + kind : "");
+  }
+
+  if(authForm){
+    authForm.addEventListener("submit", function(e){
+      e.preventDefault();
+      if(!sb){ setAuthStatus("No se pudo cargar el inicio de sesión — revisa tu conexión.", "err"); return; }
+      var email = authEmail.value.trim();
+      if(!email) return;
+      authSubmit.disabled = true;
+      setAuthStatus("Enviando enlace...");
+      sb.auth.signInWithOtp({ email: email, options: { emailRedirectTo: window.location.href } })
+        .then(function(res){
+          authSubmit.disabled = false;
+          if(res.error){ setAuthStatus(res.error.message, "err"); return; }
+          setAuthStatus("Revisa " + email + " y toca el enlace para entrar.", "ok");
+        })
+        .catch(function(){
+          authSubmit.disabled = false;
+          setAuthStatus("No se pudo enviar — revisa tu conexión.", "err");
+        });
+    });
+  }
+
+  var accountEmailEl = document.getElementById("account-email");
+  var btnLogout = document.getElementById("btn-logout");
+  if(btnLogout){
+    btnLogout.addEventListener("click", function(){
+      if(sb) sb.auth.signOut();
+    });
+  }
+
+  function onSignedIn(user){
+    currentUser = user;
+    hideAuthGate();
+    if(accountEmailEl) accountEmailEl.textContent = user.email || "Conectado";
+    loadFromSupabase();
+  }
+  function onSignedOut(){
+    currentUser = null;
+    if(accountEmailEl) accountEmailEl.textContent = "Sin sesión";
+    showAuthGate();
+  }
+
+  if(sb){
+    sb.auth.getSession().then(function(res){
+      var session = res.data && res.data.session;
+      if(session && session.user) onSignedIn(session.user); else showAuthGate();
+    }).catch(function(){ showAuthGate(); });
+
+    sb.auth.onAuthStateChange(function(_event, session){
+      if(session && session.user) onSignedIn(session.user);
+      else onSignedOut();
+    });
+  } else {
+    showAuthGate();
+    setAuthStatus("No se pudo cargar el inicio de sesión — revisa tu conexión e inténtalo de nuevo.", "err");
+  }
+
+  function loadFromSupabase(){
+    if(!sb || !currentUser) return;
+    sb.from("progress").select("date, activity_id, done").eq("user_id", currentUser.id)
+      .then(function(res){
+        if(res.error || !res.data) return;
+        var merged = {};
+        res.data.forEach(function(row){
+          if(!row.done) return;
+          if(!merged[row.date]) merged[row.date] = {};
+          merged[row.date][row.activity_id] = true;
+        });
+        progressData = merged;
+        saveProgress();
+        buildTimeline();
+        renderTimelineStates();
+        var progPanel = document.querySelector('.panel[data-panel="progreso"]');
+        if(progPanel && progPanel.classList.contains("active")) renderProgress();
+      });
+
+    sb.from("settings").select("toma5_active").eq("user_id", currentUser.id).maybeSingle()
+      .then(function(res){
+        if(res.error) return;
+        if(res.data){
+          tgToma5.checked = !!res.data.toma5_active;
+          saveBool("tg-toma5", tgToma5.checked);
+        } else {
+          sb.from("settings").upsert({
+            user_id: currentUser.id, toma5_active: tgToma5.checked, updated_at: new Date().toISOString()
+          }).then(function(){});
+        }
+        scheduleAlarms();
+        render();
+      });
+  }
+
+  function syncDoneToSupabase(key, evId, val){
+    if(!sb || !currentUser) return;
+    if(val){
+      sb.from("progress").upsert({
+        user_id: currentUser.id, date: key, activity_id: evId, done: true,
+        updated_at: new Date().toISOString()
+      }).then(function(){});
+    } else {
+      sb.from("progress").delete()
+        .match({ user_id: currentUser.id, date: key, activity_id: evId })
+        .then(function(){});
+    }
+  }
+  function syncSettingsToSupabase(){
+    if(!sb || !currentUser) return;
+    sb.from("settings").upsert({
+      user_id: currentUser.id, toma5_active: tgToma5.checked, updated_at: new Date().toISOString()
+    }).then(function(){});
   }
 
   // ==================== ESTADO ====================
@@ -633,7 +812,11 @@
   function saveBool(key, val){ localStorage.setItem("horario:"+key, val ? "1" : "0"); }
   var tgToma5 = document.getElementById("tg-toma5");
   tgToma5.checked = loadBool("tg-toma5", true);
-  tgToma5.addEventListener("change", function(){ saveBool("tg-toma5", tgToma5.checked); scheduleAlarms(); render(); });
+  tgToma5.addEventListener("change", function(){
+    saveBool("tg-toma5", tgToma5.checked);
+    syncSettingsToSupabase();
+    scheduleAlarms(); render();
+  });
 
   function isActiveOnDay(ev, weekday){
     if(ev.days.indexOf(weekday) === -1) return false;
