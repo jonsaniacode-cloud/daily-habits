@@ -1,0 +1,1301 @@
+<title>Rutina de Hoy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2F5FD0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Rutina">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+  :root{
+    --ground:#F6F7F9; --surface:#FFFFFF; --ink:#16191F;
+    --muted:#5C636E; --faint:#8A919C; --rule:#DEE2E8; --rule-soft:#EAEDF1;
+    --accent:#2F5FD0; --accent-soft:#E8EEFB; --accent-ink:#1E3E93;
+    --ambar:#B5651D; --ambar-soft:#FBEEDD;
+    --ok:#2E7D4F;
+    --c-mentalidad:#1E7E8C; --c-nutricion:#C1701E; --c-trading:#6E4BC4;
+    --c-fisico:#2E7D4F; --c-tattoo:#B3407A; --c-neutro:#5C636E; --c-principal:#2F5FD0;
+    --fisico-soft:#E6F2EA;
+    --step:clamp(0.95rem,0.9rem + 0.25vw,1.0625rem);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#111319; --surface:#181B22; --ink:#E5E8ED;
+      --muted:#9BA2AE; --faint:#767D89; --rule:#2A2F39; --rule-soft:#21262E;
+      --accent:#7FA0F2; --accent-soft:#1B2438; --accent-ink:#AEC2F7;
+      --ambar:#DE9A57; --ambar-soft:#2B2115;
+      --ok:#5FBE85;
+      --c-mentalidad:#54BACB; --c-nutricion:#E79A4E; --c-trading:#A691E8;
+      --c-fisico:#5FBE85; --c-tattoo:#E285B2; --c-neutro:#9BA2AE; --c-principal:#7FA0F2;
+      --fisico-soft:#17281F;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#111319; --surface:#181B22; --ink:#E5E8ED;
+    --muted:#9BA2AE; --faint:#767D89; --rule:#2A2F39; --rule-soft:#21262E;
+    --accent:#7FA0F2; --accent-soft:#1B2438; --accent-ink:#AEC2F7;
+    --ambar:#DE9A57; --ambar-soft:#2B2115;
+    --ok:#5FBE85;
+    --c-mentalidad:#54BACB; --c-nutricion:#E79A4E; --c-trading:#A691E8;
+    --c-fisico:#5FBE85; --c-tattoo:#E285B2; --c-neutro:#9BA2AE; --c-principal:#7FA0F2;
+    --fisico-soft:#17281F;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{background:var(--ground);color:var(--ink);font-family:"Source Serif 4",Georgia,serif;
+    font-size:var(--step);line-height:1.5;-webkit-font-smoothing:antialiased;margin:0;overflow:hidden}
+  a{color:var(--accent)}
+  button{font-family:Archivo,sans-serif;cursor:pointer}
+  .mono{font-family:"JetBrains Mono",monospace}
+
+  /* ---------- shell de app: cabecera fija + panel con scroll + tabs fijas ---------- */
+  .app{height:100%;height:100dvh;max-width:30rem;margin:0 auto;display:flex;flex-direction:column;
+    background:var(--ground);position:relative}
+
+  .appbar{flex:none;display:flex;justify-content:space-between;align-items:center;gap:0.75rem;
+    padding:0.7rem 1.1rem;border-bottom:1px solid var(--rule);background:var(--surface)}
+  .appbar .brand{display:flex;flex-direction:column}
+  .appbar .eyebrow{font-family:Archivo,sans-serif;font-weight:700;font-size:0.62rem;letter-spacing:0.13em;
+    text-transform:uppercase;color:var(--faint)}
+  .appbar .title{font-family:Archivo,sans-serif;font-weight:800;font-size:1.05rem;letter-spacing:-0.015em}
+  .appbar .clockwrap{text-align:right}
+  .appbar .clock{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:1rem;
+    font-variant-numeric:tabular-nums;line-height:1.1}
+  .appbar .date{font-family:"JetBrains Mono",monospace;font-size:0.66rem;color:var(--faint)}
+
+  .panels{flex:1;min-height:0;position:relative}
+  .panel{display:none;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    padding:1rem 1.1rem 1.5rem}
+  .panel.active{display:block}
+
+  .tabbar{flex:none;display:flex;border-top:1px solid var(--rule);background:var(--surface);
+    padding-bottom:env(safe-area-inset-bottom,0)}
+  .tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:0.2rem;padding:0.5rem 0 0.42rem;background:none;border:none;color:var(--faint);
+    font-family:Archivo,sans-serif;font-size:0.6rem;font-weight:600;letter-spacing:0.02em;
+    position:relative}
+  .tab-btn svg{width:1.3rem;height:1.3rem}
+  .tab-btn.active{color:var(--accent)}
+  .tab-btn .tab-dot{position:absolute;top:0.3rem;right:calc(50% - 0.95rem);width:0.4rem;height:0.4rem;
+    border-radius:50%;background:var(--accent);display:none}
+  .tab-btn.has-dot .tab-dot{display:block}
+
+  .eyebrow2{font-family:Archivo,sans-serif;font-weight:600;font-size:0.68rem;letter-spacing:0.15em;
+    text-transform:uppercase;color:var(--faint);margin:0 0 0.5rem}
+
+  /* banner de tipo de día */
+  .daybanner{display:flex;align-items:center;gap:0.7rem;padding:0.7rem 1rem;margin-bottom:1.1rem;
+    border:1px solid var(--rule);font-size:0.85rem}
+  .daybanner .ic{width:1.6rem;height:1.6rem;flex:none;border-radius:50%;display:flex;
+    align-items:center;justify-content:center;font-size:0.85rem}
+  .daybanner.train{background:var(--accent-soft);border-color:var(--accent)}
+  .daybanner.train .ic{background:var(--accent);color:#fff}
+  .daybanner.notrain{background:var(--surface)}
+  .daybanner.notrain .ic{background:var(--rule-soft);color:var(--muted);border:1px solid var(--rule)}
+  .daybanner.rest{background:var(--ambar-soft);border-color:var(--ambar)}
+  .daybanner.rest .ic{background:var(--ambar);color:#fff}
+  .daybanner b{font-family:Archivo,sans-serif;font-weight:700}
+  .daybanner .sub{display:block;color:var(--muted);font-size:0.78rem;margin-top:0.1rem}
+
+  /* HERO */
+  .hero{background:var(--surface);border:1px solid var(--rule);border-left:4px solid var(--accent);
+    padding:1.3rem 1.4rem;margin-bottom:1.1rem;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;top:0;right:0;width:9rem;height:9rem;
+    background:radial-gradient(circle at top right,var(--accent-soft),transparent 70%);
+    pointer-events:none}
+  .hero .tag{display:inline-flex;align-items:center;gap:0.4rem;font-family:Archivo,sans-serif;
+    font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent-ink)}
+  .hero .tag .dot{width:0.5rem;height:0.5rem;border-radius:50%;background:var(--accent);
+    animation:pulse 1.8s ease-in-out infinite}
+  @media (prefers-reduced-motion:reduce){.hero .tag .dot{animation:none}}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.7)}}
+  .hero .label{font-family:Archivo,sans-serif;font-weight:700;font-size:1.45rem;letter-spacing:-0.015em;
+    margin:0.5rem 0 0.15rem;position:relative}
+  .hero .range{font-family:"JetBrains Mono",monospace;color:var(--muted);font-size:0.85rem}
+  .hero .countdown{margin-top:0.8rem;display:flex;align-items:baseline;gap:0.5rem}
+  .hero .countdown .n{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:1.9rem;
+    font-variant-numeric:tabular-nums;color:var(--ink)}
+  .hero .countdown .u{font-family:Archivo,sans-serif;font-size:0.76rem;color:var(--faint)}
+  .hero.empty .label{color:var(--faint)}
+
+  .next{display:flex;align-items:center;gap:0.8rem;background:var(--surface);border:1px solid var(--rule);
+    padding:0.8rem 1.05rem;margin-bottom:0.5rem;font-size:0.88rem}
+  .next .k{font-family:Archivo,sans-serif;font-size:0.68rem;font-weight:700;letter-spacing:0.08em;
+    text-transform:uppercase;color:var(--faint);flex:none}
+  .next .v{font-weight:600;color:var(--ink)}
+  .next .t{margin-left:auto;font-family:"JetBrains Mono",monospace;font-size:0.82rem;color:var(--muted);
+    white-space:nowrap}
+
+  /* Rutina de entreno */
+  .workout-hd{margin-bottom:0.9rem}
+  .workout-hd h2{font-family:Archivo,sans-serif;font-weight:700;font-size:1.2rem;
+    letter-spacing:-0.01em;margin:0}
+  .workout-hd .wsub{font-family:"Source Serif 4",serif;font-size:0.85rem;color:var(--muted);margin-top:0.15rem}
+  .wbrowsing{display:inline-block;margin-top:0.5rem;font-family:Archivo,sans-serif;
+    font-size:0.62rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--accent-ink);
+    background:var(--accent-soft);border:1px solid var(--accent);padding:0.15rem 0.45rem}
+  .ex{padding:0.85rem 0;border-bottom:1px solid var(--rule-soft);display:grid;gap:0.55rem}
+  .ex:last-child{border-bottom:0}
+  .ex-top{display:flex;justify-content:space-between;align-items:baseline;gap:0.6rem;flex-wrap:wrap}
+  .ex-group{font-family:Archivo,sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.08em;
+    text-transform:uppercase;color:var(--c-fisico);background:var(--fisico-soft);
+    padding:0.1rem 0.4rem;white-space:nowrap}
+  .ex-name{font-family:Archivo,sans-serif;font-weight:600;font-size:0.92rem;color:var(--ink)}
+  .ex-meta{display:flex;gap:1rem;font-family:"JetBrains Mono",monospace;font-size:0.76rem;color:var(--muted)}
+  .ex-meta b{color:var(--ink);font-weight:700}
+  .ex-timer{display:flex;align-items:center;gap:0.55rem;margin-top:0.1rem}
+  .timer-display{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:1.15rem;
+    font-variant-numeric:tabular-nums;min-width:3.4rem;color:var(--ink)}
+  .timer-display.done{color:var(--c-fisico)}
+  .timer-btn{font-family:Archivo,sans-serif;font-weight:600;font-size:0.74rem;
+    padding:0.36rem 0.75rem;border:1px solid var(--rule);background:var(--surface);color:var(--ink)}
+  .timer-btn.start.running{background:var(--c-fisico);border-color:var(--c-fisico);color:#fff}
+  .empty-state{padding:2.5rem 1rem;text-align:center;color:var(--faint);font-size:0.92rem}
+  .empty-state b{display:block;color:var(--muted);font-family:Archivo,sans-serif;font-weight:600;
+    font-size:1rem;margin-bottom:0.3rem}
+
+  /* Calendario */
+  .calendar{border:1px solid var(--rule);background:var(--surface);padding:0.9rem 1rem;margin-bottom:1.1rem}
+  .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.7rem}
+  .cal-title{font-family:Archivo,sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:-0.01em;
+    text-transform:capitalize}
+  .cal-nav{width:1.8rem;height:1.8rem;border:1px solid var(--rule);background:var(--surface);color:var(--ink);
+    font-size:1rem;display:flex;align-items:center;justify-content:center;padding:0;line-height:1}
+  .cal-nav:hover{background:var(--rule-soft)}
+  .cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:0.3rem}
+  .cal-dow span{font-family:Archivo,sans-serif;font-size:0.58rem;font-weight:700;letter-spacing:0.06em;
+    text-transform:uppercase;color:var(--faint);text-align:center}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+  .cal-day{position:relative;aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+    font-family:"JetBrains Mono",monospace;font-size:0.8rem;color:var(--ink);background:var(--surface);
+    border:1px solid transparent;padding:0}
+  .cal-day:not(.blank):hover{background:var(--rule-soft)}
+  .cal-day.blank{visibility:hidden;cursor:default}
+  .cal-day.today{border-color:var(--ink)}
+  .cal-day.selected{background:var(--accent);color:#fff;font-weight:700}
+  .cal-day .dot{position:absolute;bottom:0.16rem;left:50%;transform:translateX(-50%);
+    width:0.26rem;height:0.26rem;border-radius:50%}
+  .cal-day .dot.train{background:var(--c-fisico)}
+  .cal-day .dot.rest{background:var(--ambar)}
+  .cal-day.selected .dot{background:#fff}
+  .cal-today-btn{margin-top:0.7rem;width:100%;font-family:Archivo,sans-serif;font-size:0.74rem;
+    font-weight:600;padding:0.4rem;border:1px solid var(--rule);background:var(--surface);color:var(--ink)}
+  .cal-today-btn:hover{background:var(--rule-soft)}
+  .cal-legend{display:flex;gap:1rem;margin-top:0.65rem;font-size:0.7rem;color:var(--faint)}
+  .cal-legend span{display:inline-flex;align-items:center;gap:0.35rem}
+  .cal-legend i{width:0.4rem;height:0.4rem;border-radius:50%;display:inline-block}
+
+  /* Controles / ajustes */
+  .settings-block{margin-bottom:1.5rem}
+  .ctrl-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+    background:var(--surface);border:1px solid var(--rule);padding:0.75rem 1rem;font-size:0.86rem}
+  .ctrl-row + .ctrl-row{border-top:0}
+  .ctrl-row .desc{color:var(--muted);font-size:0.76rem;margin-top:0.1rem}
+  .btn{font-family:Archivo,sans-serif;font-weight:600;font-size:0.76rem;letter-spacing:0.02em;
+    padding:0.5rem 0.85rem;border:1px solid var(--ink);background:var(--ink);color:var(--ground);
+    white-space:nowrap}
+  .btn:disabled{opacity:0.45;cursor:default}
+  .switch{position:relative;display:inline-block;width:2.5rem;height:1.4rem;flex:none}
+  .switch input{opacity:0;width:0;height:0}
+  .slider{position:absolute;inset:0;background:var(--rule);border:1px solid var(--faint);
+    transition:.15s;cursor:pointer}
+  .slider::before{content:"";position:absolute;width:1rem;height:1rem;left:0.12rem;top:0.11rem;
+    background:var(--surface);transition:.15s}
+  input:checked + .slider{background:var(--accent);border-color:var(--accent)}
+  input:checked + .slider::before{transform:translateX(1.1rem)}
+  .status-line{font-family:"JetBrains Mono",monospace;font-size:0.72rem;color:var(--faint);
+    margin-top:0.5rem;margin-bottom:1rem}
+
+  .callout{background:var(--ambar-soft);border:1px solid var(--rule);border-left:3px solid var(--ambar);
+    padding:0.85rem 1rem;margin-bottom:1.25rem;font-size:0.83rem;color:var(--muted)}
+  .callout strong{color:var(--ink)}
+
+  h2{font-family:Archivo,sans-serif;font-weight:700;font-size:0.95rem;letter-spacing:-0.01em;
+    margin:0 0 0.8rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.4rem}
+  h2 .count{font-family:"JetBrains Mono",monospace;font-weight:400;font-size:0.72rem;color:var(--faint)}
+
+  /* timeline */
+  .timeline{display:flex;flex-direction:column;border:1px solid var(--rule);background:var(--surface)}
+  .item{display:grid;grid-template-columns:4.3rem auto 1fr auto;align-items:center;gap:0.7rem;
+    padding:0.6rem 0.85rem;border-bottom:1px solid var(--rule-soft);position:relative;cursor:pointer}
+  .item:hover{background:var(--rule-soft)}
+  .item.now:hover{background:var(--accent-soft)}
+  .item .t{font-family:"JetBrains Mono",monospace;font-size:0.75rem;color:var(--muted);
+    font-variant-numeric:tabular-nums}
+  .item .cat{width:0.6rem;height:0.6rem;border-radius:50%;flex:none}
+  .item .mid{min-width:0}
+  .item .lbl{font-family:Archivo,sans-serif;font-weight:600;font-size:0.85rem;color:var(--ink)}
+  .item .days{display:flex;gap:0.18rem;margin-top:0.26rem}
+  .item .days span{font-family:"JetBrains Mono",monospace;font-size:0.56rem;width:0.95rem;height:0.95rem;
+    border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--faint);
+    background:var(--rule-soft)}
+  .item .days span.on{background:var(--ink);color:var(--ground)}
+  .item .badge{font-family:Archivo,sans-serif;font-size:0.58rem;font-weight:700;letter-spacing:0.07em;
+    text-transform:uppercase;padding:0.14rem 0.4rem;border:1px solid currentColor;white-space:nowrap}
+  .item .badge.now{color:var(--accent-ink);background:var(--accent-soft);border-color:var(--accent)}
+  .item .badge.confirm{color:var(--ambar);background:var(--ambar-soft);border-color:var(--ambar)}
+  .item-trail{display:flex;align-items:center;gap:0.6rem;flex:none}
+  .item-caret{font-size:0.66rem;color:var(--faint);transition:transform .15s ease;flex:none}
+  .item-caret.open{transform:rotate(180deg)}
+  .item.past{opacity:0.42}
+  .item.now{background:var(--accent-soft)}
+  .item.off{opacity:0.32;cursor:default}
+  .item.off:hover{background:var(--surface)}
+  .item.off .lbl{text-decoration:line-through}
+
+  /* casilla de verificación por actividad */
+  .chk-done{appearance:none;-webkit-appearance:none;width:1.2rem;height:1.2rem;flex:none;
+    border:1.6px solid var(--rule);background:var(--surface);position:relative;cursor:pointer;margin:0}
+  .chk-done:hover{border-color:var(--faint)}
+  .chk-done:checked{background:var(--ok);border-color:var(--ok)}
+  .chk-done:checked::after{content:"";position:absolute;left:0.32rem;top:0.1rem;width:0.3rem;height:0.58rem;
+    border:solid #fff;border-width:0 2px 2px 0;transform:rotate(40deg)}
+  .chk-done:disabled{opacity:0.3;cursor:default}
+
+  /* ---------------- pestaña Progreso ---------------- */
+  .stat-cards{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);
+    border:1px solid var(--rule);margin-bottom:1.1rem}
+  .stat-card{background:var(--surface);padding:0.9rem 1rem}
+  .stat-card .num{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:1.5rem;
+    font-variant-numeric:tabular-nums;color:var(--accent)}
+  .stat-card .lbl{font-family:Archivo,sans-serif;font-size:0.66rem;letter-spacing:0.06em;
+    text-transform:uppercase;color:var(--faint);margin-top:0.2rem}
+
+  .heatmap{border:1px solid var(--rule);background:var(--surface);margin-bottom:1.3rem;overflow-x:auto}
+  .heatmap table{border-collapse:collapse;width:100%;font-size:0.78rem}
+  .heatmap th{font-family:Archivo,sans-serif;font-weight:600;font-size:0.62rem;color:var(--faint);
+    padding:0.5rem 0.3rem;text-align:center;white-space:nowrap}
+  .heatmap th.act-col{text-align:left;padding-left:0.7rem}
+  .heatmap th.today-col{color:var(--accent-ink)}
+  .heatmap td{padding:0.35rem;text-align:center;border-top:1px solid var(--rule-soft)}
+  .heatmap td.act-name{text-align:left;padding-left:0.7rem;font-family:Archivo,sans-serif;
+    font-weight:600;font-size:0.76rem;color:var(--ink);white-space:nowrap}
+  .hcell{width:1.15rem;height:1.15rem;display:inline-block;border:1px solid var(--rule)}
+  .hcell.done{background:var(--ok);border-color:var(--ok)}
+  .hcell.missed{background:var(--rojo);border-color:var(--rojo);opacity:0.28}
+  .hcell.pending{background:transparent}
+  .hcell.na{background:var(--rule-soft);border-color:var(--rule-soft)}
+
+  .actbars{border:1px solid var(--rule);background:var(--surface);margin-bottom:1rem}
+  .actbar-row{display:flex;align-items:center;gap:0.7rem;padding:0.55rem 0.9rem;
+    border-bottom:1px solid var(--rule-soft)}
+  .actbar-row:last-child{border-bottom:0}
+  .actbar-row .an{width:5.2rem;flex:none;font-family:Archivo,sans-serif;font-size:0.78rem;
+    font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .actbar-track{flex:1;height:0.55rem;background:var(--rule-soft);position:relative}
+  .actbar-fill{height:100%;background:var(--ok)}
+  .actbar-pct{width:2.6rem;flex:none;text-align:right;font-family:"JetBrains Mono",monospace;
+    font-size:0.76rem;color:var(--muted);font-variant-numeric:tabular-nums}
+  .progress-empty{padding:2.5rem 1rem;text-align:center;color:var(--faint);font-size:0.9rem}
+  .progress-empty b{display:block;color:var(--muted);font-family:Archivo,sans-serif;font-weight:600;
+    font-size:1rem;margin-bottom:0.3rem}
+
+  .item-detail{display:none;padding:0.75rem 0.9rem 0.9rem;background:var(--rule-soft);
+    border-bottom:1px solid var(--rule-soft);font-size:0.83rem}
+  .item-detail:last-child{border-bottom:0}
+  .detail-macros{display:flex;gap:0.8rem;flex-wrap:wrap;margin-bottom:0.5rem;
+    font-family:"JetBrains Mono",monospace;font-size:0.78rem;color:var(--muted)}
+  .detail-macros b{color:var(--ink)}
+  .detail-food{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:0.5rem}
+  .detail-food .df{display:flex;flex-direction:column;gap:0.15rem;font-size:0.83rem;color:var(--ink)}
+  .detail-food .df i{font-style:normal;font-family:Archivo,sans-serif;font-size:0.58rem;font-weight:700;
+    letter-spacing:0.06em;text-transform:uppercase;color:var(--faint)}
+  .detail-note{color:var(--muted);margin:0}
+  .detail-note b{color:var(--ink)}
+
+  .foot-note{font-family:"JetBrains Mono",monospace;font-size:0.7rem;color:var(--faint);
+    line-height:1.75;padding-top:0.5rem;border-top:1px solid var(--rule);margin-top:0.5rem}
+
+  #toast-stack{position:fixed;bottom:4.2rem;right:0.9rem;display:flex;flex-direction:column;
+    gap:0.6rem;z-index:999;max-width:17rem}
+  .toast{background:var(--ink);color:var(--ground);padding:0.85rem 1rem;font-size:0.82rem;
+    box-shadow:0 8px 24px rgba(0,0,0,0.25);animation:slidein .2s ease-out}
+  .toast b{display:block;font-family:Archivo,sans-serif;font-size:0.7rem;letter-spacing:0.06em;
+    text-transform:uppercase;margin-bottom:0.25rem;color:var(--accent)}
+  @keyframes slidein{from{transform:translateY(0.5rem);opacity:0}to{transform:translateY(0);opacity:1}}
+</style>
+
+<div class="app" id="app">
+  <header class="appbar">
+    <div class="brand">
+      <span class="eyebrow">Sistema de Coaches</span>
+      <span class="title" id="appbar-title">Ahora</span>
+    </div>
+    <div class="clockwrap">
+      <div class="clock mono" id="clock">--:--:--</div>
+      <div class="date" id="date-lbl"></div>
+    </div>
+  </header>
+
+  <main class="panels">
+
+    <!-- ---------------- TAB: AHORA ---------------- -->
+    <section class="panel active" data-panel="ahora">
+      <div class="daybanner" id="daybanner">
+        <span class="ic" id="daybanner-ic">&middot;</span>
+        <span><b id="daybanner-title">&mdash;</b><span class="sub" id="daybanner-sub">&mdash;</span></span>
+      </div>
+
+      <div class="hero" id="hero">
+        <span class="tag"><span class="dot"></span><span id="hero-tag">Cargando</span></span>
+        <div class="label" id="hero-label">&mdash;</div>
+        <div class="range" id="hero-range">&mdash;</div>
+        <div class="countdown">
+          <span class="n mono" id="hero-count">&mdash;</span>
+          <span class="u" id="hero-count-unit"></span>
+        </div>
+      </div>
+
+      <div class="next">
+        <span class="k">Después</span>
+        <span class="v" id="next-label">&mdash;</span>
+        <span class="t" id="next-time">&mdash;</span>
+      </div>
+    </section>
+
+    <!-- ---------------- TAB: RUTINA ---------------- -->
+    <section class="panel" data-panel="rutina">
+      <div id="workout-content"><div class="empty-state"><b>Sin rutina hoy</b>Miércoles y sábado no llevan entreno; domingo es descanso completo.</div></div>
+    </section>
+
+    <!-- ---------------- TAB: CALENDARIO ---------------- -->
+    <section class="panel" data-panel="calendario">
+      <div class="calendar" id="calendar">
+        <div class="cal-head">
+          <button class="cal-nav" id="cal-prev" aria-label="Mes anterior">‹</button>
+          <span class="cal-title" id="cal-title">&mdash;</span>
+          <button class="cal-nav" id="cal-next" aria-label="Mes siguiente">›</button>
+        </div>
+        <div class="cal-dow">
+          <span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <button class="cal-today-btn" id="cal-today">Volver a hoy</button>
+        <div class="cal-legend">
+          <span><i style="background:var(--c-fisico)"></i>Entreno</span>
+          <span><i style="background:var(--ambar)"></i>Descanso completo</span>
+        </div>
+      </div>
+
+      <h2>Línea de tiempo <span id="tl-daylabel">de hoy</span> <span class="count" id="tl-count"></span></h2>
+      <div class="timeline" id="timeline"></div>
+    </section>
+
+    <!-- ---------------- TAB: PROGRESO ---------------- -->
+    <section class="panel" data-panel="progreso">
+      <div id="progress-content"></div>
+    </section>
+
+    <!-- ---------------- TAB: AJUSTES ---------------- -->
+    <section class="panel" data-panel="ajustes">
+      <p class="eyebrow2">Avisos</p>
+      <div class="settings-block">
+        <div class="ctrl-row">
+          <div>
+            <div>Notificaciones del sistema</div>
+            <div class="desc">Que salte una notificación del navegador, además del aviso en pantalla</div>
+          </div>
+          <button class="btn" id="btn-notif">Activar</button>
+        </div>
+        <div class="ctrl-row">
+          <div>
+            <div>Toma 5 (23:15) activa</div>
+            <div class="desc">Sigue sin confirmar &mdash; ver informe de nutrición del 8 sep</div>
+          </div>
+          <label class="switch"><input type="checkbox" id="tg-toma5" checked><span class="slider"></span></label>
+        </div>
+        <div class="status-line" id="notif-status">Notificaciones: sin activar todavía.</div>
+      </div>
+
+      <p class="eyebrow2">Google Calendar</p>
+      <div class="settings-block">
+        <div class="ctrl-row">
+          <div>
+            <div>Exportar como eventos</div>
+            <div class="desc">Descarga un .ics con las 13 actividades como eventos repetidos</div>
+          </div>
+          <button class="btn" id="btn-ics">Exportar .ics</button>
+        </div>
+        <div class="status-line" id="ics-status">No crea nada en Google todavía — genera el archivo cuando lo pulses.</div>
+      </div>
+      <div class="callout">
+        <strong>Cómo importarlo:</strong> pulsa "Exportar .ics", entra a
+        <a href="https://calendar.google.com/calendar/u/0/r/settings/export" target="_blank" rel="noopener">calendar.google.com → Configuración → Importar y exportar</a>,
+        sube el archivo y elige el calendario destino. Es una foto fija: si cambias el horario aquí luego, hay que exportar e importar de nuevo.
+      </div>
+
+      <div class="callout">
+        <strong>Para que avise de verdad:</strong> esta app tiene que seguir abierta o minimizada, no cerrada del todo — sin servidor detrás, si la cierras del todo las alarmas de hoy no suenan hasta que la reabras.
+      </div>
+
+      <div class="foot-note">
+        Entreno fijado: lunes, martes, jueves y viernes. Miércoles y sábado sin entreno. Domingo: descanso completo.<br>
+        Toca cualquier fila de la línea de tiempo para ver el detalle.<br>
+        "Salir" (hábito 9) no tiene hora fija a propósito.<br>
+        Fuente: datos/perfil.md · informes/nutricion/2026-09-08.md · informes/fisico/2026-09-08.md
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="tabbar" id="tabbar">
+    <button class="tab-btn active" data-tab="ahora">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg>
+      <span>Ahora</span>
+    </button>
+    <button class="tab-btn" data-tab="rutina">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="10" width="3" height="4" rx="0.6"></rect><rect x="17.5" y="10" width="3" height="4" rx="0.6"></rect><path d="M6.5 12h11"></path><rect x="5.2" y="8.5" width="1.8" height="7" rx="0.5"></rect><rect x="17" y="8.5" width="1.8" height="7" rx="0.5"></rect></svg>
+      <span>Rutina</span>
+      <span class="tab-dot"></span>
+    </button>
+    <button class="tab-btn" data-tab="calendario">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14.5" rx="1.4"></rect><path d="M4 9.5h16M8 3.5v3.5M16 3.5v3.5"></path><circle cx="12" cy="14" r="1.3" fill="currentColor" stroke="none"></circle></svg>
+      <span>Calendario</span>
+    </button>
+    <button class="tab-btn" data-tab="progreso">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M20.5 20H3.5"></path></svg>
+      <span>Progreso</span>
+    </button>
+    <button class="tab-btn" data-tab="ajustes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 12h3M9 12h11M4 17h13M20 17h0"></path><circle cx="11.5" cy="7" r="1.7"></circle><circle cx="7" cy="12" r="1.7"></circle><circle cx="17" cy="17" r="1.7"></circle></svg>
+      <span>Ajustes</span>
+    </button>
+  </nav>
+</div>
+
+<div id="toast-stack"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  // Días de la semana: 0=domingo, 1=lunes, 2=martes, 3=miércoles, 4=jueves, 5=viernes, 6=sábado
+  var ALL        = [0,1,2,3,4,5,6];
+  var NO_DOMINGO = [1,2,3,4,5,6];
+  var ENTRENO    = [1,2,4,5]; // lunes, martes, jueves, viernes — fijo, no se toca
+
+  var SCHEDULE = [
+    { id:"despertar",  start:"08:00", end:"08:15", label:"Despertar + meditar + visualizar", short:"Meditar",   cat:"mentalidad", days:NO_DOMINGO },
+    { id:"cocinar",    start:"08:15", end:"08:45", label:"Cocinar (única sesión, 30 min)",    short:"Cocinar",   cat:"nutricion",  days:ALL },
+    { id:"toma1",      start:"08:45", end:"09:00", label:"Toma 1 — desayuno",                  short:"Toma 1",    cat:"nutricion",  days:ALL },
+    { id:"trading",    start:"09:00", end:"10:00", label:"Trading — estudio",                  short:"Trading",   cat:"trading",    days:NO_DOMINGO },
+    { id:"entreno",    start:"10:30", end:"11:10", label:"Entreno",                             short:"Entreno",   cat:"fisico",     days:ENTRENO },
+    { id:"toma2",      start:"11:30", end:"11:45", label:"Toma 2 — merienda",                   short:"Toma 2",    cat:"nutricion",  days:ALL },
+    { id:"toma3",      start:"13:30", end:"14:00", label:"Toma 3 — comida principal",           short:"Toma 3",    cat:"nutricion",  days:ALL },
+    { id:"tattoo",     start:"16:00", end:"17:00", label:"Tatuaje — práctica",                  short:"Tatuaje",   cat:"tattoo",     days:NO_DOMINGO },
+    { id:"toma4",      start:"17:00", end:"17:15", label:"Toma 4 — merienda",                   short:"Toma 4",    cat:"nutricion",  days:ALL },
+    { id:"trabajo",    start:"19:00", end:"23:00", label:"Trabajo",                             short:"Trabajo",   cat:"neutro",     days:ALL },
+    { id:"checkin",    start:"23:00", end:"23:15", label:"Check-in diario",                     short:"Check-in",  cat:"principal",  days:ALL },
+    { id:"toma5",      start:"23:15", end:"23:30", label:"Toma 5 — a confirmar",                short:"Toma 5",    cat:"nutricion",  days:ALL, toggle:"tg-toma5", flag:"confirm" },
+    { id:"dormir",     start:"00:00", end:"00:00", label:"Dormir",                              short:"Dormir",    cat:"neutro",     days:ALL, sortAsMidnight:true }
+  ];
+
+  var CAT_VAR = {
+    mentalidad:"--c-mentalidad", nutricion:"--c-nutricion", trading:"--c-trading",
+    fisico:"--c-fisico", tattoo:"--c-tattoo", neutro:"--c-neutro", principal:"--c-principal"
+  };
+  var DAY_LETTERS = ["D","L","M","X","J","V","S"];
+  var DOW = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+  var MON = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+
+  // ---- Rutina de entreno, del informe fisico/2026-09-08.md ----
+  var DAY_ROUTINE = { 1:"torsoA", 2:"piernaA", 4:"torsoB", 5:"piernaB" };
+  var ROUTINE_META = {
+    torsoA:  { title:"Torso A",  sub:"Empuje + tracción horizontal" },
+    piernaA: { title:"Pierna A", sub:"Sentadilla + cadena posterior" },
+    torsoB:  { title:"Torso B",  sub:"Tracción horizontal + empuje secundario" },
+    piernaB: { title:"Pierna B", sub:"Unilateral · progresión hacia pistol" }
+  };
+  var WORKOUTS = {
+    torsoA: [
+      { group:"Pecho",              name:"Press de suelo con mancuernas",              sets:4, reps:"8–10",       rest:90 },
+      { group:"Pecho",              name:"Flexiones",                                   sets:3, reps:"hasta RIR",  rest:90 },
+      { group:"Espalda",            name:"Remo a una mano (apoyo en silla)",             sets:4, reps:"10–12/brazo",rest:75 },
+      { group:"Hombro",             name:"Elevación lateral",                            sets:3, reps:"12–15",     rest:60 },
+      { group:"Hombro / espalda alta", name:"Pájaro / apertura invertida",               sets:3, reps:"12–15",     rest:60 },
+      { group:"Core",               name:"Plancha",                                      sets:3, reps:"mantener",  rest:45, hold:true, holdLabel:"30–45s" }
+    ],
+    piernaA: [
+      { group:"Cuádriceps",         name:"Sentadilla goblet",                            sets:4, reps:"10–12",     rest:90 },
+      { group:"Pierna unilateral",  name:"Zancada búlgara (pie en silla)",                sets:3, reps:"10–12/pierna", rest:90 },
+      { group:"Isquios / glúteo",   name:"Peso muerto rumano",                            sets:3, reps:"10–12",     rest:90 },
+      { group:"Gemelo",             name:"Elevación de talón",                            sets:3, reps:"15–20",     rest:60 },
+      { group:"Core",               name:"Dead bug",                                      sets:3, reps:"10/lado",   rest:45 }
+    ],
+    torsoB: [
+      { group:"Espalda",            name:"Remo a dos manos (inclinado)",                  sets:4, reps:"8–10",      rest:90 },
+      { group:"Dorsal / pecho",     name:"Pullover con mancuerna",                        sets:3, reps:"10–12",     rest:75 },
+      { group:"Tríceps / pecho",    name:"Flexión diamante / press 1 mano alterno",       sets:3, reps:"8–10",      rest:75 },
+      { group:"Bíceps",             name:"Curl de bíceps",                                sets:3, reps:"12",        rest:60 },
+      { group:"Bíceps / antebrazo", name:"Curl martillo",                                 sets:2, reps:"12",        rest:60 },
+      { group:"Core",               name:"Plancha lateral",                               sets:3, reps:"mantener",  rest:30, hold:true, holdLabel:"30s/lado" }
+    ],
+    piernaB: [
+      { group:"Cuádriceps unilateral", name:"Sentadilla a silla, 1 pierna (pistol)",      sets:4, reps:"6–8/pierna",rest:90 },
+      { group:"Isquios unilateral", name:"RDL a una pierna",                              sets:3, reps:"8–10/pierna",rest:90 },
+      { group:"Pierna",             name:"Zancada",                                       sets:3, reps:"10/pierna", rest:90 },
+      { group:"Gemelo",             name:"Elevación de talón a 1 pierna",                 sets:3, reps:"12–15/pierna",rest:60 },
+      { group:"Core",               name:"Elevación de piernas tumbado",                  sets:3, reps:"12",        rest:45 }
+    ]
+  };
+
+  var FOOD_BY_DAY = {
+    0: { p:"Atún (latas)",      c:"Garbanzos (bote)", v:"Brócoli",              g:"Aceite de oliva" },
+    1: { p:"Pollo",             c:"Arroz",            v:"Brócoli",              g:"Aguacate" },
+    2: { p:"Atún (latas)",      c:"Quinoa",           v:"Guisantes",            g:"Frutos secos" },
+    3: { p:"Pescado blanco",    c:"Boniato",          v:"Brócoli",              g:"Aceite de oliva" },
+    4: { p:"Huevos + Pollo",    c:"Lentejas (bote)",  v:"Guisantes",            g:"Aguacate" },
+    5: { p:"Pavo",              c:"Arroz",            v:"Zanahoria / judía verde", g:"Aguacate" },
+    6: { p:"Pescado blanco",    c:"Quinoa",           v:"Guisantes",            g:"Frutos secos" }
+  };
+  var MEAL_INFO = {
+    toma1: { kcal:380, p:25, c:45,  g:10, ctx:"Antes de trading. Avena con fruta + huevo/atún, o una porción del batch del día." },
+    toma2: { kcal:420, p:30, c:60,  g:8,  ctx:"Después del entreno — no es “ventana anabólica”, es una toma más de la distribución." },
+    toma3: { kcal:900, p:45, c:120, g:25, ctx:"Comida principal. El único hueco tranquilo del día — la toma más grande." },
+    toma4: { kcal:380, p:25, c:50,  g:10, ctx:"Después de tatuaje, antes de trabajar." },
+    toma5: { kcal:560, p:30, c:70,  g:20, ctx:"Tras el trabajo, en el bloque de check-in. Sigue sin confirmar — ver bloqueo del informe de nutrición." }
+  };
+  var MISC_INFO = {
+    despertar: "Meditación (10 min) + visualización (5 min), bloque único al despertar.",
+    trading:   "Estudio del curso de Udemy (Jorge Bernal). Al terminar una clase, pide examen de repaso espaciado al coach-trading.",
+    tattoo:    "Fase F1: mano y dibujo. Practica y pide evaluación con rúbrica al coach-tattoo.",
+    trabajo:   "Bloque de trabajo, 4h.",
+    checkin:   "Repaso de los 9 hábitos del día: X cumplido · - no cumplido · / parcial.",
+    dormir:    "Cierre del día."
+  };
+
+  function toMin(hhmm){ var p = hhmm.split(":"); return (+p[0])*60 + (+p[1]); }
+  function sortMin(ev){ return ev.sortAsMidnight ? 24*60 : toMin(ev.start); }
+  function pad(n){ return n<10 ? "0"+n : ""+n; }
+  function sameDate(a,b){
+    return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+  }
+  function dateKey(d){ return d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate()); }
+
+  var sorted = SCHEDULE.slice().sort(function(a,b){ return sortMin(a)-sortMin(b); });
+
+  // ==================== tracking de cumplimiento (solo en este navegador) ====================
+  // Vive en localStorage, separado de datos/habitos-*.md que lleva el coach
+  // principal en las conversaciones de check-in. No hay forma de que una PWA sin
+  // backend escriba en ese archivo — esto es un registro propio, útil para verlo
+  // aquí y para contárselo tú mismo al coach, pero no está sincronizado con él.
+  function loadProgress(){
+    try{ return JSON.parse(localStorage.getItem("horario:progress") || "{}"); }
+    catch(e){ return {}; }
+  }
+  var progressData = loadProgress();
+  function saveProgress(){ localStorage.setItem("horario:progress", JSON.stringify(progressData)); }
+  function isDone(key, evId){ return !!(progressData[key] && progressData[key][evId]); }
+  function setDone(key, evId, val){
+    if(!progressData[key]) progressData[key] = {};
+    if(val) progressData[key][evId] = true; else delete progressData[key][evId];
+    if(Object.keys(progressData[key]).length === 0) delete progressData[key];
+    saveProgress();
+  }
+
+  // ==================== ESTADO ====================
+  var timerState = {};
+  var workoutBuiltFor = null;
+  var workoutDisplayWeekday = null;
+
+  var today = new Date();
+  var selectedDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  var calMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+
+  // ==================== pestañas ====================
+  function setActiveTab(name){
+    document.querySelectorAll(".panel").forEach(function(p){
+      p.classList.toggle("active", p.getAttribute("data-panel") === name);
+    });
+    document.querySelectorAll(".tab-btn").forEach(function(b){
+      b.classList.toggle("active", b.getAttribute("data-tab") === name);
+    });
+    var titles = { ahora:"Ahora", rutina:"Rutina", calendario:"Calendario", progreso:"Progreso", ajustes:"Ajustes" };
+    document.getElementById("appbar-title").textContent = titles[name] || "Rutina de hoy";
+    localStorage.setItem("horario:tab", name);
+    if(name === "progreso") renderProgress();
+  }
+  document.querySelectorAll(".tab-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){ setActiveTab(btn.getAttribute("data-tab")); });
+  });
+
+  // ==================== localStorage: solo el toggle de toma5 ====================
+  function loadBool(key, def){
+    var v = localStorage.getItem("horario:"+key);
+    return v === null ? def : v === "1";
+  }
+  function saveBool(key, val){ localStorage.setItem("horario:"+key, val ? "1" : "0"); }
+  var tgToma5 = document.getElementById("tg-toma5");
+  tgToma5.checked = loadBool("tg-toma5", true);
+  tgToma5.addEventListener("change", function(){ saveBool("tg-toma5", tgToma5.checked); scheduleAlarms(); render(); });
+
+  function isActiveOnDay(ev, weekday){
+    if(ev.days.indexOf(weekday) === -1) return false;
+    if(ev.toggle === "tg-toma5") return tgToma5.checked;
+    return true;
+  }
+
+  // ==================== exportar a Google Calendar (.ics) ====================
+  var DOW_ICS = {0:"SU",1:"MO",2:"TU",3:"WE",4:"TH",5:"FR",6:"SA"};
+  function icsByDayRule(days){
+    if(days.length === 7) return "FREQ=DAILY";
+    var codes = days.slice().sort(function(a,b){return a-b;}).map(function(d){ return DOW_ICS[d]; });
+    return "FREQ=WEEKLY;BYDAY=" + codes.join(",");
+  }
+  function nextDateForDays(days){
+    var d = new Date(); d.setHours(0,0,0,0);
+    for(var i=0;i<7;i++){
+      var cand = new Date(d.getFullYear(), d.getMonth(), d.getDate()+i);
+      if(days.indexOf(cand.getDay()) !== -1) return cand;
+    }
+    return d;
+  }
+  function addMinutesToTime(hhmm, mins){
+    var t = hhmm.split(":");
+    var d = new Date(2000,0,1, +t[0], +t[1]);
+    d.setMinutes(d.getMinutes() + mins);
+    return pad(d.getHours()) + ":" + pad(d.getMinutes());
+  }
+  function icsDateTime(dateObj, hhmm){
+    var t = hhmm.split(":");
+    return dateObj.getFullYear() + pad(dateObj.getMonth()+1) + pad(dateObj.getDate()) +
+      "T" + pad(+t[0]) + pad(+t[1]) + "00";
+  }
+  function escapeICS(s){ return String(s).replace(/([\\,;])/g, "\\$1"); }
+  function buildICS(){
+    var lines = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Sistema de Coaches//Rutina//ES","CALSCALE:GREGORIAN"];
+    var now = new Date();
+    var stamp = now.getFullYear()+pad(now.getMonth()+1)+pad(now.getDate())+"T"+pad(now.getHours())+pad(now.getMinutes())+pad(now.getSeconds())+"Z";
+    sorted.forEach(function(ev){
+      if(ev.toggle === "tg-toma5" && !tgToma5.checked) return;
+      var startDate = nextDateForDays(ev.days);
+      var endTime = (ev.end === ev.start) ? addMinutesToTime(ev.start, 5) : ev.end;
+      lines.push("BEGIN:VEVENT");
+      lines.push("UID:" + ev.id + "-coach-rutina@local");
+      lines.push("DTSTAMP:" + stamp);
+      lines.push("DTSTART;TZID=Europe/Madrid:" + icsDateTime(startDate, ev.start));
+      lines.push("DTEND;TZID=Europe/Madrid:" + icsDateTime(startDate, endTime));
+      lines.push("RRULE:" + icsByDayRule(ev.days));
+      lines.push("SUMMARY:" + escapeICS(ev.label));
+      lines.push("END:VEVENT");
+    });
+    lines.push("END:VCALENDAR");
+    return lines.join("\r\n");
+  }
+  var icsStatus = document.getElementById("ics-status");
+  document.getElementById("btn-ics").addEventListener("click", function(){
+    var ics = buildICS();
+    var blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = "rutina-coach.ics";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+    icsStatus.textContent = "Descargado rutina-coach.ics — impórtalo en Google Calendar.";
+  });
+
+  // ==================== notificaciones ====================
+  var notifBtn = document.getElementById("btn-notif");
+  var notifStatus = document.getElementById("notif-status");
+  var canNotify = "Notification" in window;
+  function refreshNotifUI(){
+    if(!canNotify){
+      notifBtn.disabled = true;
+      notifStatus.textContent = "Notificaciones: no soportadas en este navegador.";
+      return;
+    }
+    if(Notification.permission === "granted"){
+      notifBtn.textContent = "Activadas"; notifBtn.disabled = true;
+      notifStatus.textContent = "Notificaciones: activas";
+    } else if(Notification.permission === "denied"){
+      notifBtn.disabled = true; notifBtn.textContent = "Bloqueadas";
+      notifStatus.textContent = "Notificaciones: bloqueadas por el navegador.";
+    } else {
+      notifBtn.textContent = "Activar"; notifBtn.disabled = false;
+      notifStatus.textContent = "Notificaciones: sin activar todavía.";
+    }
+  }
+  notifBtn.addEventListener("click", function(){
+    if(!canNotify) return;
+    Notification.requestPermission().then(refreshNotifUI);
+  });
+  refreshNotifUI();
+
+  // ==================== beep: alarma larga y fuerte ====================
+  var audioCtx = null;
+  function beep(){
+    try{
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      var t0 = audioCtx.currentTime;
+      var pulses = 6, pulseLen = 0.26, gap = 0.14, peak = 0.55;
+      var freqs = [988, 740];
+      for(var i=0; i<pulses; i++){
+        var start = t0 + i*(pulseLen+gap);
+        var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = "square";
+        o.frequency.value = freqs[i % 2];
+        g.gain.setValueAtTime(0.0001, start);
+        g.gain.exponentialRampToValueAtTime(peak, start + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, start + pulseLen);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(start); o.stop(start + pulseLen + 0.02);
+      }
+    }catch(e){}
+  }
+  function toast(title, body){
+    var stack = document.getElementById("toast-stack");
+    var el = document.createElement("div");
+    el.className = "toast";
+    el.innerHTML = "<b>" + title + "</b>" + body;
+    stack.appendChild(el);
+    setTimeout(function(){ el.remove(); }, 9000);
+  }
+  function fireAlarm(ev){
+    beep();
+    toast(ev.start + " · toca ahora", ev.label);
+    if(canNotify && Notification.permission === "granted"){
+      try{
+        new Notification("Rutina — " + ev.label, {
+          body: ev.start + (ev.end && ev.end !== ev.start ? "–" + ev.end : "") + " · toca ahora",
+          tag: "rutina-" + ev.id
+        });
+      }catch(e){}
+    }
+  }
+
+  var timers = [];
+  function scheduleAlarms(){
+    timers.forEach(function(t){ clearTimeout(t); });
+    timers = [];
+    var now = new Date();
+    var weekday = now.getDay();
+    var nowMs = now.getTime();
+    sorted.forEach(function(ev){
+      if(!isActiveOnDay(ev, weekday)) return;
+      var target = new Date(now);
+      var mins = toMin(ev.start);
+      target.setHours(Math.floor(mins/60), mins%60, 0, 0);
+      if(ev.sortAsMidnight){ target.setDate(target.getDate()+1); }
+      var delay = target.getTime() - nowMs;
+      if(delay > 0 && delay < 24*3600*1000){
+        timers.push(setTimeout(function(){ fireAlarm(ev); }, delay));
+      }
+    });
+  }
+
+  // ==================== rutina de entreno (tab dedicada) ====================
+  function fmtSec(s){
+    s = Math.max(0, Math.round(s));
+    return pad(Math.floor(s/60)) + ":" + pad(s%60);
+  }
+  function updateTimerDOM(exId){
+    var st = timerState[exId];
+    if(!st) return;
+    var disp = document.getElementById("td-" + exId);
+    var btn = document.getElementById("tb-" + exId);
+    if(!disp || !btn) return;
+    disp.textContent = fmtSec(st.remaining);
+    disp.classList.toggle("done", st.remaining <= 0);
+    btn.textContent = st.running ? "Pausar" : (st.remaining <= 0 ? "Reiniciar" : "Iniciar");
+    btn.classList.toggle("running", st.running);
+  }
+  function tickTimers(){
+    Object.keys(timerState).forEach(function(exId){
+      var st = timerState[exId];
+      if(!st.running) return;
+      st.remaining -= 1;
+      if(st.remaining <= 0){ st.remaining = 0; st.running = false; beep(); }
+      updateTimerDOM(exId);
+    });
+  }
+
+  function renderWorkoutContent(weekday){
+    var host = document.getElementById("workout-content");
+    var routineId = DAY_ROUTINE[weekday];
+    if(!routineId){
+      host.innerHTML = '<div class="empty-state"><b>Sin rutina hoy</b>Miércoles y sábado no llevan entreno; domingo es descanso completo.</div>';
+      timerState = {};
+      return;
+    }
+    var meta = ROUTINE_META[routineId];
+    var isRealToday = (weekday === new Date().getDay());
+    var html =
+      '<div class="workout-hd"><h2>' + meta.title + '</h2><div class="wsub">' + meta.sub + '</div>' +
+      (isRealToday ? '' : '<span class="wbrowsing">Viendo ' + DOW[weekday] + '</span>') +
+      '</div>';
+    timerState = {};
+    WORKOUTS[routineId].forEach(function(ex, idx){
+      var exId = routineId + "-" + idx;
+      timerState[exId] = { remaining: ex.rest, def: ex.rest, running: false };
+      html +=
+        '<div class="ex">' +
+          '<div class="ex-top">' +
+            '<span class="ex-group">' + ex.group + '</span>' +
+            '<span class="ex-name">' + ex.name + '</span>' +
+          '</div>' +
+          '<div class="ex-meta">' +
+            '<span><b>' + ex.sets + '</b> series</span>' +
+            '<span><b>' + ex.reps + '</b></span>' +
+            '<span>' + (ex.hold ? "Aguante " + ex.holdLabel : "Descanso " + ex.rest + "s") + '</span>' +
+          '</div>' +
+          '<div class="ex-timer">' +
+            '<span class="timer-display mono" id="td-' + exId + '">' + fmtSec(ex.rest) + '</span>' +
+            '<button class="timer-btn start" id="tb-' + exId + '">Iniciar</button>' +
+            '<button class="timer-btn" id="tr-' + exId + '">Reiniciar</button>' +
+          '</div>' +
+        '</div>';
+    });
+    host.innerHTML = html;
+    Object.keys(timerState).forEach(function(exId){
+      document.getElementById("tb-" + exId).addEventListener("click", function(){
+        var st = timerState[exId];
+        if(st.remaining <= 0) st.remaining = st.def;
+        st.running = !st.running;
+        updateTimerDOM(exId);
+      });
+      document.getElementById("tr-" + exId).addEventListener("click", function(){
+        var st = timerState[exId];
+        st.running = false; st.remaining = st.def;
+        updateTimerDOM(exId);
+      });
+    });
+  }
+
+  // Muestra la rutina de `weekday` y cambia a la pestaña Rutina (se usa al tocar
+  // "Entreno" en la línea de tiempo, hoy o cualquier día navegado en el calendario).
+  function browseWorkout(weekday){
+    renderWorkoutContent(weekday);
+    workoutDisplayWeekday = weekday;
+    setActiveTab("rutina");
+  }
+
+  // ==================== calendario ====================
+  function renderCalendar(){
+    var titleEl = document.getElementById("cal-title");
+    titleEl.textContent = MON[calMonth.getMonth()] + " " + calMonth.getFullYear();
+    var grid = document.getElementById("cal-grid");
+    grid.innerHTML = "";
+    var firstOfMonth = new Date(calMonth.getFullYear(), calMonth.getMonth(), 1);
+    var jsFirstDay = firstOfMonth.getDay();
+    var leading = (jsFirstDay + 6) % 7;
+    var daysInMonth = new Date(calMonth.getFullYear(), calMonth.getMonth()+1, 0).getDate();
+    for(var b=0; b<leading; b++){
+      var blank = document.createElement("span");
+      blank.className = "cal-day blank";
+      grid.appendChild(blank);
+    }
+    for(var d=1; d<=daysInMonth; d++){
+      var cellDate = new Date(calMonth.getFullYear(), calMonth.getMonth(), d);
+      var wd = cellDate.getDay();
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "cal-day";
+      if(sameDate(cellDate, today)) btn.classList.add("today");
+      if(sameDate(cellDate, selectedDate)) btn.classList.add("selected");
+      var dotHTML = "";
+      if(wd === 0) dotHTML = '<span class="dot rest"></span>';
+      else if(ENTRENO.indexOf(wd) !== -1) dotHTML = '<span class="dot train"></span>';
+      btn.innerHTML = d + dotHTML;
+      (function(dt){ btn.addEventListener("click", function(){ selectDate(dt); }); })(cellDate);
+      grid.appendChild(btn);
+    }
+  }
+  function selectDate(dt){
+    selectedDate = dt;
+    if(dt.getMonth() !== calMonth.getMonth() || dt.getFullYear() !== calMonth.getFullYear()){
+      calMonth = new Date(dt.getFullYear(), dt.getMonth(), 1);
+    }
+    renderCalendar();
+    buildTimeline();
+    renderTimelineStates();
+  }
+  document.getElementById("cal-prev").addEventListener("click", function(){
+    calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth()-1, 1);
+    renderCalendar();
+  });
+  document.getElementById("cal-next").addEventListener("click", function(){
+    calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth()+1, 1);
+    renderCalendar();
+  });
+  document.getElementById("cal-today").addEventListener("click", function(){
+    var t = new Date();
+    calMonth = new Date(t.getFullYear(), t.getMonth(), 1);
+    selectDate(new Date(t.getFullYear(), t.getMonth(), t.getDate()));
+  });
+
+  // ==================== línea de tiempo ====================
+  function dayStripHTML(days){
+    var out = "";
+    for(var d=1; d<=6; d++){
+      out += '<span class="' + (days.indexOf(d)!==-1?"on":"") + '">' + DAY_LETTERS[d] + '</span>';
+    }
+    out += '<span class="' + (days.indexOf(0)!==-1?"on":"") + '">' + DAY_LETTERS[0] + '</span>';
+    return out;
+  }
+  function buildDetailHTML(ev, weekday){
+    if(MEAL_INFO[ev.id]){
+      var m = MEAL_INFO[ev.id];
+      return '<div class="detail-macros">' +
+          '<span><b>' + m.kcal + '</b> kcal</span>' +
+          '<span>P <b>' + m.p + '</b>g</span>' +
+          '<span>C <b>' + m.c + '</b>g</span>' +
+          '<span>G <b>' + m.g + '</b>g</span>' +
+        '</div>' +
+        '<p class="detail-note">' + m.ctx + '</p>';
+    }
+    if(ev.id === "cocinar"){
+      var f = FOOD_BY_DAY[weekday];
+      return '<div class="detail-food">' +
+          '<span class="df"><i>Proteína</i>' + f.p + '</span>' +
+          '<span class="df"><i>Carbohidrato</i>' + f.c + '</span>' +
+          '<span class="df"><i>Verdura</i>' + f.v + '</span>' +
+          '<span class="df"><i>Grasa</i>' + f.g + '</span>' +
+        '</div>' +
+        '<p class="detail-note">Sesión única de 30 min, todo en paralelo.</p>';
+    }
+    return '<p class="detail-note">' + (MISC_INFO[ev.id] || "Sin detalle adicional.") + '</p>';
+  }
+  function buildTimeline(){
+    var timelineEl = document.getElementById("timeline");
+    var weekday = selectedDate.getDay();
+    var key = dateKey(selectedDate);
+    var todayMidnight = new Date(); todayMidnight.setHours(0,0,0,0);
+    var isFuture = selectedDate.getTime() > todayMidnight.getTime();
+    timelineEl.innerHTML = "";
+    sorted.forEach(function(ev){
+      var active = isActiveOnDay(ev, weekday);
+      var row = document.createElement("div");
+      row.className = "item";
+      row.id = "row-" + ev.id;
+      var checkboxHTML = active
+        ? '<input type="checkbox" class="chk-done" id="chk-' + ev.id + '"' +
+          (isDone(key, ev.id) ? ' checked' : '') + (isFuture ? ' disabled' : '') + '>'
+        : '';
+      row.innerHTML =
+        '<span class="t mono">' + ev.start + '</span>' +
+        '<span class="cat" style="background:var(' + CAT_VAR[ev.cat] + ')"></span>' +
+        '<span class="mid"><span class="lbl">' + ev.label + '</span>' +
+        '<span class="days">' + dayStripHTML(ev.days) + '</span></span>' +
+        '<span class="item-trail">' +
+          '<span class="badge-slot"></span>' +
+          checkboxHTML +
+          '<span class="item-caret" id="caret-' + ev.id + '">' + (ev.id === "entreno" ? "↧" : "▾") + '</span>' +
+        '</span>';
+      timelineEl.appendChild(row);
+
+      var detail = document.createElement("div");
+      detail.className = "item-detail";
+      detail.id = "detail-" + ev.id;
+      detail.innerHTML = buildDetailHTML(ev, weekday);
+      timelineEl.appendChild(detail);
+
+      if(active){
+        var chk = row.querySelector(".chk-done");
+        chk.addEventListener("click", function(e){ e.stopPropagation(); });
+        chk.addEventListener("change", function(){
+          setDone(key, ev.id, chk.checked);
+        });
+      }
+
+      row.addEventListener("click", function(){
+        if(!active) return;
+        if(ev.id === "entreno"){
+          browseWorkout(selectedDate.getDay());
+          return;
+        }
+        var d = document.getElementById("detail-" + ev.id);
+        var c = document.getElementById("caret-" + ev.id);
+        var isOpen = d.style.display === "block";
+        d.style.display = isOpen ? "none" : "block";
+        if(c) c.classList.toggle("open", !isOpen);
+      });
+    });
+  }
+  buildTimeline();
+
+  function renderTimelineStates(){
+    var now = new Date();
+    var viewingToday = sameDate(selectedDate, now);
+    var weekday = selectedDate.getDay();
+    var nowMin = now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
+    var list = sorted.filter(function(ev){ return isActiveOnDay(ev, weekday); });
+    var current = null;
+    if(viewingToday){
+      for(var i=0;i<list.length;i++){
+        var ev = list[i];
+        var s = sortMin(ev);
+        var e = ev.sortAsMidnight ? (24*60) : toMin(ev.end);
+        if(ev.sortAsMidnight){ if(nowMin >= s) current = ev; continue; }
+        if(nowMin >= s && nowMin < e) current = ev;
+      }
+    }
+    document.getElementById("tl-daylabel").textContent =
+      viewingToday ? "de hoy" : ("— " + DOW[weekday] + " " + selectedDate.getDate() + " " + MON[selectedDate.getMonth()].slice(0,3));
+    document.getElementById("tl-count").textContent = list.length + " activos de " + sorted.length;
+
+    sorted.forEach(function(ev){
+      var row = document.getElementById("row-" + ev.id);
+      if(!row) return;
+      row.classList.remove("past","now","off");
+      var slot = row.querySelector(".badge-slot");
+      slot.innerHTML = "";
+      var active = isActiveOnDay(ev, weekday);
+      if(!active){ row.classList.add("off"); return; }
+      if(viewingToday){
+        var s = sortMin(ev);
+        var e = ev.sortAsMidnight ? 24*60 : toMin(ev.end);
+        var isNow = ev.sortAsMidnight ? (current === ev) : (nowMin >= s && nowMin < e);
+        var isPast = ev.sortAsMidnight ? false : (nowMin >= e);
+        if(isNow){
+          row.classList.add("now");
+          var b = document.createElement("span"); b.className="badge now"; b.textContent="ahora"; slot.appendChild(b);
+        } else if(isPast){
+          row.classList.add("past");
+        }
+      }
+      if(ev.flag === "confirm"){
+        var c = document.createElement("span"); c.className="badge confirm"; c.textContent="a confirmar";
+        c.style.marginLeft = "0.35rem"; slot.appendChild(c);
+      }
+    });
+  }
+
+  // ==================== pestaña Progreso ====================
+  function last7Dates(){
+    var arr = [], base = new Date(); base.setHours(0,0,0,0);
+    for(var i=6; i>=0; i--){
+      var d = new Date(base); d.setDate(base.getDate()-i);
+      arr.push(d);
+    }
+    return arr;
+  }
+
+  // Racha de "días perfectos" (todas las actividades que tocaban ese día,
+  // marcadas) contando hacia atrás desde AYER — hoy no cuenta porque aún no ha
+  // terminado y penalizaría la racha sin motivo.
+  function perfectDayStreak(){
+    var streak = 0;
+    var d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-1);
+    for(var guard=0; guard<365; guard++){
+      var wd = d.getDay();
+      var key = dateKey(d);
+      var applicable = sorted.filter(function(ev){ return isActiveOnDay(ev, wd); });
+      var allDone = applicable.length > 0 && applicable.every(function(ev){ return isDone(key, ev.id); });
+      if(!allDone) break;
+      streak++;
+      d.setDate(d.getDate()-1);
+    }
+    return streak;
+  }
+
+  function renderProgress(){
+    var host = document.getElementById("progress-content");
+    if(Object.keys(progressData).length === 0){
+      host.innerHTML = '<div class="progress-empty"><b>Todavía no hay nada marcado</b>Ve marcando las casillas en la línea de tiempo (pestaña Calendario) y aquí se va llenando el histórico.</div>';
+      return;
+    }
+
+    var days = last7Dates();
+    var now = new Date();
+
+    // ---- tarjetas de estadística ----
+    var todayKey = dateKey(now);
+    var todayWeekday = now.getDay();
+    var todayApplicable = sorted.filter(function(ev){ return isActiveOnDay(ev, todayWeekday); });
+    var todayDone = todayApplicable.filter(function(ev){ return isDone(todayKey, ev.id); });
+    var todayPct = todayApplicable.length ? Math.round(todayDone.length/todayApplicable.length*100) : 0;
+
+    var wk7Applicable = 0, wk7Done = 0;
+    days.forEach(function(d){
+      var wd = d.getDay(), key = dateKey(d);
+      sorted.forEach(function(ev){
+        if(isActiveOnDay(ev, wd)){ wk7Applicable++; if(isDone(key, ev.id)) wk7Done++; }
+      });
+    });
+    var wk7Pct = wk7Applicable ? Math.round(wk7Done/wk7Applicable*100) : 0;
+    var streak = perfectDayStreak();
+
+    var html = '<div class="stat-cards">' +
+      '<div class="stat-card"><div class="num">' + todayPct + '%</div><div class="lbl">Hoy · ' + todayDone.length + '/' + todayApplicable.length + '</div></div>' +
+      '<div class="stat-card"><div class="num">' + wk7Pct + '%</div><div class="lbl">Últimos 7 días</div></div>' +
+      '<div class="stat-card"><div class="num">' + streak + '</div><div class="lbl">Racha de días perfectos</div></div>' +
+      '<div class="stat-card"><div class="num">' + wk7Done + '</div><div class="lbl">Actividades cumplidas (7d)</div></div>' +
+    '</div>';
+
+    // ---- mapa de calor: 13 actividades × 7 días ----
+    var DOWLETTER = ["D","L","M","X","J","V","S"];
+    html += '<h2>Últimos 7 días</h2><div class="heatmap"><table><thead><tr><th class="act-col">Actividad</th>';
+    days.forEach(function(d){
+      var isToday = sameDate(d, now);
+      html += '<th class="' + (isToday?"today-col":"") + '">' + DOWLETTER[d.getDay()] + '<br>' + d.getDate() + '</th>';
+    });
+    html += '</tr></thead><tbody>';
+    sorted.forEach(function(ev){
+      html += '<tr><td class="act-name">' + ev.short + '</td>';
+      days.forEach(function(d){
+        var wd = d.getDay(), key = dateKey(d);
+        var isToday = sameDate(d, now);
+        var cls;
+        if(!isActiveOnDay(ev, wd)) cls = "na";
+        else if(isDone(key, ev.id)) cls = "done";
+        else if(isToday) cls = "pending";
+        else cls = "missed";
+        html += '<td><span class="hcell ' + cls + '"></span></td>';
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+
+    // ---- barras por actividad, la más floja primero ----
+    var stats = sorted.map(function(ev){
+      var applicable = 0, done = 0;
+      days.forEach(function(d){
+        var wd = d.getDay(), key = dateKey(d);
+        if(isActiveOnDay(ev, wd)){ applicable++; if(isDone(key, ev.id)) done++; }
+      });
+      return { ev: ev, applicable: applicable, done: done, pct: applicable ? Math.round(done/applicable*100) : null };
+    }).filter(function(s){ return s.applicable > 0; })
+      .sort(function(a,b){ return a.pct - b.pct; });
+
+    html += '<h2>Por actividad <span class="count">7 días, de más floja a más sólida</span></h2><div class="actbars">';
+    stats.forEach(function(s){
+      html += '<div class="actbar-row">' +
+        '<span class="an">' + s.ev.short + '</span>' +
+        '<div class="actbar-track"><div class="actbar-fill" style="width:' + s.pct + '%"></div></div>' +
+        '<span class="actbar-pct">' + s.done + '/' + s.applicable + '</span>' +
+      '</div>';
+    });
+    html += '</div>';
+
+    host.innerHTML = html;
+  }
+
+  // ==================== render principal (siempre sobre el día/hora REAL) ====================
+  var heroEl = document.getElementById("hero");
+  var heroTag = document.getElementById("hero-tag");
+  var heroLabel = document.getElementById("hero-label");
+  var heroRange = document.getElementById("hero-range");
+  var heroCount = document.getElementById("hero-count");
+  var heroCountUnit = document.getElementById("hero-count-unit");
+  var nextLabel = document.getElementById("next-label");
+  var nextTime = document.getElementById("next-time");
+  var clockEl = document.getElementById("clock");
+  var dateEl = document.getElementById("date-lbl");
+  var dbEl = document.getElementById("daybanner");
+  var dbIc = document.getElementById("daybanner-ic");
+  var dbTitle = document.getElementById("daybanner-title");
+  var dbSub = document.getElementById("daybanner-sub");
+  var rutinaTabBtn = document.querySelector('.tab-btn[data-tab="rutina"]');
+
+  function updateDayBanner(weekday){
+    dbEl.className = "daybanner";
+    if(weekday === 0){
+      dbEl.classList.add("rest");
+      dbIc.textContent = "☀";
+      dbTitle.textContent = "Domingo — día de descanso completo";
+      dbSub.textContent = "Solo cocina y comidas. Sin meditar, sin trading, sin entreno, sin tatuaje.";
+    } else if(ENTRENO.indexOf(weekday) !== -1){
+      dbEl.classList.add("train");
+      dbIc.textContent = "●";
+      dbTitle.textContent = DOW[weekday].charAt(0).toUpperCase()+DOW[weekday].slice(1) + " — hoy toca entreno";
+      dbSub.textContent = "10:30–11:10 · el resto de la rutina va como siempre.";
+    } else {
+      dbEl.classList.add("notrain");
+      dbIc.textContent = "○";
+      dbTitle.textContent = DOW[weekday].charAt(0).toUpperCase()+DOW[weekday].slice(1) + " — hoy no toca entreno";
+      dbSub.textContent = "Rutina normal, solo sin el bloque de las 10:30.";
+    }
+  }
+
+  function render(){
+    var now = new Date();
+    var realWeekday = now.getDay();
+    clockEl.textContent = pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":" + pad(now.getSeconds());
+    dateEl.textContent = DOW[realWeekday] + ", " + now.getDate() + " " + MON[now.getMonth()].slice(0,3);
+    updateDayBanner(realWeekday);
+
+    if(workoutBuiltFor !== realWeekday){
+      renderWorkoutContent(realWeekday);
+      workoutBuiltFor = realWeekday;
+      workoutDisplayWeekday = realWeekday;
+    }
+    tickTimers();
+
+    var nowMin = now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
+    var listReal = sorted.filter(function(ev){ return isActiveOnDay(ev, realWeekday); });
+    var current = null, next = null;
+    for(var i=0;i<listReal.length;i++){
+      var ev = listReal[i];
+      var s = sortMin(ev);
+      var e = ev.sortAsMidnight ? (24*60) : toMin(ev.end);
+      if(ev.sortAsMidnight){ if(nowMin >= s) current = ev; continue; }
+      if(nowMin >= s && nowMin < e) current = ev;
+      if(!next && s > nowMin) next = ev;
+    }
+    if(!next && listReal.length) next = listReal[0];
+
+    // aviso visual (puntito) en la pestaña Rutina mientras toca entreno de verdad
+    var isEntrenoNow = !!(current && current.id === "entreno");
+    if(rutinaTabBtn) rutinaTabBtn.classList.toggle("has-dot", isEntrenoNow);
+
+    if(current){
+      heroEl.classList.remove("empty");
+      heroTag.textContent = "Ahora";
+      heroLabel.textContent = current.label;
+      heroRange.textContent = current.sortAsMidnight ? current.start : (current.start + "–" + current.end);
+      var endMin = current.sortAsMidnight ? 24*60 : toMin(current.end);
+      var remain = Math.max(0, endMin - nowMin);
+      var rm = Math.floor(remain), rs = Math.round((remain-rm)*60);
+      heroCount.textContent = pad(Math.floor(rm/60)) + ":" + pad(rm%60) + ":" + pad(rs);
+      heroCountUnit.textContent = "restante en este bloque";
+    } else {
+      heroEl.classList.add("empty");
+      heroTag.textContent = realWeekday===0 ? "Domingo libre" : "Hueco libre";
+      heroLabel.textContent = realWeekday===0 ? "Sin actividades complementarias hoy" : "Sin actividad programada ahora";
+      heroRange.textContent = ""; heroCount.textContent = ""; heroCountUnit.textContent = "";
+    }
+
+    if(next){
+      var sNext = sortMin(next);
+      var untilNext = sNext - nowMin;
+      if(untilNext < 0) untilNext += 24*60;
+      var hn = Math.floor(untilNext/60), mn = Math.floor(untilNext%60);
+      nextLabel.textContent = next.label;
+      nextTime.textContent = next.start + " · en " + (hn>0? hn+"h ":"") + mn + "min";
+    } else {
+      nextLabel.textContent = "Nada más programado hoy";
+      nextTime.textContent = "";
+    }
+
+    renderTimelineStates();
+  }
+
+  // restaurar última pestaña usada
+  var savedTab = localStorage.getItem("horario:tab");
+  if(savedTab && document.querySelector('.panel[data-panel="'+savedTab+'"]')){
+    setActiveTab(savedTab);
+  }
+
+  renderCalendar();
+  render();
+  scheduleAlarms();
+  setInterval(render, 1000);
+
+  var lastDay = new Date().getDate();
+  setInterval(function(){
+    var d = new Date().getDate();
+    if(d !== lastDay){ lastDay = d; scheduleAlarms(); }
+  }, 30000);
+
+  if("serviceWorker" in navigator){
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("sw.js").catch(function(){});
+    });
+  }
+})();
+</script>
