@@ -298,21 +298,33 @@
 
   /* ---------------- pantalla de acceso ---------------- */
   .auth-gate{position:fixed;inset:0;background:var(--ground);z-index:2000;
-    display:flex;align-items:center;justify-content:center;padding:1.5rem}
-  .auth-card{max-width:22rem;width:100%}
-  .auth-title{font-family:Archivo,sans-serif;font-weight:800;font-size:1.7rem;
-    letter-spacing:-0.02em;margin:0.3rem 0 0.7rem}
-  .auth-sub{color:var(--muted);font-size:0.9rem;margin:0 0 1.5rem;line-height:1.5}
-  #auth-form{display:flex;flex-direction:column;gap:0.7rem}
-  .auth-input{font-family:"Source Serif 4",serif;font-size:1rem;padding:0.75rem 0.9rem;
-    border:1.5px solid var(--rule);background:var(--surface);color:var(--ink);width:100%}
+    display:flex;align-items:center;justify-content:center;padding:1.5rem;overflow-y:auto}
+  .auth-gate::before{content:"";position:fixed;inset:0;pointer-events:none;
+    background:radial-gradient(circle at 50% 0%,var(--accent-soft),transparent 60%)}
+  .auth-card{max-width:21rem;width:100%;position:relative;text-align:center}
+  .auth-mark{width:3.4rem;height:3.4rem;margin:0 auto 1.3rem;border-radius:50%;
+    background:var(--accent);display:flex;align-items:center;justify-content:center;position:relative}
+  .auth-mark::before{content:"";position:absolute;inset:-5px;border:1.5px solid var(--accent);
+    border-radius:50%;opacity:0.35}
+  .auth-mark .dot{width:0.85rem;height:0.85rem;border-radius:50%;background:#fff}
+  .auth-eyebrow{font-family:Archivo,sans-serif;font-weight:700;font-size:0.66rem;letter-spacing:0.15em;
+    text-transform:uppercase;color:var(--faint);margin:0 0 0.4rem}
+  .auth-title{font-family:Archivo,sans-serif;font-weight:800;font-size:1.6rem;
+    letter-spacing:-0.02em;margin:0 0 0.6rem}
+  .auth-sub{color:var(--muted);font-size:0.88rem;margin:0 0 1.6rem;line-height:1.55}
+  #auth-form{display:flex;flex-direction:column;gap:0.7rem;text-align:left}
+  .auth-input{font-family:"Source Serif 4",serif;font-size:1rem;padding:0.8rem 0.95rem;
+    border:1.5px solid var(--rule);background:var(--surface);color:var(--ink);width:100%;
+    text-align:center}
   .auth-input:focus{outline:none;border-color:var(--accent)}
-  .auth-btn{width:100%;padding:0.75rem;font-size:0.85rem}
+  .auth-btn{width:100%;padding:0.8rem;font-size:0.85rem}
   .auth-btn:disabled{opacity:0.5;cursor:default}
-  .auth-status{margin-top:1rem;font-family:"JetBrains Mono",monospace;font-size:0.78rem;
-    color:var(--muted);min-height:1.2em}
+  .auth-status{margin-top:1.1rem;font-family:"JetBrains Mono",monospace;font-size:0.76rem;
+    color:var(--muted);min-height:1.2em;line-height:1.5}
   .auth-status.ok{color:var(--ok)}
   .auth-status.err{color:var(--rojo)}
+  .auth-foot{margin-top:2rem;font-family:"JetBrains Mono",monospace;font-size:0.68rem;
+    color:var(--faint);letter-spacing:0.02em}
 
   .item-detail{display:none;padding:0.75rem 0.9rem 0.9rem;background:var(--rule-soft);
     border-bottom:1px solid var(--rule-soft);font-size:0.83rem}
@@ -500,7 +512,8 @@
 
 <div class="auth-gate" id="auth-gate" style="display:none">
   <div class="auth-card">
-    <p class="eyebrow">Sistema de Coaches</p>
+    <div class="auth-mark"><span class="dot"></span></div>
+    <p class="auth-eyebrow">Sistema de Coaches</p>
     <h1 class="auth-title">Rutina de hoy</h1>
     <p class="auth-sub">Entra con tu correo para que el progreso se guarde contigo, no solo en este navegador.</p>
     <form id="auth-form">
@@ -508,6 +521,7 @@
       <button type="submit" class="btn auth-btn" id="auth-submit">Enviar enlace de acceso</button>
     </form>
     <p class="auth-status" id="auth-status"></p>
+    <p class="auth-foot">Sin contraseña — entras con un enlace que te mandamos al correo</p>
   </div>
 </div>
 
