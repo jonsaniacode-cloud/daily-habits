@@ -464,12 +464,16 @@
   [data-style="vivid"]{
     --v-radius-lg:1.6rem; --v-radius-md:1.15rem; --v-radius-sm:0.85rem;
   }
+  /* --surface/--rule-soft son la base de casi todas las tarjetas "neutras"
+     (calendario, timeline, modales, selects, switches, la barra de pestañas...).
+     Antes estaban tintadas de morado por error -- ahora son gris-azulado,
+     a juego con el degradado de fondo y con --accent. */
   @media (prefers-color-scheme: dark){
     [data-style="vivid"]:not([data-theme="light"]){
-      --ground:#0d0a13; --surface:#1b1626; --rule:transparent; --rule-soft:#251f34;
+      --ground:#0a0e1a; --surface:#131a2b; --rule:transparent; --rule-soft:#1c2540;
     }
   }
-  [data-style="vivid"][data-theme="dark"]{ --ground:#0d0a13; --surface:#1b1626; --rule:transparent; --rule-soft:#251f34; }
+  [data-style="vivid"][data-theme="dark"]{ --ground:#0a0e1a; --surface:#131a2b; --rule:transparent; --rule-soft:#1c2540; }
 
   [data-style="vivid"] body{font-family:Archivo,sans-serif}
   /* fondo degradado oscuro (no negro plano), con el mismo azul de la paleta
@@ -536,7 +540,7 @@
   [data-style="vivid"] .stat-card:nth-child(2)::after{content:"🍊"}
   [data-style="vivid"] .stat-card:nth-child(3){background:linear-gradient(150deg,var(--c-mentalidad) 0%,#0e4a53 140%)}
   [data-style="vivid"] .stat-card:nth-child(3)::after{content:"🌙"}
-  [data-style="vivid"] .stat-card:nth-child(4){background:linear-gradient(150deg,var(--c-tattoo) 0%,#6e1f47 140%)}
+  [data-style="vivid"] .stat-card:nth-child(4){background:linear-gradient(150deg,#4C7FF0 0%,#0f1f52 140%)}
   [data-style="vivid"] .stat-card:nth-child(4)::after{content:"❤️"}
   [data-style="vivid"] .stat-card .num,[data-style="vivid"] .stat-card .lbl{color:#fff}
 
