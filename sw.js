@@ -1,7 +1,7 @@
 // Service worker de la PWA "Rutina de Hoy".
 // Sube CACHE_VERSION cada vez que edites HORARIO.html (u otro archivo listado
 // abajo) para que los teléfonos que ya instalaron la app cojan la versión nueva.
-const CACHE_VERSION = "coach-rutina-v25";
+const CACHE_VERSION = "coach-rutina-v26";
 const CORE_ASSETS = [
   "./index.html",
   "./manifest.json",

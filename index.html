@@ -474,33 +474,51 @@
      [data-style="vivid"] que se activan/desactivan con el toggle de Ajustes
      ("Apariencia" → "Estilo vívido"). Apagarlo devuelve exactamente el
      estilo clásico de siempre, sin recargar nada ni perder funcionalidad.
-     Inspirado en apps tipo Samsung Health: fondo casi negro, tarjetas muy
-     redondeadas con gradientes de color por categoría, sin bordes finos,
-     tipografía de peso alto, barra de pestañas flotante tipo píldora.
-     ========================================================================== */
+     Inspirado en apps tipo Samsung Health: tarjetas muy redondeadas con
+     gradientes de color por categoría, sin bordes finos, tipografía de peso
+     alto, barra de pestañas flotante tipo píldora.
+
+     Es un tema binario claro/oscuro, no una variante única: por defecto
+     (declaración sin @media) usa la paleta CLARA -- diseñada a juego con la
+     oscura, misma estructura y mismos tokens de color de categoría, pero en
+     tonos claros en vez de casi negros. Bajo @media (prefers-color-scheme:
+     dark) se sobreescribe con la paleta OSCURA, que es la que ya conocías
+     como "vívido" desde el principio y no ha cambiado. Sigue el mismo
+     patrón que ya usa el resto del CSS (:root define claro por defecto,
+     @media dark lo sobreescribe), así que el sistema decide automáticamente
+     cuál de las dos toca -- y el switch de Ajustes solo decide si esta capa
+     entera está activa o no, no cuál paleta usar dentro de ella. */
   [data-style="vivid"]{
     --v-radius-lg:1.6rem; --v-radius-md:1.15rem; --v-radius-sm:0.85rem;
+    /* paleta CLARA (por defecto): tarjetas blancas sobre un fondo azul muy
+       pálido, en vez del blanco puro del tema clásico -- para que se note
+       que sigue siendo la "familia vívida" y no una vuelta al clásico */
+    --ground:#eef2fa; --surface:#ffffff; --rule:transparent; --rule-soft:#e3e9f5;
   }
-  /* --surface/--rule-soft son la base de casi todas las tarjetas "neutras"
-     (calendario, timeline, modales, selects, switches, la barra de pestañas...).
-     Antes estaban tintadas de morado por error -- ahora son gris-azulado,
-     a juego con el degradado de fondo y con --accent. */
   @media (prefers-color-scheme: dark){
-    [data-style="vivid"]:not([data-theme="light"]){
+    /* paleta OSCURA: la que ya conocías, sin cambios */
+    [data-style="vivid"]{
       --ground:#0a0e1a; --surface:#131a2b; --rule:transparent; --rule-soft:#1c2540;
     }
   }
-  [data-style="vivid"][data-theme="dark"]{ --ground:#0a0e1a; --surface:#131a2b; --rule:transparent; --rule-soft:#1c2540; }
 
   [data-style="vivid"] body{font-family:Archivo,sans-serif}
-  /* fondo degradado oscuro (no negro plano), con el mismo azul de la paleta
-     (--accent / --c-principal) en vez de morado-vino inventado, para que
-     encaje con el color de acento que ya se usa en el resto de la app */
+  /* fondo degradado sutil (claro por defecto, oscuro bajo @media dark), con
+     el mismo azul de la paleta (--accent / --c-principal) en los dos casos
+     para que se note que es la misma familia visual en ambos modos */
   [data-style="vivid"] .app{
     background:
-      radial-gradient(ellipse 120% 55% at 15% 0%, rgba(127,160,242,0.30), transparent 60%),
-      radial-gradient(ellipse 110% 60% at 100% 100%, rgba(47,95,208,0.30), transparent 65%),
-      linear-gradient(180deg, #0a0e1a 0%, #0c111c 40%, #0e1420 100%);
+      radial-gradient(ellipse 120% 55% at 15% 0%, rgba(127,160,242,0.18), transparent 60%),
+      radial-gradient(ellipse 110% 60% at 100% 100%, rgba(47,95,208,0.12), transparent 65%),
+      linear-gradient(180deg, #eef2fa 0%, #eaf0fb 40%, #e6edfa 100%);
+  }
+  @media (prefers-color-scheme: dark){
+    [data-style="vivid"] .app{
+      background:
+        radial-gradient(ellipse 120% 55% at 15% 0%, rgba(127,160,242,0.30), transparent 60%),
+        radial-gradient(ellipse 110% 60% at 100% 100%, rgba(47,95,208,0.30), transparent 65%),
+        linear-gradient(180deg, #0a0e1a 0%, #0c111c 40%, #0e1420 100%);
+    }
   }
   [data-style="vivid"] .appbar{border-bottom:none;background:transparent;padding-top:0.9rem}
   [data-style="vivid"] .appbar .title{font-size:1.3rem}
@@ -593,8 +611,15 @@
      borraría la flecha SVG de los <select>, que se define como background-image */
   [data-style="vivid"] .am-input,[data-style="vivid"] select.wsel{border-radius:var(--v-radius-sm);border-color:transparent;background-color:var(--rule-soft)}
   [data-style="vivid"] .item-edit-btn{border:none;border-radius:999px;background:var(--rule-soft);color:var(--muted)}
+  /* flecha oscura por defecto (paleta clara), clara bajo @media dark --
+     un data-URI no puede usar var() para el color dentro del string, así
+     que hacen falta dos declaraciones explícitas en vez de una variable */
   [data-style="vivid"] select.am-input,[data-style="vivid"] select.wsel{
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23E5E8ED' stroke-width='1.8'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E")}
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%238A919C' stroke-width='1.8'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E")}
+  @media (prefers-color-scheme: dark){
+    [data-style="vivid"] select.am-input,[data-style="vivid"] select.wsel{
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23E5E8ED' stroke-width='1.8'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E")}
+  }
   [data-style="vivid"] .switch{width:2.9rem;height:1.6rem}
   [data-style="vivid"] .slider{border-radius:999px;border:none;background:var(--rule-soft)}
   [data-style="vivid"] .slider::before{border-radius:50%;width:1.2rem;height:1.2rem;left:0.14rem;top:0.13rem}
@@ -605,7 +630,10 @@
      (temporizador, editar), solo cambia el envoltorio visual */
   [data-style="vivid"] .ex{border-bottom:none;border-radius:var(--v-radius-md);background:var(--surface);
     padding:1rem 1.1rem;margin-bottom:0.7rem;position:relative;isolation:isolate;overflow:hidden}
-  [data-style="vivid"] .ex-group{background:rgba(255,255,255,0.08);border-radius:999px}
+  [data-style="vivid"] .ex-group{background:rgba(0,0,0,0.05);border-radius:999px}
+  @media (prefers-color-scheme: dark){
+    [data-style="vivid"] .ex-group{background:rgba(255,255,255,0.08)}
+  }
   [data-style="vivid"] .timer-btn{border:none;border-radius:999px;background:var(--rule-soft)}
   /* icono del grupo muscular como marca de agua grande en la esquina de la
      tarjeta -- mismo dato que ya se usa junto al nombre del grupo (arriba,
@@ -630,14 +658,22 @@
 <script>
   // Aplica el estilo visual guardado ANTES de pintar la app, para que no haya
   // parpadeo (un instante en clásico y luego salto a vívido, o al revés).
-  // updateThemeColorMeta() fija la barra de estado de Android siempre al
-  // mismo azul-negro del fondo (#0a0e1a) -- antes intentaba seguir el modo
-  // claro/oscuro del sistema y se quedaba blanca en algunos casos; más
-  // simple y sin sorpresas: un único color fijo, siempre.
+  //
+  // updateThemeColorMeta() ya no intenta ADIVINAR qué color toca combinando
+  // a mano clásico/vívido × claro/oscuro (eso fue lo que se rompía cada vez
+  // que se añadía una combinación nueva). En vez de eso, lee el valor YA
+  // calculado de --ground directamente del CSS con getComputedStyle -- el
+  // mismo motor que decide qué fondo pintar decide también qué color le
+  // pasamos a la barra de estado, así que es imposible que se desincronicen:
+  // funciona automáticamente para clásico claro, clásico oscuro, vívido
+  // claro y vívido oscuro, y para cualquier combinación futura, sin tocar
+  // este código nunca más.
   window.updateThemeColorMeta = function(){
     try{
       var meta = document.getElementById("theme-color-meta");
-      if(meta) meta.setAttribute("content", "#0a0e1a");
+      if(!meta) return;
+      var ground = getComputedStyle(document.documentElement).getPropertyValue("--ground").trim();
+      if(ground) meta.setAttribute("content", ground);
     }catch(e){}
   };
   (function(){
@@ -647,6 +683,10 @@
       }
     }catch(e){}
     updateThemeColorMeta();
+    if(window.matchMedia){
+      var mq = window.matchMedia("(prefers-color-scheme: dark)");
+      if(mq.addEventListener) mq.addEventListener("change", updateThemeColorMeta);
+    }
   })();
 </script>
 
@@ -778,7 +818,7 @@
         <div class="ctrl-row">
           <div>
             <div>Estilo vívido</div>
-            <div class="desc">Tarjetas grandes con color y esquinas redondeadas. Apágalo y vuelves al estilo clásico al instante, sin perder nada.</div>
+            <div class="desc">Tarjetas grandes con color y esquinas redondeadas, en claro u oscuro según tu teléfono. Apágalo y vuelves al estilo clásico al instante, sin perder nada.</div>
           </div>
           <label class="switch">
             <input type="checkbox" id="tg-vivid-style">
