@@ -239,7 +239,6 @@
   .item .badge{font-family:Archivo,sans-serif;font-size:0.58rem;font-weight:700;letter-spacing:0.07em;
     text-transform:uppercase;padding:0.14rem 0.4rem;border:1px solid currentColor;white-space:nowrap}
   .item .badge.now{color:var(--accent-ink);background:var(--accent-soft);border-color:var(--accent)}
-  .item .badge.confirm{color:var(--ambar);background:var(--ambar-soft);border-color:var(--ambar)}
   .item-trail{display:flex;align-items:center;gap:0.6rem;flex:none}
   .item-edit-btn{flex:none;width:1.5rem;height:1.5rem;padding:0;border:1px solid var(--rule);
     background:var(--surface);color:var(--faint);font-size:0.72rem;cursor:pointer}
@@ -378,6 +377,19 @@
   .btn-danger{font-family:Archivo,sans-serif;font-weight:600;font-size:0.78rem;
     padding:0.5rem 0.85rem;border:1px solid var(--rojo);background:transparent;color:var(--rojo)}
   .am-status{margin:0;font-family:"JetBrains Mono",monospace;font-size:0.74rem;color:var(--rojo);min-height:1.1em}
+
+  /* ---------------- perfil ---------------- */
+  .profile-form{padding:1.1rem;display:flex;flex-direction:column;gap:0.9rem}
+  .profile-avatar-row{display:flex;align-items:center;gap:0.9rem;margin-bottom:0.3rem}
+  .profile-avatar{position:relative;width:3.6rem;height:3.6rem;flex:none;border-radius:50%;
+    border:1.5px solid var(--rule);background:var(--accent-soft);padding:0;cursor:pointer;overflow:hidden}
+  .profile-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+  .profile-avatar #profile-avatar-fallback{width:100%;height:100%;display:flex;align-items:center;
+    justify-content:center;font-family:Archivo,sans-serif;font-weight:700;font-size:1.3rem;color:var(--accent-ink)}
+  .profile-avatar-edit{position:absolute;bottom:-0.1rem;right:-0.1rem;width:1.15rem;height:1.15rem;
+    border-radius:50%;background:var(--ink);color:var(--ground);font-size:0.58rem;
+    display:flex;align-items:center;justify-content:center;border:2px solid var(--surface)}
+  .profile-avatar-name{font-family:Archivo,sans-serif;font-weight:700;font-size:0.95rem;color:var(--ink)}
   .item-detail-actions{display:flex;gap:0.6rem;margin-top:0.8rem;padding-top:0.7rem;border-top:1px solid var(--rule)}
   .item-detail-actions button{font-family:Archivo,sans-serif;font-weight:600;font-size:0.72rem;
     padding:0.4rem 0.7rem;border:1px solid var(--rule);background:var(--surface);color:var(--ink)}
@@ -482,15 +494,53 @@
 
     <!-- ---------------- TAB: AJUSTES ---------------- -->
     <section class="panel" data-panel="ajustes">
-      <p class="eyebrow2">Cuenta</p>
+      <p class="eyebrow2">Perfil</p>
       <div class="settings-block">
-        <div class="ctrl-row">
-          <div>
-            <div>Sesión</div>
-            <div class="desc" id="account-email">Cargando…</div>
+        <form id="profile-form" class="profile-form">
+          <div class="profile-avatar-row">
+            <button type="button" class="profile-avatar" id="profile-avatar-btn" aria-label="Cambiar foto">
+              <img id="profile-avatar-img" style="display:none" alt="">
+              <span id="profile-avatar-fallback">?</span>
+              <span class="profile-avatar-edit">✎</span>
+            </button>
+            <input type="file" id="profile-avatar-input" accept="image/*" style="display:none">
+            <div>
+              <div class="profile-avatar-name" id="profile-name-preview">Sin nombre todavía</div>
+              <div class="desc">Toca la foto para cambiarla</div>
+            </div>
           </div>
-          <button class="btn" id="btn-logout">Salir</button>
-        </div>
+
+          <label class="am-field">
+            <span>Nombre</span>
+            <input type="text" id="pf-name" class="am-input" placeholder="Tu nombre" maxlength="60">
+          </label>
+          <label class="am-field">
+            <span>Correo</span>
+            <input type="email" id="pf-email" class="am-input" placeholder="tu@correo.com">
+          </label>
+          <div class="am-row2">
+            <label class="am-field">
+              <span>Nacimiento</span>
+              <input type="date" id="pf-birth" class="am-input">
+            </label>
+            <label class="am-field">
+              <span>Peso (kg)</span>
+              <input type="number" id="pf-weight" class="am-input" min="0" max="400" step="0.1">
+            </label>
+          </div>
+          <label class="am-field">
+            <span>Altura (cm)</span>
+            <input type="number" id="pf-height" class="am-input" min="0" max="260" step="0.1">
+          </label>
+
+          <div class="am-actions">
+            <button class="btn" id="btn-logout" type="button">Cerrar sesión</button>
+            <div class="am-actions-right">
+              <button type="submit" class="btn" id="pf-save">Guardar perfil</button>
+            </div>
+          </div>
+          <p class="am-status" id="pf-status"></p>
+        </form>
       </div>
 
       <p class="eyebrow2">Avisos</p>
@@ -501,13 +551,6 @@
             <div class="desc">Que salte una notificación del navegador, además del aviso en pantalla</div>
           </div>
           <button class="btn" id="btn-notif">Activar</button>
-        </div>
-        <div class="ctrl-row">
-          <div>
-            <div>Toma 5 (23:15) activa</div>
-            <div class="desc">Sigue sin confirmar &mdash; ver informe de nutrición del 8 sep</div>
-          </div>
-          <label class="switch"><input type="checkbox" id="tg-toma5" checked><span class="slider"></span></label>
         </div>
         <div class="status-line" id="notif-status">Notificaciones: sin activar todavía.</div>
       </div>
@@ -655,7 +698,7 @@
     { id:"toma4",      start:"17:00", end:"17:15", label:"Toma 4 — merienda",                   short:"Toma 4",    cat:"nutricion",  days:ALL },
     { id:"trabajo",    start:"19:00", end:"23:00", label:"Trabajo",                             short:"Trabajo",   cat:"neutro",     days:ALL },
     { id:"checkin",    start:"23:00", end:"23:15", label:"Check-in diario",                     short:"Check-in",  cat:"principal",  days:ALL },
-    { id:"toma5",      start:"23:15", end:"23:30", label:"Toma 5 — a confirmar",                short:"Toma 5",    cat:"nutricion",  days:ALL, toggle:"tg-toma5", flag:"confirm" },
+    { id:"toma5",      start:"23:15", end:"23:30", label:"Toma 5 — cena",                        short:"Toma 5",    cat:"nutricion",  days:ALL },
     { id:"dormir",     start:"00:00", end:"00:00", label:"Dormir",                              short:"Dormir",    cat:"neutro",     days:ALL, sortAsMidnight:true }
   ];
 
@@ -720,7 +763,7 @@
     toma2: { kcal:420, p:30, c:60,  g:8,  ctx:"Después del entreno — no es “ventana anabólica”, es una toma más de la distribución." },
     toma3: { kcal:900, p:45, c:120, g:25, ctx:"Comida principal. El único hueco tranquilo del día — la toma más grande." },
     toma4: { kcal:380, p:25, c:50,  g:10, ctx:"Después de tatuaje, antes de trabajar." },
-    toma5: { kcal:560, p:30, c:70,  g:20, ctx:"Tras el trabajo, en el bloque de check-in. Sigue sin confirmar — ver bloqueo del informe de nutrición." }
+    toma5: { kcal:560, p:30, c:70,  g:20, ctx:"Tras el trabajo, en el bloque de check-in." }
   };
   var MISC_INFO = {
     despertar: "Meditación (10 min) + visualización (5 min), bloque único al despertar.",
@@ -833,7 +876,6 @@
     });
   }
 
-  var accountEmailEl = document.getElementById("account-email");
   var btnLogout = document.getElementById("btn-logout");
   if(btnLogout){
     btnLogout.addEventListener("click", function(){
@@ -844,21 +886,125 @@
   function onSignedIn(user){
     currentUser = user;
     hideAuthGate();
-    if(accountEmailEl) accountEmailEl.textContent = user.email || "Conectado";
     loadFromSupabase();
     loadSchedule();
     loadRoutines();
     loadNutrition();
+    loadProfile();
   }
   function onSignedOut(){
     currentUser = null;
-    if(accountEmailEl) accountEmailEl.textContent = "Sin sesión";
     showAuthGate();
+    pfForm.reset();
+    currentAvatarUrl = null;
+    updateAvatarDisplay(null, "");
+    pfNamePreview.textContent = "Sin nombre todavía";
     // vuelve a esqueleto para la próxima vez que alguien inicie sesión
     SCHEDULE = []; sorted = []; scheduleLoaded = false;
     ROUTINES = {}; routinesLoaded = false;
     MEAL_INFO = {}; FOOD_BY_DAY = {}; nutritionLoaded = false;
   }
+
+  // ==================== perfil: cargar, guardar, foto ====================
+  var pfForm = document.getElementById("profile-form");
+  var pfName = document.getElementById("pf-name");
+  var pfEmail = document.getElementById("pf-email");
+  var pfBirth = document.getElementById("pf-birth");
+  var pfWeight = document.getElementById("pf-weight");
+  var pfHeight = document.getElementById("pf-height");
+  var pfStatus = document.getElementById("pf-status");
+  var pfSave = document.getElementById("pf-save");
+  var pfAvatarBtn = document.getElementById("profile-avatar-btn");
+  var pfAvatarImg = document.getElementById("profile-avatar-img");
+  var pfAvatarFallback = document.getElementById("profile-avatar-fallback");
+  var pfAvatarInput = document.getElementById("profile-avatar-input");
+  var pfNamePreview = document.getElementById("profile-name-preview");
+  var currentAvatarUrl = null;
+
+  function updateAvatarDisplay(url, name){
+    if(url){
+      pfAvatarImg.src = url; pfAvatarImg.style.display = "block";
+      pfAvatarFallback.style.display = "none";
+    } else {
+      pfAvatarImg.style.display = "none";
+      pfAvatarFallback.style.display = "flex";
+      pfAvatarFallback.textContent = (name && name.trim()) ? name.trim()[0].toUpperCase() : "?";
+    }
+  }
+
+  function loadProfile(){
+    if(!sb || !currentUser) return;
+    pfEmail.value = currentUser.email || "";
+    sb.from("profiles").select("*").eq("user_id", currentUser.id).maybeSingle()
+      .then(function(res){
+        if(res.error) return;
+        var p = res.data;
+        pfName.value = (p && p.full_name) ? p.full_name : "";
+        pfBirth.value = (p && p.birth_date) ? p.birth_date : "";
+        pfWeight.value = (p && p.weight_kg != null) ? p.weight_kg : "";
+        pfHeight.value = (p && p.height_cm != null) ? p.height_cm : "";
+        currentAvatarUrl = (p && p.avatar_url) ? p.avatar_url : null;
+        updateAvatarDisplay(currentAvatarUrl, pfName.value);
+        pfNamePreview.textContent = pfName.value || "Sin nombre todavía";
+      });
+  }
+
+  pfAvatarBtn.addEventListener("click", function(){ pfAvatarInput.click(); });
+  pfAvatarInput.addEventListener("change", function(){
+    var file = pfAvatarInput.files[0];
+    if(!file || !sb || !currentUser) return;
+    pfStatus.textContent = "Subiendo foto...";
+    var ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+    var path = currentUser.id + "/avatar." + ext;
+    sb.storage.from("avatars").upload(path, file, { upsert:true, cacheControl:"3600" })
+      .then(function(res){
+        if(res.error){ pfStatus.textContent = res.error.message; return; }
+        var pub = sb.storage.from("avatars").getPublicUrl(path);
+        var url = pub.data.publicUrl + "?t=" + Date.now(); // rompe la caché del navegador al cambiar la foto
+        currentAvatarUrl = url;
+        updateAvatarDisplay(url, pfName.value);
+        return sb.from("profiles").upsert({
+          user_id: currentUser.id, avatar_url: url, updated_at: new Date().toISOString()
+        });
+      }).then(function(){
+        pfStatus.textContent = "Foto actualizada.";
+      }).catch(function(){
+        pfStatus.textContent = "No se pudo subir la foto — revisa tu conexión.";
+      });
+  });
+
+  pfForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    if(!sb || !currentUser) return;
+    pfSave.disabled = true;
+    pfStatus.textContent = "Guardando...";
+    var newEmail = pfEmail.value.trim();
+    var emailChanged = newEmail && newEmail !== currentUser.email;
+    var tasks = [
+      sb.from("profiles").upsert({
+        user_id: currentUser.id,
+        full_name: pfName.value.trim() || null,
+        birth_date: pfBirth.value || null,
+        weight_kg: pfWeight.value ? +pfWeight.value : null,
+        height_cm: pfHeight.value ? +pfHeight.value : null,
+        updated_at: new Date().toISOString()
+      })
+    ];
+    if(emailChanged) tasks.push(sb.auth.updateUser({ email: newEmail }));
+    Promise.all(tasks).then(function(results){
+      pfSave.disabled = false;
+      var errored = results.filter(function(r){ return r && r.error; });
+      if(errored.length){ pfStatus.textContent = errored[0].error.message; return; }
+      pfNamePreview.textContent = pfName.value.trim() || "Sin nombre todavía";
+      updateAvatarDisplay(currentAvatarUrl, pfName.value);
+      pfStatus.textContent = emailChanged
+        ? "Guardado. Revisa tu correo nuevo para confirmar el cambio — hasta entonces sigues entrando con el actual."
+        : "Perfil guardado.";
+    }).catch(function(){
+      pfSave.disabled = false;
+      pfStatus.textContent = "No se pudo guardar — revisa tu conexión.";
+    });
+  });
 
   if(sb){
     sb.auth.getSession().then(function(res){
@@ -893,21 +1039,6 @@
         var progPanel = document.querySelector('.panel[data-panel="progreso"]');
         if(progPanel && progPanel.classList.contains("active")) renderProgress();
       });
-
-    sb.from("settings").select("toma5_active").eq("user_id", currentUser.id).maybeSingle()
-      .then(function(res){
-        if(res.error) return;
-        if(res.data){
-          tgToma5.checked = !!res.data.toma5_active;
-          saveBool("tg-toma5", tgToma5.checked);
-        } else {
-          sb.from("settings").upsert({
-            user_id: currentUser.id, toma5_active: tgToma5.checked, updated_at: new Date().toISOString()
-          }).then(function(){});
-        }
-        scheduleAlarms();
-        render();
-      });
   }
 
   // ==================== caché local de horario/rutinas/nutrición ====================
@@ -923,7 +1054,6 @@
       label: r.label, short: r.short_label, cat: r.category, days: r.days
     };
     if(r.is_midnight) item.sortAsMidnight = true;
-    if(r.activity_key === "toma5"){ item.toggle = "tg-toma5"; item.flag = "confirm"; }
     return item;
   }
   function applySchedule(rows){
@@ -1138,12 +1268,6 @@
         .then(function(){});
     }
   }
-  function syncSettingsToSupabase(){
-    if(!sb || !currentUser) return;
-    sb.from("settings").upsert({
-      user_id: currentUser.id, toma5_active: tgToma5.checked, updated_at: new Date().toISOString()
-    }).then(function(){});
-  }
 
   // ==================== ESTADO ====================
   var timerState = {};
@@ -1171,24 +1295,8 @@
     btn.addEventListener("click", function(){ setActiveTab(btn.getAttribute("data-tab")); });
   });
 
-  // ==================== localStorage: solo el toggle de toma5 ====================
-  function loadBool(key, def){
-    var v = localStorage.getItem("horario:"+key);
-    return v === null ? def : v === "1";
-  }
-  function saveBool(key, val){ localStorage.setItem("horario:"+key, val ? "1" : "0"); }
-  var tgToma5 = document.getElementById("tg-toma5");
-  tgToma5.checked = loadBool("tg-toma5", true);
-  tgToma5.addEventListener("change", function(){
-    saveBool("tg-toma5", tgToma5.checked);
-    syncSettingsToSupabase();
-    scheduleAlarms(); render();
-  });
-
   function isActiveOnDay(ev, weekday){
-    if(ev.days.indexOf(weekday) === -1) return false;
-    if(ev.toggle === "tg-toma5") return tgToma5.checked;
-    return true;
+    return ev.days.indexOf(weekday) !== -1;
   }
 
   // ==================== exportar a Google Calendar (.ics) ====================
@@ -1223,7 +1331,6 @@
     var now = new Date();
     var stamp = now.getFullYear()+pad(now.getMonth()+1)+pad(now.getDate())+"T"+pad(now.getHours())+pad(now.getMinutes())+pad(now.getSeconds())+"Z";
     sorted.forEach(function(ev){
-      if(ev.toggle === "tg-toma5" && !tgToma5.checked) return;
       var startDate = nextDateForDays(ev.days);
       var endTime = (ev.end === ev.start) ? addMinutesToTime(ev.start, 5) : ev.end;
       lines.push("BEGIN:VEVENT");
@@ -1747,10 +1854,6 @@
         } else if(isPast){
           row.classList.add("past");
         }
-      }
-      if(ev.flag === "confirm"){
-        var c = document.createElement("span"); c.className="badge confirm"; c.textContent="a confirmar";
-        c.style.marginLeft = "0.35rem"; slot.appendChild(c);
       }
     });
   }
