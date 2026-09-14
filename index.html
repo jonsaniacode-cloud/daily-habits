@@ -165,10 +165,15 @@
     border-style:solid;white-space:nowrap;box-sizing:border-box}
   .ex{padding:0.85rem 0;border-bottom:1px solid var(--rule-soft);display:grid;gap:0.55rem;min-width:0}
   .ex:last-child{border-bottom:0}
-  .ex-top{display:flex;justify-content:space-between;align-items:baseline;gap:0.6rem;flex-wrap:wrap;min-width:0}
-  .ex-group{font-family:Archivo,sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.08em;
+  /* el grupo muscular siempre va solo en su propia línea arriba (antes iba
+     en la misma fila que el nombre y solo bajaba cuando el texto era largo
+     -- quedaba distinto de un ejercicio a otro); el nombre + el lápiz de
+     editar van juntos debajo, en su propia fila */
+  .ex-top{display:flex;flex-direction:column;gap:0.4rem;min-width:0}
+  .ex-group{align-self:flex-start;font-family:Archivo,sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.08em;
     text-transform:uppercase;color:var(--c-fisico);background:var(--fisico-soft);
     padding:0.1rem 0.4rem;white-space:nowrap}
+  .ex-name-row{display:flex;justify-content:space-between;align-items:center;gap:0.6rem;min-width:0}
   .ex-name{font-family:Archivo,sans-serif;font-weight:600;font-size:0.92rem;color:var(--ink);
     min-width:0;overflow-wrap:break-word}
   .ex-meta{display:flex;gap:1rem;font-family:"JetBrains Mono",monospace;font-size:0.76rem;color:var(--muted)}
@@ -2053,7 +2058,7 @@
       });
     }
     html += '</select>';
-    if(routine) html += '<button type="button" class="item-edit-btn wsel-edit" id="routine-edit-btn" aria-label="Editar rutina">✎</button>';
+    if(routine) html += '<button type="button" class="btn-add-activity wsel-new wsel-edit" id="routine-edit-btn" aria-label="Editar rutina">✎ Editar</button>';
     html += '<button type="button" class="btn-add-activity wsel-new" id="routine-new-btn">+ Nueva</button>';
     html += '</div>';
     if(routine) html += '<div class="wsub">' + (routine.sub||"") + '</div>';
@@ -2075,8 +2080,10 @@
         '<div class="ex">' +
           '<div class="ex-top">' +
             '<span class="ex-group">' + ex.group + '</span>' +
-            '<span class="ex-name">' + ex.name + '</span>' +
-            '<button type="button" class="item-edit-btn ex-edit-btn" data-reid="' + ex.id + '" aria-label="Editar ejercicio">✎</button>' +
+            '<div class="ex-name-row">' +
+              '<span class="ex-name">' + ex.name + '</span>' +
+              '<button type="button" class="item-edit-btn ex-edit-btn" data-reid="' + ex.id + '" aria-label="Editar ejercicio">✎</button>' +
+            '</div>' +
           '</div>' +
           '<div class="ex-meta">' +
             '<span><b>' + ex.sets + '</b> series</span>' +
