@@ -141,13 +141,18 @@
     font-size:0.62rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--accent-ink);
     background:var(--accent-soft);border:1px solid var(--accent);padding:0.15rem 0.45rem}
   .wsel-row{display:flex;align-items:center;gap:0.5rem;min-width:0}
-  select.wsel{flex:1;min-width:0;font-family:Archivo,sans-serif;font-weight:700;font-size:1rem;
-    padding:0.6rem 2.1rem 0.6rem 0.8rem;text-overflow:ellipsis;color:var(--ink);
+  /* el select se ciñe a su propio contenido (nombre + flecha pegados), en vez
+     de estirarse a todo el ancho de la fila -- así el nombre queda justo
+     delante de la flecha y no hay un hueco vacío entre ambos. flex-shrink
+     sigue activo para que, si el nombre es largo, se trunque con "…" antes
+     de empujar el botón "+ Nueva" fuera de la pantalla. */
+  select.wsel{flex:0 1 auto;min-width:0;max-width:100%;font-family:Archivo,sans-serif;font-weight:700;font-size:1rem;
+    padding:0.6rem 2.1rem 0.6rem 0.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink);
     border:1.5px solid var(--rule);background-color:var(--surface);
     -webkit-appearance:none;-moz-appearance:none;appearance:none;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%238A919C' stroke-width='1.8'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
     background-repeat:no-repeat;background-position:right 0.75rem center;background-size:1.05rem}
-  .wsel-new{width:auto;flex:none;margin-top:0;padding:0.55rem 0.7rem;font-size:0.72rem;
+  .wsel-new{width:auto;flex:none;margin-top:0;margin-left:auto;padding:0.55rem 0.7rem;font-size:0.72rem;
     border-style:solid;white-space:nowrap;box-sizing:border-box}
   .ex{padding:0.85rem 0;border-bottom:1px solid var(--rule-soft);display:grid;gap:0.55rem;min-width:0}
   .ex:last-child{border-bottom:0}
@@ -366,7 +371,11 @@
   .modal-head h2{margin:0;font-size:1.02rem}
   .modal-close{width:1.8rem;height:1.8rem;border:1px solid var(--rule);background:var(--surface);
     color:var(--faint);font-size:0.85rem;padding:0}
-  #am-form{padding:1.1rem 1.2rem 1.3rem;display:flex;flex-direction:column;gap:0.9rem}
+  /* .modal-form: compartida por los tres formularios dentro de modales
+     (actividad, rutina, editar ejercicio) para que todos tengan el mismo
+     aire interior -- antes solo #am-form la tenía y los otros dos formularios
+     quedaban con el contenido pegado a los bordes de la tarjeta. */
+  .modal-form{padding:1.1rem 1.2rem 1.3rem;display:flex;flex-direction:column;gap:0.9rem}
   .am-field{display:flex;flex-direction:column;gap:0.4rem;font-family:Archivo,sans-serif;
     font-size:0.78rem;font-weight:600;color:var(--muted)}
   .am-field em{font-style:normal;font-weight:400;color:var(--faint)}
@@ -802,7 +811,7 @@
       <h2 id="am-title">Nueva actividad</h2>
       <button class="modal-close" id="am-close" aria-label="Cerrar">✕</button>
     </div>
-    <form id="am-form">
+    <form id="am-form" class="modal-form">
       <label class="am-field">
         <span>Nombre</span>
         <input type="text" id="am-label" class="am-input" placeholder="Ej. Estudiar inglés" required maxlength="60">
@@ -847,7 +856,7 @@
       <h2 id="rm-title">Nueva rutina</h2>
       <button class="modal-close" id="rm-close" aria-label="Cerrar">✕</button>
     </div>
-    <form id="rm-form">
+    <form id="rm-form" class="modal-form">
       <label class="am-field">
         <span>Nombre</span>
         <input type="text" id="rm-name" class="am-input" placeholder="Ej. Full body en casa" required maxlength="40">
@@ -931,7 +940,7 @@
       <h2>Editar ejercicio</h2>
       <button class="modal-close" id="ee-close" aria-label="Cerrar">✕</button>
     </div>
-    <form id="ee-form">
+    <form id="ee-form" class="modal-form">
       <label class="am-field">
         <span>Nombre</span>
         <input type="text" id="ee-name" class="am-input" required maxlength="60">
