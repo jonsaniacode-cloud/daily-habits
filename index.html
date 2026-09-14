@@ -142,7 +142,11 @@
     background:var(--accent-soft);border:1px solid var(--accent);padding:0.15rem 0.45rem}
   .wsel-row{display:flex;align-items:center;gap:0.5rem;min-width:0}
   select.wsel{flex:1;min-width:0;font-family:Archivo,sans-serif;font-weight:700;font-size:1rem;
-    padding:0.6rem 2rem 0.6rem 0.8rem;text-overflow:ellipsis}
+    padding:0.6rem 2.1rem 0.6rem 0.8rem;text-overflow:ellipsis;color:var(--ink);
+    border:1.5px solid var(--rule);background-color:var(--surface);
+    -webkit-appearance:none;-moz-appearance:none;appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%238A919C' stroke-width='1.8'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 0.75rem center;background-size:1.05rem}
   .wsel-new{width:auto;flex:none;margin-top:0;padding:0.55rem 0.7rem;font-size:0.72rem;
     border-style:solid;white-space:nowrap;box-sizing:border-box}
   .ex{padding:0.85rem 0;border-bottom:1px solid var(--rule-soft);display:grid;gap:0.55rem;min-width:0}
@@ -469,7 +473,7 @@
   }
   [data-style="vivid"] .appbar{border-bottom:none;background:transparent;padding-top:0.9rem}
   [data-style="vivid"] .appbar .title{font-size:1.3rem}
-  [data-style="vivid"] .panel{padding:0.3rem 1rem 6.5rem}
+  [data-style="vivid"] .panel{padding:0.3rem 1.1rem 6.5rem}
 
   /* icono grande decorativo dentro de las tarjetas de color, recortado por
      la esquina — es lo que da el aire "Samsung Health" a las capturas */
@@ -529,6 +533,7 @@
   [data-style="vivid"] .calendar,[data-style="vivid"] .heatmap,[data-style="vivid"] .actbars,
   [data-style="vivid"] .timeline,[data-style="vivid"] .modal-card,[data-style="vivid"] .ep-list{
     border:none;border-radius:var(--v-radius-md);background:var(--surface);overflow:hidden}
+  [data-style="vivid"] .timeline{padding:0.35rem 0}
   [data-style="vivid"] .cal-day.selected{border-radius:50%;background:var(--accent)}
   [data-style="vivid"] .cal-nav,[data-style="vivid"] .cal-today-btn{border:none;border-radius:999px;background:var(--rule-soft)}
 
@@ -551,7 +556,11 @@
   [data-style="vivid"] .wsel-new,[data-style="vivid"] .cal-today-btn,[data-style="vivid"] .btn-add-activity,
   [data-style="vivid"] .auth-btn{border-radius:999px}
   [data-style="vivid"] .btn{border-color:var(--accent);background:var(--accent);color:#fff}
-  [data-style="vivid"] .am-input,[data-style="vivid"] select.wsel{border-radius:var(--v-radius-sm);border-color:transparent;background:var(--rule-soft)}
+  /* background-color (no "background" corto) a propósito: el shorthand
+     borraría la flecha SVG de los <select>, que se define como background-image */
+  [data-style="vivid"] .am-input,[data-style="vivid"] select.wsel{border-radius:var(--v-radius-sm);border-color:transparent;background-color:var(--rule-soft)}
+  [data-style="vivid"] select.am-input,[data-style="vivid"] select.wsel{
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23E5E8ED' stroke-width='1.8'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E")}
   [data-style="vivid"] .switch{width:2.9rem;height:1.6rem}
   [data-style="vivid"] .slider{border-radius:999px;border:none;background:var(--rule-soft)}
   [data-style="vivid"] .slider::before{border-radius:50%;width:1.2rem;height:1.2rem;left:0.14rem;top:0.13rem}
