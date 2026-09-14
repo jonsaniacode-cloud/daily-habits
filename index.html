@@ -140,6 +140,9 @@
   .wbrowsing{display:inline-block;margin-top:0.5rem;font-family:Archivo,sans-serif;
     font-size:0.62rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--accent-ink);
     background:var(--accent-soft);border:1px solid var(--accent);padding:0.15rem 0.45rem}
+  .wsel-row{display:flex;align-items:center;gap:0.5rem}
+  select.wsel{flex:1;font-family:Archivo,sans-serif;font-weight:700;font-size:1rem;padding:0.6rem 2rem 0.6rem 0.8rem}
+  .wsel-new{width:auto;flex:none;margin-top:0;padding:0.55rem 0.7rem;font-size:0.72rem;border-style:solid}
   .ex{padding:0.85rem 0;border-bottom:1px solid var(--rule-soft);display:grid;gap:0.55rem}
   .ex:last-child{border-bottom:0}
   .ex-top{display:flex;justify-content:space-between;align-items:baseline;gap:0.6rem;flex-wrap:wrap}
@@ -394,6 +397,19 @@
   .item-detail-actions button{font-family:Archivo,sans-serif;font-weight:600;font-size:0.72rem;
     padding:0.4rem 0.7rem;border:1px solid var(--rule);background:var(--surface);color:var(--ink)}
   .item-detail-actions .del{border-color:var(--rojo);color:var(--rojo)}
+
+  /* ---------------- selector de ejercicios ---------------- */
+  .ep-list{max-height:16rem;overflow-y:auto;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+  .ep-item{display:flex;align-items:center;justify-content:space-between;gap:0.8rem;
+    padding:0.65rem 1.2rem;border-bottom:1px solid var(--rule-soft);cursor:pointer}
+  .ep-item:last-child{border-bottom:0}
+  .ep-item:hover{background:var(--rule-soft)}
+  .ep-item .epn{font-family:Archivo,sans-serif;font-weight:600;font-size:0.86rem;color:var(--ink)}
+  .ep-item .epg{display:block;font-family:"JetBrains Mono",monospace;font-size:0.68rem;color:var(--faint);margin-top:0.15rem}
+  .ep-item .epadd{flex:none;font-family:Archivo,sans-serif;font-size:0.7rem;font-weight:700;color:var(--accent-ink)}
+  .ep-empty{padding:1.5rem 1.2rem;text-align:center;color:var(--faint);font-size:0.85rem}
+  .ep-new-toggle{padding:0.9rem 1.2rem 0}
+  .ep-new-form{padding:0.9rem 1.2rem 1.2rem;display:flex;flex-direction:column;gap:0.9rem}
 
   .item-detail{display:none;padding:0.75rem 0.9rem 0.9rem;background:var(--rule-soft);
     border-bottom:1px solid var(--rule-soft);font-size:0.83rem}
@@ -656,6 +672,129 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="routine-modal" style="display:none">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2 id="rm-title">Nueva rutina</h2>
+      <button class="modal-close" id="rm-close" aria-label="Cerrar">✕</button>
+    </div>
+    <form id="rm-form">
+      <label class="am-field">
+        <span>Nombre</span>
+        <input type="text" id="rm-name" class="am-input" placeholder="Ej. Full body en casa" required maxlength="40">
+      </label>
+      <label class="am-field">
+        <span>Descripción <em>(opcional)</em></span>
+        <input type="text" id="rm-sub" class="am-input" placeholder="Ej. Con bandas, sin material">
+      </label>
+      <label class="am-field">
+        <span>Día por defecto <em>(opcional)</em></span>
+        <select id="rm-weekday" class="am-input">
+          <option value="">Ninguno — solo se elige a mano</option>
+          <option value="1">Lunes</option>
+          <option value="2">Martes</option>
+          <option value="3">Miércoles</option>
+          <option value="4">Jueves</option>
+          <option value="5">Viernes</option>
+          <option value="6">Sábado</option>
+          <option value="0">Domingo</option>
+        </select>
+      </label>
+      <div class="am-actions">
+        <button type="button" class="btn-danger" id="rm-delete" style="display:none">Eliminar</button>
+        <div class="am-actions-right">
+          <button type="button" class="timer-btn" id="rm-cancel">Cancelar</button>
+          <button type="submit" class="btn" id="rm-save">Guardar</button>
+        </div>
+      </div>
+      <p class="am-status" id="rm-status"></p>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="exercise-picker-modal" style="display:none">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2>Añadir ejercicio</h2>
+      <button class="modal-close" id="ep-close" aria-label="Cerrar">✕</button>
+    </div>
+    <div style="padding:1.1rem 1.2rem 0.3rem">
+      <input type="text" id="ep-search" class="am-input" placeholder="Buscar en tu biblioteca...">
+    </div>
+    <div class="ep-list" id="ep-list"></div>
+    <div class="ep-new-toggle">
+      <button type="button" class="btn-add-activity" id="ep-new-toggle-btn">+ Crear ejercicio nuevo</button>
+    </div>
+    <form id="ep-new-form" class="ep-new-form" style="display:none">
+      <label class="am-field">
+        <span>Nombre</span>
+        <input type="text" id="ep-name" class="am-input" placeholder="Ej. Face pull con banda" maxlength="60">
+      </label>
+      <label class="am-field">
+        <span>Grupo muscular</span>
+        <input type="text" id="ep-group" class="am-input" placeholder="Ej. Espalda" maxlength="30">
+      </label>
+      <div class="am-row2">
+        <label class="am-field"><span>Series</span><input type="number" id="ep-sets" class="am-input" min="1" max="10" value="3"></label>
+        <label class="am-field"><span>Reps</span><input type="text" id="ep-reps" class="am-input" placeholder="Ej. 10-12" value="10-12"></label>
+      </div>
+      <label class="am-field">
+        <span>Descanso (segundos)</span>
+        <input type="number" id="ep-rest" class="am-input" min="10" max="300" step="5" value="60">
+      </label>
+      <label class="am-field" style="flex-direction:row;align-items:center;gap:0.5rem">
+        <input type="checkbox" id="ep-hold" style="width:auto">
+        <span>Es de mantener (isométrico), no de repeticiones</span>
+      </label>
+      <div class="am-actions">
+        <div class="am-actions-right">
+          <button type="submit" class="btn" id="ep-save">Crear y añadir</button>
+        </div>
+      </div>
+      <p class="am-status" id="ep-status"></p>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="exercise-edit-modal" style="display:none">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2>Editar ejercicio</h2>
+      <button class="modal-close" id="ee-close" aria-label="Cerrar">✕</button>
+    </div>
+    <form id="ee-form">
+      <label class="am-field">
+        <span>Nombre</span>
+        <input type="text" id="ee-name" class="am-input" required maxlength="60">
+      </label>
+      <label class="am-field">
+        <span>Grupo muscular</span>
+        <input type="text" id="ee-group" class="am-input" required maxlength="30">
+      </label>
+      <div class="am-row2">
+        <label class="am-field"><span>Series</span><input type="number" id="ee-sets" class="am-input" min="1" max="10" required></label>
+        <label class="am-field"><span>Reps</span><input type="text" id="ee-reps" class="am-input" required></label>
+      </div>
+      <label class="am-field">
+        <span>Descanso (segundos)</span>
+        <input type="number" id="ee-rest" class="am-input" min="10" max="300" step="5" required>
+      </label>
+      <label class="am-field" style="flex-direction:row;align-items:center;gap:0.5rem">
+        <input type="checkbox" id="ee-hold" style="width:auto">
+        <span>Es de mantener (isométrico), no de repeticiones</span>
+      </label>
+      <div class="am-actions">
+        <button type="button" class="btn-danger" id="ee-remove">Quitar de esta rutina</button>
+        <div class="am-actions-right">
+          <button type="button" class="timer-btn" id="ee-cancel">Cancelar</button>
+          <button type="submit" class="btn" id="ee-save">Guardar</button>
+        </div>
+      </div>
+      <p class="am-status" id="ee-status"></p>
+    </form>
+  </div>
+</div>
+
 <div class="auth-gate" id="auth-gate" style="display:none">
   <div class="auth-card">
     <div class="auth-mark"><span class="dot"></span></div>
@@ -716,38 +855,67 @@
 
   // ---- Rutinas de entreno por defecto (informe fisico/2026-09-08.md), una por
   // día de la semana. Igual que arriba: solo para sembrar o como respaldo. ----
-  var DEFAULT_ROUTINES = {
-    1: { title:"Torso A",  sub:"Empuje + tracción horizontal", exercises:[
-      { group:"Pecho",              name:"Press de suelo con mancuernas",              sets:4, reps:"8–10",       rest:90 },
-      { group:"Pecho",              name:"Flexiones",                                   sets:3, reps:"hasta RIR",  rest:90 },
-      { group:"Espalda",            name:"Remo a una mano (apoyo en silla)",             sets:4, reps:"10–12/brazo",rest:75 },
-      { group:"Hombro",             name:"Elevación lateral",                            sets:3, reps:"12–15",     rest:60 },
-      { group:"Hombro / espalda alta", name:"Pájaro / apertura invertida",               sets:3, reps:"12–15",     rest:60 },
-      { group:"Core",               name:"Plancha",                                      sets:3, reps:"mantener",  rest:45, hold:true, holdLabel:"30–45s" }
+  // Biblioteca de ejercicios por defecto — cada uno con una key estable,
+  // reutilizada entre rutinas. Solo para sembrar o como respaldo.
+  var DEFAULT_EXERCISES = [
+    { key:"press-suelo",       group:"Pecho",                   name:"Press de suelo con mancuernas" },
+    { key:"flexiones",         group:"Pecho",                   name:"Flexiones" },
+    { key:"remo-1-mano",       group:"Espalda",                 name:"Remo a una mano (apoyo en silla)" },
+    { key:"elev-lateral",      group:"Hombro",                  name:"Elevación lateral" },
+    { key:"pajaro",            group:"Hombro / espalda alta",   name:"Pájaro / apertura invertida" },
+    { key:"plancha",           group:"Core",                    name:"Plancha", hold:true },
+    { key:"sentadilla-goblet", group:"Cuádriceps",              name:"Sentadilla goblet" },
+    { key:"zancada-bulgara",   group:"Pierna unilateral",       name:"Zancada búlgara (pie en silla)" },
+    { key:"peso-muerto-rum",   group:"Isquios / glúteo",        name:"Peso muerto rumano" },
+    { key:"elev-talon",        group:"Gemelo",                  name:"Elevación de talón" },
+    { key:"dead-bug",          group:"Core",                    name:"Dead bug" },
+    { key:"remo-2-manos",      group:"Espalda",                 name:"Remo a dos manos (inclinado)" },
+    { key:"pullover",          group:"Dorsal / pecho",          name:"Pullover con mancuerna" },
+    { key:"flexion-diamante",  group:"Tríceps / pecho",         name:"Flexión diamante / press 1 mano alterno" },
+    { key:"curl-biceps",       group:"Bíceps",                  name:"Curl de bíceps" },
+    { key:"curl-martillo",     group:"Bíceps / antebrazo",      name:"Curl martillo" },
+    { key:"plancha-lateral",   group:"Core",                    name:"Plancha lateral", hold:true },
+    { key:"pistol",            group:"Cuádriceps unilateral",   name:"Sentadilla a silla, 1 pierna (pistol)" },
+    { key:"rdl-1-pierna",      group:"Isquios unilateral",      name:"RDL a una pierna" },
+    { key:"zancada",           group:"Pierna",                  name:"Zancada" },
+    { key:"elev-talon-1",      group:"Gemelo",                  name:"Elevación de talón a 1 pierna" },
+    { key:"elev-piernas",      group:"Core",                    name:"Elevación de piernas tumbado" }
+  ];
+
+  // Rutinas por defecto — cada entrada de ejercicio referencia una key de la
+  // biblioteca de arriba, con sus series/reps/descanso propios de ESTA rutina.
+  var DEFAULT_ROUTINES = [
+    { title:"Torso A",  sub:"Empuje + tracción horizontal", defaultWeekday:1, exercises:[
+      { key:"press-suelo",  sets:4, reps:"8–10",        rest:90 },
+      { key:"flexiones",    sets:3, reps:"hasta RIR",    rest:90 },
+      { key:"remo-1-mano",  sets:4, reps:"10–12/brazo",  rest:75 },
+      { key:"elev-lateral", sets:3, reps:"12–15",        rest:60 },
+      { key:"pajaro",       sets:3, reps:"12–15",        rest:60 },
+      { key:"plancha",      sets:3, reps:"mantener",     rest:45, holdLabel:"30–45s" }
     ]},
-    2: { title:"Pierna A", sub:"Sentadilla + cadena posterior", exercises:[
-      { group:"Cuádriceps",         name:"Sentadilla goblet",                            sets:4, reps:"10–12",     rest:90 },
-      { group:"Pierna unilateral",  name:"Zancada búlgara (pie en silla)",                sets:3, reps:"10–12/pierna", rest:90 },
-      { group:"Isquios / glúteo",   name:"Peso muerto rumano",                            sets:3, reps:"10–12",     rest:90 },
-      { group:"Gemelo",             name:"Elevación de talón",                            sets:3, reps:"15–20",     rest:60 },
-      { group:"Core",               name:"Dead bug",                                      sets:3, reps:"10/lado",   rest:45 }
+    { title:"Pierna A", sub:"Sentadilla + cadena posterior", defaultWeekday:2, exercises:[
+      { key:"sentadilla-goblet", sets:4, reps:"10–12",      rest:90 },
+      { key:"zancada-bulgara",   sets:3, reps:"10–12/pierna",rest:90 },
+      { key:"peso-muerto-rum",   sets:3, reps:"10–12",      rest:90 },
+      { key:"elev-talon",        sets:3, reps:"15–20",      rest:60 },
+      { key:"dead-bug",          sets:3, reps:"10/lado",    rest:45 }
     ]},
-    4: { title:"Torso B",  sub:"Tracción horizontal + empuje secundario", exercises:[
-      { group:"Espalda",            name:"Remo a dos manos (inclinado)",                  sets:4, reps:"8–10",      rest:90 },
-      { group:"Dorsal / pecho",     name:"Pullover con mancuerna",                        sets:3, reps:"10–12",     rest:75 },
-      { group:"Tríceps / pecho",    name:"Flexión diamante / press 1 mano alterno",       sets:3, reps:"8–10",      rest:75 },
-      { group:"Bíceps",             name:"Curl de bíceps",                                sets:3, reps:"12",        rest:60 },
-      { group:"Bíceps / antebrazo", name:"Curl martillo",                                 sets:2, reps:"12",        rest:60 },
-      { group:"Core",               name:"Plancha lateral",                               sets:3, reps:"mantener",  rest:30, hold:true, holdLabel:"30s/lado" }
+    { title:"Torso B",  sub:"Tracción horizontal + empuje secundario", defaultWeekday:4, exercises:[
+      { key:"remo-2-manos",     sets:4, reps:"8–10",   rest:90 },
+      { key:"pullover",         sets:3, reps:"10–12",  rest:75 },
+      { key:"flexion-diamante", sets:3, reps:"8–10",   rest:75 },
+      { key:"curl-biceps",      sets:3, reps:"12",     rest:60 },
+      { key:"curl-martillo",    sets:2, reps:"12",     rest:60 },
+      { key:"plancha-lateral",  sets:3, reps:"mantener",rest:30, holdLabel:"30s/lado" }
     ]},
-    5: { title:"Pierna B", sub:"Unilateral · progresión hacia pistol", exercises:[
-      { group:"Cuádriceps unilateral", name:"Sentadilla a silla, 1 pierna (pistol)",      sets:4, reps:"6–8/pierna",rest:90 },
-      { group:"Isquios unilateral", name:"RDL a una pierna",                              sets:3, reps:"8–10/pierna",rest:90 },
-      { group:"Pierna",             name:"Zancada",                                       sets:3, reps:"10/pierna", rest:90 },
-      { group:"Gemelo",             name:"Elevación de talón a 1 pierna",                 sets:3, reps:"12–15/pierna",rest:60 },
-      { group:"Core",               name:"Elevación de piernas tumbado",                  sets:3, reps:"12",        rest:45 }
+    { title:"Pierna B", sub:"Unilateral · progresión hacia pistol", defaultWeekday:5, exercises:[
+      { key:"pistol",        sets:4, reps:"6–8/pierna", rest:90 },
+      { key:"rdl-1-pierna",  sets:3, reps:"8–10/pierna",rest:90 },
+      { key:"zancada",       sets:3, reps:"10/pierna",  rest:90 },
+      { key:"elev-talon-1",  sets:3, reps:"12–15/pierna",rest:60 },
+      { key:"elev-piernas",  sets:3, reps:"12",         rest:45 }
     ]}
-  };
+  ];
 
   var DEFAULT_FOOD_BY_DAY = {
     0: { p:"Atún (latas)",      c:"Garbanzos (bote)", v:"Brócoli",              g:"Aceite de oliva" },
@@ -793,8 +961,10 @@
   var SCHEDULE = [];
   var sorted = [];
   var scheduleLoaded = false;
-  var ROUTINES = {};          // weekday -> {id, title, sub, exercises:[...]}
+  var ROUTINES_LIST = [];     // [{id, title, sub, defaultWeekday, exercises:[{id(join row), exerciseId, group, name, sets, reps, rest, hold, holdLabel}]}]
+  var EXERCISE_LIBRARY = [];  // [{id, group, name, sets, reps, rest, hold, holdLabel}] — valores por defecto de la biblioteca
   var routinesLoaded = false;
+  var activeRoutineId = null; // qué rutina se está mostrando ahora mismo en la pestaña Rutina
   var MEAL_INFO = {};         // slot_key -> {kcal,p,c,g,ctx}
   var FOOD_BY_DAY = {};       // weekday -> {p,c,v,g}
   var nutritionLoaded = false;
@@ -809,6 +979,25 @@
   }
   function rebuildSorted(){
     sorted = SCHEDULE.slice().sort(function(a,b){ return sortMin(a)-sortMin(b); });
+  }
+  function findRoutine(id){
+    for(var i=0;i<ROUTINES_LIST.length;i++){ if(ROUTINES_LIST[i].id === id) return ROUTINES_LIST[i]; }
+    return null;
+  }
+  function routineForWeekday(weekday){
+    for(var i=0;i<ROUTINES_LIST.length;i++){ if(ROUTINES_LIST[i].defaultWeekday === weekday) return ROUTINES_LIST[i]; }
+    return null;
+  }
+  function routineOverrideKey(d){ return "horario:routine-override:" + dateKey(d); }
+  function resolveRoutine(weekday, isToday){
+    if(isToday){
+      var overrideId = localStorage.getItem(routineOverrideKey(new Date()));
+      if(overrideId){
+        var ov = findRoutine(overrideId);
+        if(ov) return ov;
+      }
+    }
+    return routineForWeekday(weekday);
   }
 
   // ==================== tracking de cumplimiento (solo en este navegador) ====================
@@ -901,7 +1090,7 @@
     pfNamePreview.textContent = "Sin nombre todavía";
     // vuelve a esqueleto para la próxima vez que alguien inicie sesión
     SCHEDULE = []; sorted = []; scheduleLoaded = false;
-    ROUTINES = {}; routinesLoaded = false;
+    ROUTINES_LIST = []; EXERCISE_LIBRARY = []; routinesLoaded = false; activeRoutineId = null;
     MEAL_INFO = {}; FOOD_BY_DAY = {}; nutritionLoaded = false;
   }
 
@@ -1148,65 +1337,196 @@
     });
   }
 
-  // ==================== rutinas de entreno: cargar y sembrar ====================
-  function applyRoutines(routineRows, exerciseRows){
-    ROUTINES = {};
-    routineRows.forEach(function(r){
-      ROUTINES[r.weekday] = { id:r.id, title:r.title, sub:r.sub, exercises:[] };
+  // ==================== rutinas + biblioteca de ejercicios: cargar, sembrar, CRUD ====================
+  function applyExercisesAndRoutines(exerciseRows, routineRows, routineExerciseRows){
+    EXERCISE_LIBRARY = exerciseRows.map(function(e){
+      return { id:e.id, group:e.group_name, name:e.name, sets:e.default_sets, reps:e.default_reps,
+        rest:e.default_rest_sec, hold:e.is_hold, holdLabel:e.hold_label };
     });
-    exerciseRows.slice().sort(function(a,b){ return a.sort_order-b.sort_order; }).forEach(function(ex){
-      for(var wd in ROUTINES){
-        if(ROUTINES[wd].id === ex.routine_id){
-          ROUTINES[wd].exercises.push({
-            group: ex.group_name, name: ex.name, sets: ex.sets, reps: ex.reps,
-            rest: ex.rest_sec, hold: ex.is_hold, holdLabel: ex.hold_label
-          });
-          break;
-        }
-      }
+    ROUTINES_LIST = routineRows.map(function(r){
+      return { id:r.id, title:r.title, sub:r.sub, defaultWeekday:r.default_weekday, exercises:[] };
+    });
+    routineExerciseRows.slice().sort(function(a,b){ return a.sort_order-b.sort_order; }).forEach(function(re){
+      var routine = findRoutine(re.routine_id);
+      if(!routine) return;
+      var lib = EXERCISE_LIBRARY.filter(function(e){ return e.id === re.exercise_id; })[0];
+      routine.exercises.push({
+        id: re.id, exerciseId: re.exercise_id,
+        group: lib ? lib.group : "Otro", name: lib ? lib.name : "Ejercicio",
+        sets: re.sets, reps: re.reps, rest: re.rest_sec, hold: re.is_hold, holdLabel: re.hold_label
+      });
     });
     routinesLoaded = true;
-    saveCache("routines", ROUTINES);
+    saveCache("routines", { exercises:EXERCISE_LIBRARY, routines:ROUTINES_LIST });
     render();
   }
-  function seedRoutines(){
-    var weekdays = Object.keys(DEFAULT_ROUTINES);
-    var routineInserts = weekdays.map(function(wd){
-      return { user_id: currentUser.id, weekday: +wd, title: DEFAULT_ROUTINES[wd].title, sub: DEFAULT_ROUTINES[wd].sub };
+
+  function seedRoutinesAndExercises(){
+    var exerciseInserts = DEFAULT_EXERCISES.map(function(e){
+      return { user_id: currentUser.id, group_name:e.group, name:e.name,
+        default_sets:3, default_reps:"10-12", default_rest_sec:60, is_hold: !!e.hold, hold_label: e.holdLabel || null };
     });
-    sb.from("routines").insert(routineInserts).select().then(function(res){
-      if(res.error || !res.data || !res.data.length){
-        ROUTINES = JSON.parse(JSON.stringify(DEFAULT_ROUTINES)); routinesLoaded = true; render();
+    sb.from("exercises").insert(exerciseInserts).select().then(function(exRes){
+      if(exRes.error || !exRes.data || !exRes.data.length){
+        routinesLoaded = true; render();
         return;
       }
-      var exerciseInserts = [];
-      res.data.forEach(function(r){
-        (DEFAULT_ROUTINES[r.weekday] ? DEFAULT_ROUTINES[r.weekday].exercises : []).forEach(function(ex, idx){
-          exerciseInserts.push({
-            user_id: currentUser.id, routine_id: r.id, group_name: ex.group, name: ex.name,
-            sets: ex.sets, reps: ex.reps, rest_sec: ex.rest, is_hold: !!ex.hold,
-            hold_label: ex.holdLabel || null, sort_order: idx
+      var keyToId = {};
+      DEFAULT_EXERCISES.forEach(function(e, idx){ keyToId[e.key] = exRes.data[idx].id; });
+      var routineInserts = DEFAULT_ROUTINES.map(function(r, idx){
+        return { user_id: currentUser.id, title:r.title, sub:r.sub, default_weekday:r.defaultWeekday, sort_order: idx };
+      });
+      sb.from("routines").insert(routineInserts).select().then(function(rRes){
+        if(rRes.error || !rRes.data || !rRes.data.length){
+          applyExercisesAndRoutines(exRes.data, [], []);
+          return;
+        }
+        var reInserts = [];
+        rRes.data.forEach(function(r, idx){
+          DEFAULT_ROUTINES[idx].exercises.forEach(function(ex, exIdx){
+            reInserts.push({
+              user_id: currentUser.id, routine_id:r.id, exercise_id: keyToId[ex.key],
+              sets: ex.sets, reps: ex.reps, rest_sec: ex.rest, is_hold: !!ex.hold,
+              hold_label: ex.holdLabel || null, sort_order: exIdx
+            });
           });
         });
-      });
-      sb.from("routine_exercises").insert(exerciseInserts).select().then(function(res2){
-        applyRoutines(res.data, res2.data || []);
+        sb.from("routine_exercises").insert(reInserts).select().then(function(reRes){
+          applyExercisesAndRoutines(exRes.data, rRes.data, reRes.data || []);
+        });
       });
     });
   }
+
   function loadRoutines(){
     if(!sb || !currentUser) return;
-    sb.from("routines").select("*").eq("user_id", currentUser.id).then(function(res){
-      if(res.error || !res.data){
+    sb.from("exercises").select("*").eq("user_id", currentUser.id).then(function(exRes){
+      if(exRes.error || !exRes.data){
         var cache = loadCache("routines");
-        if(cache){ ROUTINES = cache; routinesLoaded = true; render(); }
+        if(cache){ EXERCISE_LIBRARY = cache.exercises; ROUTINES_LIST = cache.routines; routinesLoaded = true; render(); }
         return;
       }
-      if(res.data.length === 0){ seedRoutines(); return; }
-      var routineRows = res.data;
-      sb.from("routine_exercises").select("*").eq("user_id", currentUser.id).then(function(res2){
-        applyRoutines(routineRows, res2.data || []);
+      sb.from("routines").select("*").eq("user_id", currentUser.id).then(function(rRes){
+        if(rRes.error || !rRes.data){
+          var cache2 = loadCache("routines");
+          if(cache2){ EXERCISE_LIBRARY = cache2.exercises; ROUTINES_LIST = cache2.routines; routinesLoaded = true; render(); }
+          return;
+        }
+        if(exRes.data.length === 0 && rRes.data.length === 0){ seedRoutinesAndExercises(); return; }
+        sb.from("routine_exercises").select("*").eq("user_id", currentUser.id).then(function(reRes){
+          applyExercisesAndRoutines(exRes.data, rRes.data, reRes.data || []);
+        });
       });
+    });
+  }
+
+  // ---- CRUD de rutinas ----
+  function createRoutine(fields){
+    return sb.from("routines").insert({
+      user_id: currentUser.id, title: fields.title, sub: fields.sub || null,
+      default_weekday: fields.defaultWeekday, sort_order: ROUTINES_LIST.length
+    }).select().then(function(res){
+      if(!res.error && res.data && res.data[0]){
+        var r = res.data[0];
+        ROUTINES_LIST.push({ id:r.id, title:r.title, sub:r.sub, defaultWeekday:r.default_weekday, exercises:[] });
+        saveCache("routines", { exercises:EXERCISE_LIBRARY, routines:ROUTINES_LIST });
+      }
+      return res;
+    });
+  }
+  function updateRoutine(id, fields){
+    return sb.from("routines").update({
+      title: fields.title, sub: fields.sub || null, default_weekday: fields.defaultWeekday
+    }).eq("id", id).select().then(function(res){
+      if(!res.error && res.data && res.data[0]){
+        var r = res.data[0];
+        var local = findRoutine(id);
+        if(local){ local.title = r.title; local.sub = r.sub; local.defaultWeekday = r.default_weekday; }
+        saveCache("routines", { exercises:EXERCISE_LIBRARY, routines:ROUTINES_LIST });
+      }
+      return res;
+    });
+  }
+  function deleteRoutine(id){
+    return sb.from("routines").delete().eq("id", id).then(function(res){
+      if(!res.error){
+        ROUTINES_LIST = ROUTINES_LIST.filter(function(r){ return r.id !== id; });
+        saveCache("routines", { exercises:EXERCISE_LIBRARY, routines:ROUTINES_LIST });
+      }
+      return res;
+    });
+  }
+
+  // ---- CRUD de ejercicios dentro de una rutina ----
+  function addExerciseToRoutine(routineId, libEx, overrides){
+    var routine = findRoutine(routineId);
+    var sets = (overrides && overrides.sets) ? overrides.sets : libEx.sets;
+    var reps = (overrides && overrides.reps) ? overrides.reps : libEx.reps;
+    var rest = (overrides && overrides.rest) ? overrides.rest : libEx.rest;
+    return sb.from("routine_exercises").insert({
+      user_id: currentUser.id, routine_id: routineId, exercise_id: libEx.id,
+      sets: sets, reps: reps, rest_sec: rest, is_hold: !!libEx.hold, hold_label: libEx.holdLabel || null,
+      sort_order: routine ? routine.exercises.length : 0
+    }).select().then(function(res){
+      if(!res.error && res.data && res.data[0] && routine){
+        var re = res.data[0];
+        routine.exercises.push({
+          id:re.id, exerciseId:libEx.id, group:libEx.group, name:libEx.name,
+          sets:re.sets, reps:re.reps, rest:re.rest_sec, hold:re.is_hold, holdLabel:re.hold_label
+        });
+        saveCache("routines", { exercises:EXERCISE_LIBRARY, routines:ROUTINES_LIST });
+      }
+      return res;
+    });
+  }
+  function createExerciseAndAddToRoutine(routineId, fields){
+    return sb.from("exercises").insert({
+      user_id: currentUser.id, group_name: fields.group, name: fields.name,
+      default_sets: fields.sets, default_reps: fields.reps, default_rest_sec: fields.rest,
+      is_hold: !!fields.hold, hold_label: fields.holdLabel || null
+    }).select().then(function(res){
+      if(res.error || !res.data || !res.data[0]) return res;
+      var e = res.data[0];
+      var libEntry = { id:e.id, group:e.group_name, name:e.name, sets:e.default_sets, reps:e.default_reps,
+        rest:e.default_rest_sec, hold:e.is_hold, holdLabel:e.hold_label };
+      EXERCISE_LIBRARY.push(libEntry);
+      return addExerciseToRoutine(routineId, libEntry, fields);
+    });
+  }
+  function updateExerciseInRoutine(routineExerciseId, exerciseId, fields){
+    return Promise.all([
+      sb.from("exercises").update({
+        group_name: fields.group, name: fields.name, is_hold: !!fields.hold, hold_label: fields.holdLabel || null
+      }).eq("id", exerciseId),
+      sb.from("routine_exercises").update({
+        sets: fields.sets, reps: fields.reps, rest_sec: fields.rest, is_hold: !!fields.hold, hold_label: fields.holdLabel || null
+      }).eq("id", routineExerciseId)
+    ]).then(function(results){
+      var errored = results.filter(function(r){ return r.error; });
+      if(!errored.length){
+        var lib = EXERCISE_LIBRARY.filter(function(e){ return e.id === exerciseId; })[0];
+        if(lib){ lib.group=fields.group; lib.name=fields.name; lib.hold=!!fields.hold; lib.holdLabel=fields.holdLabel; }
+        ROUTINES_LIST.forEach(function(r){
+          r.exercises.forEach(function(ex){
+            if(ex.id === routineExerciseId){
+              ex.group=fields.group; ex.name=fields.name; ex.sets=fields.sets; ex.reps=fields.reps;
+              ex.rest=fields.rest; ex.hold=!!fields.hold; ex.holdLabel=fields.holdLabel;
+            }
+          });
+        });
+        saveCache("routines", { exercises:EXERCISE_LIBRARY, routines:ROUTINES_LIST });
+      }
+      return { error: errored.length ? errored[0].error : null };
+    });
+  }
+  function removeExerciseFromRoutine(routineId, routineExerciseId){
+    return sb.from("routine_exercises").delete().eq("id", routineExerciseId).then(function(res){
+      if(!res.error){
+        var routine = findRoutine(routineId);
+        if(routine) routine.exercises = routine.exercises.filter(function(ex){ return ex.id !== routineExerciseId; });
+        saveCache("routines", { exercises:EXERCISE_LIBRARY, routines:ROUTINES_LIST });
+      }
+      return res;
     });
   }
 
@@ -1497,31 +1817,50 @@
       host.innerHTML = workoutSkeletonHTML();
       return;
     }
-    var routine = ROUTINES[weekday];
+    var isRealToday = (weekday === new Date().getDay());
+    var routine = resolveRoutine(weekday, isRealToday);
+    activeRoutineId = routine ? routine.id : null;
+    workoutDisplayWeekday = weekday;
+
+    var html = '<div class="workout-hd"><div class="wsel-row">';
+    html += '<select class="am-input wsel" id="routine-select">';
+    if(ROUTINES_LIST.length === 0){
+      html += '<option value="">Sin rutinas todavía</option>';
+    } else {
+      ROUTINES_LIST.forEach(function(r){
+        html += '<option value="' + r.id + '"' + (routine && routine.id===r.id ? ' selected' : '') + '>' + r.title + '</option>';
+      });
+    }
+    html += '</select>';
+    if(routine) html += '<button type="button" class="item-edit-btn" id="routine-edit-btn" aria-label="Editar rutina">✎</button>';
+    html += '<button type="button" class="btn-add-activity wsel-new" id="routine-new-btn">+ Nueva</button>';
+    html += '</div>';
+    if(routine) html += '<div class="wsub">' + (routine.sub||"") + '</div>';
+    html += (isRealToday ? '' : '<span class="wbrowsing">Viendo ' + DOW[weekday] + '</span>');
+    html += '</div>';
+
+    timerState = {};
     if(!routine){
-      host.innerHTML = '<div class="empty-state"><b>Sin rutina hoy</b>Añade una actividad de tipo "Físico" ese día, o entra a Ajustes para ver por qué no hay rutina configurada.</div>';
-      timerState = {};
+      html += '<div class="empty-state"><b>Sin rutina para hoy</b>Crea una con "+ Nueva" arriba, o elige una existente si ya tienes alguna.</div>';
+      host.innerHTML = html;
+      wireRoutineSelectorEvents(weekday);
       return;
     }
-    var isRealToday = (weekday === new Date().getDay());
-    var html =
-      '<div class="workout-hd"><h2>' + routine.title + '</h2><div class="wsub">' + (routine.sub||"") + '</div>' +
-      (isRealToday ? '' : '<span class="wbrowsing">Viendo ' + DOW[weekday] + '</span>') +
-      '</div>';
-    timerState = {};
-    routine.exercises.forEach(function(ex, idx){
-      var exId = "r" + weekday + "-" + idx;
+
+    routine.exercises.forEach(function(ex){
+      var exId = "re-" + ex.id;
       timerState[exId] = { remaining: ex.rest, def: ex.rest, running: false };
       html +=
         '<div class="ex">' +
           '<div class="ex-top">' +
             '<span class="ex-group">' + ex.group + '</span>' +
             '<span class="ex-name">' + ex.name + '</span>' +
+            '<button type="button" class="item-edit-btn ex-edit-btn" data-reid="' + ex.id + '" aria-label="Editar ejercicio">✎</button>' +
           '</div>' +
           '<div class="ex-meta">' +
             '<span><b>' + ex.sets + '</b> series</span>' +
             '<span><b>' + ex.reps + '</b></span>' +
-            '<span>' + (ex.hold ? "Aguante " + ex.holdLabel : "Descanso " + ex.rest + "s") + '</span>' +
+            '<span>' + (ex.hold ? "Aguante " + (ex.holdLabel||"") : "Descanso " + ex.rest + "s") + '</span>' +
           '</div>' +
           '<div class="ex-timer">' +
             '<span class="timer-display mono" id="td-' + exId + '">' + fmtSec(ex.rest) + '</span>' +
@@ -1530,7 +1869,9 @@
           '</div>' +
         '</div>';
     });
+    html += '<button type="button" class="btn-add-activity" id="add-exercise-btn">+ Añadir ejercicio</button>';
     host.innerHTML = html;
+
     Object.keys(timerState).forEach(function(exId){
       document.getElementById("tb-" + exId).addEventListener("click", function(){
         var st = timerState[exId];
@@ -1544,13 +1885,43 @@
         updateTimerDOM(exId);
       });
     });
+    Array.prototype.forEach.call(host.querySelectorAll(".ex-edit-btn"), function(btn){
+      btn.addEventListener("click", function(){
+        var reId = btn.getAttribute("data-reid");
+        var ex = routine.exercises.filter(function(e){ return e.id === reId; })[0];
+        if(ex) openExerciseEditModal(routine.id, ex);
+      });
+    });
+    document.getElementById("add-exercise-btn").addEventListener("click", function(){
+      openExercisePicker(routine.id);
+    });
+
+    wireRoutineSelectorEvents(weekday);
+  }
+
+  function wireRoutineSelectorEvents(weekday){
+    var isRealToday = (weekday === new Date().getDay());
+    var sel = document.getElementById("routine-select");
+    if(sel){
+      sel.addEventListener("change", function(){
+        if(isRealToday && sel.value) localStorage.setItem(routineOverrideKey(new Date()), sel.value);
+        renderWorkoutContent(weekday);
+      });
+    }
+    var editBtn = document.getElementById("routine-edit-btn");
+    if(editBtn){
+      editBtn.addEventListener("click", function(){ openRoutineModal(activeRoutineId ? findRoutine(activeRoutineId) : null); });
+    }
+    var newBtn = document.getElementById("routine-new-btn");
+    if(newBtn){
+      newBtn.addEventListener("click", function(){ openRoutineModal(null); });
+    }
   }
 
   // Muestra la rutina de `weekday` y cambia a la pestaña Rutina (se usa al tocar
   // "Entreno" en la línea de tiempo, hoy o cualquier día navegado en el calendario).
   function browseWorkout(weekday){
     renderWorkoutContent(weekday);
-    workoutDisplayWeekday = weekday;
     setActiveTab("rutina");
   }
 
@@ -1812,6 +2183,227 @@
       closeActivityModal();
     });
   });
+
+  function currentWorkoutWeekday(){
+    return (workoutDisplayWeekday !== null && workoutDisplayWeekday !== undefined) ? workoutDisplayWeekday : new Date().getDay();
+  }
+
+  // ==================== modal: crear/editar rutina ====================
+  var rmModal = document.getElementById("routine-modal");
+  var rmForm = document.getElementById("rm-form");
+  var rmTitle = document.getElementById("rm-title");
+  var rmName = document.getElementById("rm-name");
+  var rmSub = document.getElementById("rm-sub");
+  var rmWeekday = document.getElementById("rm-weekday");
+  var rmDelete = document.getElementById("rm-delete");
+  var rmStatus = document.getElementById("rm-status");
+  var rmSave = document.getElementById("rm-save");
+  var rmEditing = null;
+
+  function openRoutineModal(routine){
+    rmEditing = routine || null;
+    rmStatus.textContent = "";
+    if(routine){
+      rmTitle.textContent = "Editar rutina";
+      rmName.value = routine.title;
+      rmSub.value = routine.sub || "";
+      rmWeekday.value = (routine.defaultWeekday === null || routine.defaultWeekday === undefined) ? "" : routine.defaultWeekday;
+      rmDelete.style.display = "";
+    } else {
+      rmTitle.textContent = "Nueva rutina";
+      rmForm.reset();
+      rmDelete.style.display = "none";
+    }
+    rmModal.style.display = "flex";
+  }
+  function closeRoutineModal(){ rmModal.style.display = "none"; rmEditing = null; }
+  document.getElementById("rm-close").addEventListener("click", closeRoutineModal);
+  document.getElementById("rm-cancel").addEventListener("click", closeRoutineModal);
+  rmModal.addEventListener("click", function(e){ if(e.target === rmModal) closeRoutineModal(); });
+
+  rmForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    if(!sb || !currentUser) return;
+    var fields = {
+      title: rmName.value.trim(), sub: rmSub.value.trim(),
+      defaultWeekday: rmWeekday.value === "" ? null : +rmWeekday.value
+    };
+    rmSave.disabled = true;
+    rmStatus.textContent = "Guardando...";
+    var op = rmEditing ? updateRoutine(rmEditing.id, fields) : createRoutine(fields);
+    op.then(function(res){
+      rmSave.disabled = false;
+      if(res.error){ rmStatus.textContent = res.error.message; return; }
+      closeRoutineModal();
+      renderWorkoutContent(currentWorkoutWeekday());
+    }).catch(function(){
+      rmSave.disabled = false;
+      rmStatus.textContent = "No se pudo guardar — revisa tu conexión.";
+    });
+  });
+  rmDelete.addEventListener("click", function(){
+    if(!rmEditing) return;
+    if(!window.confirm('¿Eliminar la rutina "' + rmEditing.title + '"? No borra los ejercicios de tu biblioteca, solo esta combinación.')) return;
+    rmDelete.disabled = true;
+    deleteRoutine(rmEditing.id).then(function(res){
+      rmDelete.disabled = false;
+      if(res.error){ rmStatus.textContent = res.error.message; return; }
+      closeRoutineModal();
+      renderWorkoutContent(currentWorkoutWeekday());
+    });
+  });
+
+  // ==================== modal: elegir / crear ejercicio ====================
+  var epModal = document.getElementById("exercise-picker-modal");
+  var epList = document.getElementById("ep-list");
+  var epSearch = document.getElementById("ep-search");
+  var epNewToggleBtn = document.getElementById("ep-new-toggle-btn");
+  var epNewForm = document.getElementById("ep-new-form");
+  var epName = document.getElementById("ep-name");
+  var epGroup = document.getElementById("ep-group");
+  var epSets = document.getElementById("ep-sets");
+  var epReps = document.getElementById("ep-reps");
+  var epRest = document.getElementById("ep-rest");
+  var epHold = document.getElementById("ep-hold");
+  var epStatus = document.getElementById("ep-status");
+  var epSave = document.getElementById("ep-save");
+  var epRoutineId = null;
+
+  function renderExercisePickerList(){
+    var routine = findRoutine(epRoutineId);
+    var already = routine ? routine.exercises.map(function(e){ return e.exerciseId; }) : [];
+    var q = epSearch.value.trim().toLowerCase();
+    var candidates = EXERCISE_LIBRARY.filter(function(e){
+      if(already.indexOf(e.id) !== -1) return false;
+      if(!q) return true;
+      return e.name.toLowerCase().indexOf(q) !== -1 || e.group.toLowerCase().indexOf(q) !== -1;
+    });
+    if(candidates.length === 0){
+      epList.innerHTML = '<div class="ep-empty">' +
+        (EXERCISE_LIBRARY.length ? "No hay más ejercicios que coincidan." : "Tu biblioteca está vacía todavía.") +
+        '</div>';
+      return;
+    }
+    epList.innerHTML = "";
+    candidates.forEach(function(ex){
+      var row = document.createElement("div");
+      row.className = "ep-item";
+      row.innerHTML = '<span><span class="epn">' + ex.name + '</span><span class="epg">' + ex.group + '</span></span><span class="epadd">Añadir</span>';
+      row.addEventListener("click", function(){
+        addExerciseToRoutine(epRoutineId, ex).then(function(res){
+          if(res.error){ epStatus.textContent = res.error.message; return; }
+          closeExercisePicker();
+          renderWorkoutContent(currentWorkoutWeekday());
+        });
+      });
+      epList.appendChild(row);
+    });
+  }
+  function openExercisePicker(routineId){
+    epRoutineId = routineId;
+    epSearch.value = "";
+    epStatus.textContent = "";
+    epNewForm.style.display = "none";
+    epNewToggleBtn.textContent = "+ Crear ejercicio nuevo";
+    renderExercisePickerList();
+    epModal.style.display = "flex";
+  }
+  function closeExercisePicker(){ epModal.style.display = "none"; epRoutineId = null; }
+  document.getElementById("ep-close").addEventListener("click", closeExercisePicker);
+  epModal.addEventListener("click", function(e){ if(e.target === epModal) closeExercisePicker(); });
+  epSearch.addEventListener("input", renderExercisePickerList);
+  epNewToggleBtn.addEventListener("click", function(){
+    var showing = epNewForm.style.display !== "none";
+    epNewForm.style.display = showing ? "none" : "flex";
+    epNewToggleBtn.textContent = showing ? "+ Crear ejercicio nuevo" : "Cancelar";
+  });
+  epNewForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    if(!sb || !currentUser || !epRoutineId) return;
+    var name = epName.value.trim();
+    if(!name){ epStatus.textContent = "Ponle un nombre."; return; }
+    var fields = {
+      name: name, group: epGroup.value.trim() || "General",
+      sets: +epSets.value || 3, reps: epReps.value.trim() || "10-12",
+      rest: +epRest.value || 60, hold: epHold.checked, holdLabel: epHold.checked ? "mantener" : null
+    };
+    epSave.disabled = true;
+    epStatus.textContent = "Creando...";
+    createExerciseAndAddToRoutine(epRoutineId, fields).then(function(res){
+      epSave.disabled = false;
+      if(res.error){ epStatus.textContent = res.error.message; return; }
+      closeExercisePicker();
+      renderWorkoutContent(currentWorkoutWeekday());
+    }).catch(function(){
+      epSave.disabled = false;
+      epStatus.textContent = "No se pudo crear — revisa tu conexión.";
+    });
+  });
+
+  // ==================== modal: editar ejercicio dentro de la rutina ====================
+  var eeModal = document.getElementById("exercise-edit-modal");
+  var eeForm = document.getElementById("ee-form");
+  var eeName = document.getElementById("ee-name");
+  var eeGroup = document.getElementById("ee-group");
+  var eeSets = document.getElementById("ee-sets");
+  var eeReps = document.getElementById("ee-reps");
+  var eeRest = document.getElementById("ee-rest");
+  var eeHold = document.getElementById("ee-hold");
+  var eeStatus = document.getElementById("ee-status");
+  var eeSave = document.getElementById("ee-save");
+  var eeRemove = document.getElementById("ee-remove");
+  var eeRoutineId = null;
+  var eeEditing = null;
+
+  function openExerciseEditModal(routineId, ex){
+    eeRoutineId = routineId;
+    eeEditing = ex;
+    eeStatus.textContent = "";
+    eeName.value = ex.name;
+    eeGroup.value = ex.group;
+    eeSets.value = ex.sets;
+    eeReps.value = ex.reps;
+    eeRest.value = ex.rest;
+    eeHold.checked = !!ex.hold;
+    eeModal.style.display = "flex";
+  }
+  function closeExerciseEditModal(){ eeModal.style.display = "none"; eeEditing = null; eeRoutineId = null; }
+  document.getElementById("ee-close").addEventListener("click", closeExerciseEditModal);
+  document.getElementById("ee-cancel").addEventListener("click", closeExerciseEditModal);
+  eeModal.addEventListener("click", function(e){ if(e.target === eeModal) closeExerciseEditModal(); });
+
+  eeForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    if(!eeEditing) return;
+    var fields = {
+      name: eeName.value.trim(), group: eeGroup.value.trim(),
+      sets: +eeSets.value, reps: eeReps.value.trim(), rest: +eeRest.value,
+      hold: eeHold.checked, holdLabel: eeHold.checked ? "mantener" : null
+    };
+    eeSave.disabled = true;
+    eeStatus.textContent = "Guardando...";
+    updateExerciseInRoutine(eeEditing.id, eeEditing.exerciseId, fields).then(function(res){
+      eeSave.disabled = false;
+      if(res.error){ eeStatus.textContent = res.error.message; return; }
+      closeExerciseEditModal();
+      renderWorkoutContent(currentWorkoutWeekday());
+    }).catch(function(){
+      eeSave.disabled = false;
+      eeStatus.textContent = "No se pudo guardar — revisa tu conexión.";
+    });
+  });
+  eeRemove.addEventListener("click", function(){
+    if(!eeEditing || !eeRoutineId) return;
+    if(!window.confirm('¿Quitar "' + eeEditing.name + '" de esta rutina?')) return;
+    eeRemove.disabled = true;
+    removeExerciseFromRoutine(eeRoutineId, eeEditing.id).then(function(res){
+      eeRemove.disabled = false;
+      if(res.error){ eeStatus.textContent = res.error.message; return; }
+      closeExerciseEditModal();
+      renderWorkoutContent(currentWorkoutWeekday());
+    });
+  });
+
   buildTimeline();
 
   function renderTimelineStates(){
