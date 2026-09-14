@@ -143,7 +143,8 @@
   .wsel-row{display:flex;align-items:center;gap:0.5rem;min-width:0}
   select.wsel{flex:1;min-width:0;font-family:Archivo,sans-serif;font-weight:700;font-size:1rem;
     padding:0.6rem 2rem 0.6rem 0.8rem;text-overflow:ellipsis}
-  .wsel-new{width:auto;flex:none;margin-top:0;padding:0.55rem 0.7rem;font-size:0.72rem;border-style:solid}
+  .wsel-new{width:auto;flex:none;margin-top:0;padding:0.55rem 0.7rem;font-size:0.72rem;
+    border-style:solid;white-space:nowrap;box-sizing:border-box}
   .ex{padding:0.85rem 0;border-bottom:1px solid var(--rule-soft);display:grid;gap:0.55rem;min-width:0}
   .ex:last-child{border-bottom:0}
   .ex-top{display:flex;justify-content:space-between;align-items:baseline;gap:0.6rem;flex-wrap:wrap;min-width:0}
@@ -352,11 +353,10 @@
   .btn-add-activity:hover{border-color:var(--accent);color:var(--accent-ink);background:var(--accent-soft)}
 
   .modal-overlay{position:fixed;inset:0;background:rgba(22,25,31,0.5);z-index:1500;
-    display:flex;align-items:flex-end;justify-content:center}
-  @media (min-width:30rem){ .modal-overlay{align-items:center} }
+    display:flex;align-items:flex-end;justify-content:center;padding:0 0.9rem 0.9rem}
+  @media (min-width:30rem){ .modal-overlay{align-items:center;padding:1.5rem} }
   .modal-card{width:100%;max-width:26rem;max-height:88vh;overflow-y:auto;
-    background:var(--surface);border-top:1px solid var(--rule)}
-  @media (min-width:30rem){ .modal-card{border:1px solid var(--rule)} }
+    background:var(--surface);border:1px solid var(--rule);border-radius:0.5rem}
   .modal-head{display:flex;align-items:center;justify-content:space-between;
     padding:1rem 1.2rem;border-bottom:1px solid var(--rule)}
   .modal-head h2{margin:0;font-size:1.02rem}
@@ -369,8 +369,9 @@
   .am-input{font-family:"Source Serif 4",serif;font-size:0.95rem;padding:0.65rem 0.8rem;
     border:1.5px solid var(--rule);background:var(--ground);color:var(--ink);width:100%}
   .am-input:focus{outline:none;border-color:var(--accent)}
-  select.am-input{font-family:Archivo,sans-serif;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%238A919C' stroke-width='1.6'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
-    background-repeat:no-repeat;background-position:right 0.7rem center}
+  select.am-input{font-family:Archivo,sans-serif;-webkit-appearance:none;-moz-appearance:none;appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%238A919C' stroke-width='1.6'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 0.7rem center;background-size:1rem}
   .am-row2{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem}
   .am-days{display:flex;gap:0.35rem}
   .am-day-chip{flex:1;text-align:center;padding:0.5rem 0;border:1.5px solid var(--rule);
@@ -999,7 +1000,10 @@
         if(ov) return ov;
       }
     }
-    return routineForWeekday(weekday);
+    // Si el día no tiene rutina asignada (miércoles, sábado, o cualquier día
+    // sin default_weekday), cae a la primera de la lista en vez de dejar la
+    // pestaña vacía — siempre hay algo seleccionado si existe al menos una rutina.
+    return routineForWeekday(weekday) || (ROUTINES_LIST.length ? ROUTINES_LIST[0] : null);
   }
 
   // ==================== tracking de cumplimiento (solo en este navegador) ====================
