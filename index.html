@@ -453,46 +453,77 @@
   }
   @media (prefers-color-scheme: dark){
     [data-style="vivid"]:not([data-theme="light"]){
-      --ground:#0A0B0E; --surface:#16181F; --rule:transparent; --rule-soft:#20232C;
+      --ground:#0d0a13; --surface:#1b1626; --rule:transparent; --rule-soft:#251f34;
     }
   }
-  [data-style="vivid"][data-theme="dark"]{ --ground:#0A0B0E; --surface:#16181F; --rule:transparent; --rule-soft:#20232C; }
+  [data-style="vivid"][data-theme="dark"]{ --ground:#0d0a13; --surface:#1b1626; --rule:transparent; --rule-soft:#251f34; }
 
   [data-style="vivid"] body{font-family:Archivo,sans-serif}
+  /* fondo degradado oscuro (no negro plano): navy/negro arriba, virando a
+     morado-vino abajo, como en las capturas de referencia */
+  [data-style="vivid"] .app{
+    background:
+      radial-gradient(ellipse 120% 55% at 15% 0%, rgba(120,70,200,0.30), transparent 60%),
+      radial-gradient(ellipse 110% 60% at 100% 100%, rgba(170,30,90,0.28), transparent 65%),
+      linear-gradient(180deg, #0c0a16 0%, #120c1c 40%, #1c0f1e 100%);
+  }
   [data-style="vivid"] .appbar{border-bottom:none;background:transparent;padding-top:0.9rem}
   [data-style="vivid"] .appbar .title{font-size:1.3rem}
   [data-style="vivid"] .panel{padding:0.3rem 1rem 6.5rem}
 
+  /* icono grande decorativo dentro de las tarjetas de color, recortado por
+     la esquina — es lo que da el aire "Samsung Health" a las capturas */
+  [data-style="vivid"] .daybanner,[data-style="vivid"] .hero,[data-style="vivid"] .stat-card{
+    position:relative;isolation:isolate}
+  [data-style="vivid"] .daybanner::after,[data-style="vivid"] .hero::after,[data-style="vivid"] .stat-card::after{
+    content:attr(data-vicon);position:absolute;right:-0.4rem;bottom:-0.9rem;font-size:4.2rem;
+    line-height:1;opacity:0.9;filter:drop-shadow(0 6px 14px rgba(0,0,0,0.35));
+    pointer-events:none;z-index:0}
+  [data-style="vivid"] .daybanner::after{font-size:2.6rem;bottom:-0.5rem;right:0.2rem;opacity:0.85}
+  [data-style="vivid"] .daybanner > *{position:relative;z-index:1}
+  [data-style="vivid"] .hero > *{position:relative;z-index:1}
+  [data-style="vivid"] .stat-card > *{position:relative;z-index:1}
+
   /* tarjetas de categoría con degradado — reutiliza los tokens de color que
      ya existen para cada área (fisico/nutricion/mentalidad/...) */
   [data-style="vivid"] .daybanner{border:none;border-radius:var(--v-radius-md);padding:1rem 1.2rem;
-    background:linear-gradient(135deg,var(--accent) 0%,var(--accent-ink) 130%);box-shadow:0 8px 24px -10px var(--accent)}
+    background:linear-gradient(135deg,var(--accent) 0%,var(--accent-ink) 130%);box-shadow:0 8px 24px -10px var(--accent);
+    overflow:hidden}
   [data-style="vivid"] .daybanner .ic{background:rgba(255,255,255,0.22);color:#fff;border:none}
   [data-style="vivid"] .daybanner b,[data-style="vivid"] .daybanner .sub{color:#fff}
   [data-style="vivid"] .daybanner.notrain{background:var(--surface);box-shadow:none}
+  [data-style="vivid"] .daybanner.notrain::after{display:none}
   [data-style="vivid"] .daybanner.notrain b,[data-style="vivid"] .daybanner.notrain .sub{color:var(--ink)}
   [data-style="vivid"] .daybanner.rest{background:linear-gradient(135deg,var(--ambar) 0%,#8a4d12 130%);box-shadow:0 8px 24px -10px var(--ambar)}
+  [data-style="vivid"] .daybanner.train::after{content:"🏋️"}
+  [data-style="vivid"] .daybanner.rest::after{content:"🌙"}
 
   [data-style="vivid"] .hero{border:none;border-left:none;border-radius:var(--v-radius-lg);
     padding:1.5rem 1.5rem 1.7rem;background:linear-gradient(150deg,var(--c-fisico) 0%,#0e3a24 140%);
-    box-shadow:0 14px 34px -16px var(--c-fisico)}
-  [data-style="vivid"] .hero::before{background:radial-gradient(circle at top right,rgba(255,255,255,0.28),transparent 65%)}
+    box-shadow:0 14px 34px -16px var(--c-fisico);overflow:hidden}
+  [data-style="vivid"] .hero::before{background:radial-gradient(circle at top right,rgba(255,255,255,0.28),transparent 65%);z-index:0}
+  [data-style="vivid"] .hero::after{content:"🔥"}
   [data-style="vivid"] .hero .tag,[data-style="vivid"] .hero .label,[data-style="vivid"] .hero .range,
   [data-style="vivid"] .hero .countdown .n,[data-style="vivid"] .hero .countdown .u{color:#fff}
   [data-style="vivid"] .hero .tag .dot{background:#fff}
   [data-style="vivid"] .hero.empty{background:var(--surface);box-shadow:none}
+  [data-style="vivid"] .hero.empty::after{display:none}
   [data-style="vivid"] .hero.empty .label,[data-style="vivid"] .hero.empty .tag,[data-style="vivid"] .hero.empty .range{color:var(--faint)}
 
   [data-style="vivid"] .next{border:none;border-radius:var(--v-radius-md);background:var(--surface);padding:1rem 1.2rem}
 
-  /* tarjetas de estadísticas: grid de píldoras de color, como los mosaicos
-     "Actividad diaria / Sueño / Comida" de las capturas */
+  /* tarjetas de estadísticas: grid de mosaicos de color con icono grande,
+     como "Actividad diaria / Sueño / Comida / Salud cardiovascular" */
   [data-style="vivid"] .stat-cards{background:transparent;border:none;gap:0.7rem;border-radius:0}
-  [data-style="vivid"] .stat-card{border-radius:var(--v-radius-md);padding:1.1rem 1.2rem;
+  [data-style="vivid"] .stat-card{border-radius:var(--v-radius-md);padding:1.1rem 1.2rem;overflow:hidden;
     background:linear-gradient(150deg,var(--c-principal) 0%,var(--accent-ink) 140%)}
+  [data-style="vivid"] .stat-card::after{content:"🔥"}
   [data-style="vivid"] .stat-card:nth-child(2){background:linear-gradient(150deg,var(--c-nutricion) 0%,#7a3c0a 140%)}
+  [data-style="vivid"] .stat-card:nth-child(2)::after{content:"🍊"}
   [data-style="vivid"] .stat-card:nth-child(3){background:linear-gradient(150deg,var(--c-mentalidad) 0%,#0e4a53 140%)}
+  [data-style="vivid"] .stat-card:nth-child(3)::after{content:"🌙"}
   [data-style="vivid"] .stat-card:nth-child(4){background:linear-gradient(150deg,var(--c-tattoo) 0%,#6e1f47 140%)}
+  [data-style="vivid"] .stat-card:nth-child(4)::after{content:"❤️"}
   [data-style="vivid"] .stat-card .num,[data-style="vivid"] .stat-card .lbl{color:#fff}
 
   [data-style="vivid"] .calendar,[data-style="vivid"] .heatmap,[data-style="vivid"] .actbars,
