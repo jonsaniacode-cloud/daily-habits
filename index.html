@@ -603,9 +603,15 @@
      plana separada por líneas -- mismo contenido y misma funcionalidad
      (temporizador, editar), solo cambia el envoltorio visual */
   [data-style="vivid"] .ex{border-bottom:none;border-radius:var(--v-radius-md);background:var(--surface);
-    padding:1rem 1.1rem;margin-bottom:0.7rem}
+    padding:1rem 1.1rem;margin-bottom:0.7rem;position:relative;isolation:isolate;overflow:hidden}
   [data-style="vivid"] .ex-group{background:rgba(255,255,255,0.08);border-radius:999px}
   [data-style="vivid"] .timer-btn{border:none;border-radius:999px;background:var(--rule-soft)}
+  /* icono del grupo muscular como marca de agua grande en la esquina de la
+     tarjeta -- mismo dato que ya se usa junto al nombre del grupo (arriba,
+     a tamaño normal), solo que aquí más grande y tenue de fondo */
+  [data-style="vivid"] .ex::after{content:attr(data-micon);position:absolute;right:-0.5rem;bottom:-0.7rem;
+    font-size:3.4rem;line-height:1;opacity:0.12;pointer-events:none;z-index:0}
+  [data-style="vivid"] .ex > *{position:relative;z-index:1}
 
   /* barra de pestañas flotante tipo píldora, con el activo resaltado */
   [data-style="vivid"] .tabbar{position:absolute;left:0.8rem;right:0.8rem;bottom:calc(0.7rem + env(safe-area-inset-bottom,0));
@@ -2016,6 +2022,29 @@
   }
 
   // ==================== rutina de entreno (tab dedicada) ====================
+  // Icono por grupo muscular: solo un objeto de texto->emoji, muy fácil de
+  // tocar si algún día quieres cambiar alguno o añadir un grupo nuevo. Busca
+  // por coincidencia de palabra dentro del texto del grupo (que es libre,
+  // lo escribe el usuario), así que sirve también para grupos compuestos
+  // como "Hombro / Espalda alta" -- se queda con el primero que encuentre,
+  // en el orden de esta lista. Si no reconoce nada, usa el genérico 🏋️.
+  var GROUP_ICONS = [
+    ["pecho", "🎽"],
+    ["espalda", "🎒"],
+    ["hombro", "🤷"],
+    ["gluteo", "🍑"], ["glúteo", "🍑"],
+    ["pierna", "🦵"], ["cuadricep", "🦵"], ["cuádricep", "🦵"], ["femoral", "🦵"], ["pantorrilla", "🦵"],
+    ["biceps", "💪"], ["bíceps", "💪"], ["triceps", "💪"], ["tríceps", "💪"], ["brazo", "💪"], ["antebrazo", "💪"],
+    ["abdomen", "🌀"], ["core", "🌀"], ["abs", "🌀"],
+    ["cardio", "🏃"]
+  ];
+  function groupIcon(group){
+    var g = (group || "").toLowerCase();
+    for(var i=0; i<GROUP_ICONS.length; i++){
+      if(g.indexOf(GROUP_ICONS[i][0]) !== -1) return GROUP_ICONS[i][1];
+    }
+    return "🏋️";
+  }
   function fmtSec(s){
     s = Math.max(0, Math.round(s));
     return pad(Math.floor(s/60)) + ":" + pad(s%60);
@@ -2081,11 +2110,12 @@
 
     routine.exercises.forEach(function(ex){
       var exId = "re-" + ex.id;
+      var micon = groupIcon(ex.group);
       timerState[exId] = { remaining: ex.rest, def: ex.rest, running: false };
       html +=
-        '<div class="ex">' +
+        '<div class="ex" data-micon="' + micon + '">' +
           '<div class="ex-top">' +
-            '<span class="ex-group">' + ex.group + '</span>' +
+            '<span class="ex-group">' + micon + ' ' + ex.group + '</span>' +
             '<div class="ex-name-row">' +
               '<span class="ex-name">' + ex.name + '</span>' +
               '<button type="button" class="item-edit-btn ex-edit-btn" data-reid="' + ex.id + '" aria-label="Editar ejercicio">✎</button>' +
@@ -2522,7 +2552,7 @@
     candidates.forEach(function(ex){
       var row = document.createElement("div");
       row.className = "ep-item";
-      row.innerHTML = '<span><span class="epn">' + ex.name + '</span><span class="epg">' + ex.group + '</span></span><span class="epadd">Añadir</span>';
+      row.innerHTML = '<span><span class="epn">' + ex.name + '</span><span class="epg">' + groupIcon(ex.group) + ' ' + ex.group + '</span></span><span class="epadd">Añadir</span>';
       row.addEventListener("click", function(){
         addExerciseToRoutine(epRoutineId, ex).then(function(res){
           if(res.error){ epStatus.textContent = res.error.message; return; }
