@@ -70,7 +70,7 @@
   .appbar .date{font-family:"JetBrains Mono",monospace;font-size:0.66rem;color:var(--faint)}
 
   .panels{flex:1;min-height:0;position:relative}
-  .panel{display:none;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  .panel{display:none;height:100%;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
     padding:1rem 1.1rem 1.5rem}
   .panel.active{display:block}
 
@@ -140,16 +140,18 @@
   .wbrowsing{display:inline-block;margin-top:0.5rem;font-family:Archivo,sans-serif;
     font-size:0.62rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--accent-ink);
     background:var(--accent-soft);border:1px solid var(--accent);padding:0.15rem 0.45rem}
-  .wsel-row{display:flex;align-items:center;gap:0.5rem}
-  select.wsel{flex:1;font-family:Archivo,sans-serif;font-weight:700;font-size:1rem;padding:0.6rem 2rem 0.6rem 0.8rem}
+  .wsel-row{display:flex;align-items:center;gap:0.5rem;min-width:0}
+  select.wsel{flex:1;min-width:0;font-family:Archivo,sans-serif;font-weight:700;font-size:1rem;
+    padding:0.6rem 2rem 0.6rem 0.8rem;text-overflow:ellipsis}
   .wsel-new{width:auto;flex:none;margin-top:0;padding:0.55rem 0.7rem;font-size:0.72rem;border-style:solid}
-  .ex{padding:0.85rem 0;border-bottom:1px solid var(--rule-soft);display:grid;gap:0.55rem}
+  .ex{padding:0.85rem 0;border-bottom:1px solid var(--rule-soft);display:grid;gap:0.55rem;min-width:0}
   .ex:last-child{border-bottom:0}
-  .ex-top{display:flex;justify-content:space-between;align-items:baseline;gap:0.6rem;flex-wrap:wrap}
+  .ex-top{display:flex;justify-content:space-between;align-items:baseline;gap:0.6rem;flex-wrap:wrap;min-width:0}
   .ex-group{font-family:Archivo,sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.08em;
     text-transform:uppercase;color:var(--c-fisico);background:var(--fisico-soft);
     padding:0.1rem 0.4rem;white-space:nowrap}
-  .ex-name{font-family:Archivo,sans-serif;font-weight:600;font-size:0.92rem;color:var(--ink)}
+  .ex-name{font-family:Archivo,sans-serif;font-weight:600;font-size:0.92rem;color:var(--ink);
+    min-width:0;overflow-wrap:break-word}
   .ex-meta{display:flex;gap:1rem;font-family:"JetBrains Mono",monospace;font-size:0.76rem;color:var(--muted)}
   .ex-meta b{color:var(--ink);font-weight:700}
   .ex-timer{display:flex;align-items:center;gap:0.55rem;margin-top:0.1rem}
