@@ -426,6 +426,19 @@
     border-radius:50%;background:var(--ink);color:var(--ground);font-size:0.58rem;
     display:flex;align-items:center;justify-content:center;border:2px solid var(--surface)}
   .profile-avatar-name{font-family:Archivo,sans-serif;font-weight:700;font-size:0.95rem;color:var(--ink)}
+
+  /* resumen de perfil arriba de todo en la pestaña Ahora: foto + nombre +
+     datos extra (edad/peso/altura), sin quitar nada de lo que ya había
+     debajo (banner del día, hero, después...) */
+  .ahora-profile{display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem}
+  .ahora-profile-avatar{position:relative;width:2.9rem;height:2.9rem;flex:none;border-radius:50%;
+    border:1.5px solid var(--rule);background:var(--accent-soft);overflow:hidden;display:block}
+  .ahora-profile-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+  #ahora-avatar-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+    font-family:Archivo,sans-serif;font-weight:700;font-size:1.05rem;color:var(--accent-ink)}
+  .ahora-profile-text{display:flex;flex-direction:column;gap:0.1rem;min-width:0}
+  .ahora-profile-name{font-family:Archivo,sans-serif;font-weight:700;font-size:0.98rem;color:var(--ink)}
+  .ahora-profile-meta{font-family:"JetBrains Mono",monospace;font-size:0.72rem;color:var(--faint)}
   .item-detail-actions{display:flex;gap:0.6rem;margin-top:0.8rem;padding-top:0.7rem;border-top:1px solid var(--rule)}
   .item-detail-actions button{font-family:Archivo,sans-serif;font-weight:600;font-size:0.72rem;
     padding:0.4rem 0.7rem;border:1px solid var(--rule);background:var(--surface);color:var(--ink)}
@@ -693,7 +706,7 @@
 <div class="app" id="app">
   <header class="appbar">
     <div class="brand">
-      <span class="eyebrow">Sistema de Coaches</span>
+      <span class="eyebrow">Daily Habits</span>
       <span class="title" id="appbar-title">Ahora</span>
     </div>
     <div class="clockwrap">
@@ -706,6 +719,17 @@
 
     <!-- ---------------- TAB: AHORA ---------------- -->
     <section class="panel active" data-panel="ahora">
+      <div class="ahora-profile" id="ahora-profile">
+        <span class="ahora-profile-avatar">
+          <img id="ahora-avatar-img" style="display:none" alt="">
+          <span id="ahora-avatar-fallback">?</span>
+        </span>
+        <span class="ahora-profile-text">
+          <span class="ahora-profile-name" id="ahora-profile-name">Sin nombre todavía</span>
+          <span class="ahora-profile-meta" id="ahora-profile-meta">Completa tu perfil en Ajustes</span>
+        </span>
+      </div>
+
       <div class="daybanner" id="daybanner">
         <span class="ic" id="daybanner-ic">&middot;</span>
         <span><b id="daybanner-title">&mdash;</b><span class="sub" id="daybanner-sub">&mdash;</span></span>
@@ -1066,7 +1090,7 @@
 <div class="auth-gate" id="auth-gate" style="display:none">
   <div class="auth-card">
     <div class="auth-mark"><span class="dot"></span></div>
-    <p class="auth-eyebrow">Sistema de Coaches</p>
+    <p class="auth-eyebrow">Daily Habits</p>
     <h1 class="auth-title">Rutina de hoy</h1>
     <p class="auth-sub">Entra con tu correo para que el progreso se guarde contigo, no solo en este navegador.</p>
     <form id="auth-form">
@@ -1359,6 +1383,7 @@
     currentAvatarUrl = null;
     updateAvatarDisplay(null, "");
     pfNamePreview.textContent = "Sin nombre todavía";
+    renderAhoraProfileSummary();
     // vuelve a esqueleto para la próxima vez que alguien inicie sesión
     SCHEDULE = []; sorted = []; scheduleLoaded = false;
     ROUTINES_LIST = []; EXERCISE_LIBRARY = []; routinesLoaded = false; activeRoutineId = null;
@@ -1380,6 +1405,13 @@
   var pfAvatarInput = document.getElementById("profile-avatar-input");
   var pfNamePreview = document.getElementById("profile-name-preview");
   var currentAvatarUrl = null;
+  // resumen de perfil en la pestaña Ahora (foto + nombre + datos extra) --
+  // mismos datos que ya se cargan para el formulario de Ajustes, solo que
+  // aquí se muestran de un vistazo, sin poder editarlos
+  var ahoraAvatarImg = document.getElementById("ahora-avatar-img");
+  var ahoraAvatarFallback = document.getElementById("ahora-avatar-fallback");
+  var ahoraProfileName = document.getElementById("ahora-profile-name");
+  var ahoraProfileMeta = document.getElementById("ahora-profile-meta");
 
   function updateAvatarDisplay(url, name){
     if(url){
@@ -1390,6 +1422,39 @@
       pfAvatarFallback.style.display = "flex";
       pfAvatarFallback.textContent = (name && name.trim()) ? name.trim()[0].toUpperCase() : "?";
     }
+    if(ahoraAvatarImg && ahoraAvatarFallback){
+      if(url){
+        ahoraAvatarImg.src = url; ahoraAvatarImg.style.display = "block";
+        ahoraAvatarFallback.style.display = "none";
+      } else {
+        ahoraAvatarImg.style.display = "none";
+        ahoraAvatarFallback.style.display = "flex";
+        ahoraAvatarFallback.textContent = (name && name.trim()) ? name.trim()[0].toUpperCase() : "?";
+      }
+    }
+  }
+
+  function calcAge(birthDateStr){
+    if(!birthDateStr) return null;
+    var b = new Date(birthDateStr + "T00:00:00");
+    if(isNaN(b.getTime())) return null;
+    var now = new Date();
+    var age = now.getFullYear() - b.getFullYear();
+    var hasHadBirthdayThisYear = (now.getMonth() > b.getMonth()) ||
+      (now.getMonth() === b.getMonth() && now.getDate() >= b.getDate());
+    if(!hasHadBirthdayThisYear) age -= 1;
+    return age >= 0 ? age : null;
+  }
+
+  function renderAhoraProfileSummary(){
+    if(!ahoraProfileName || !ahoraProfileMeta) return;
+    ahoraProfileName.textContent = pfName.value || "Sin nombre todavía";
+    var bits = [];
+    var age = calcAge(pfBirth.value);
+    if(age != null) bits.push(age + " años");
+    if(pfWeight.value) bits.push(pfWeight.value + " kg");
+    if(pfHeight.value) bits.push(pfHeight.value + " cm");
+    ahoraProfileMeta.textContent = bits.length ? bits.join(" · ") : "Completa tu perfil en Ajustes";
   }
 
   function loadProfile(){
@@ -1406,6 +1471,7 @@
         currentAvatarUrl = (p && p.avatar_url) ? p.avatar_url : null;
         updateAvatarDisplay(currentAvatarUrl, pfName.value);
         pfNamePreview.textContent = pfName.value || "Sin nombre todavía";
+        renderAhoraProfileSummary();
       });
   }
 
@@ -1457,6 +1523,7 @@
       if(errored.length){ pfStatus.textContent = errored[0].error.message; return; }
       pfNamePreview.textContent = pfName.value.trim() || "Sin nombre todavía";
       updateAvatarDisplay(currentAvatarUrl, pfName.value);
+      renderAhoraProfileSummary();
       pfStatus.textContent = emailChanged
         ? "Guardado. Revisa tu correo nuevo para confirmar el cambio — hasta entonces sigues entrando con el actual."
         : "Perfil guardado.";
@@ -2145,7 +2212,7 @@
     }
     html += '</select></div>';
     html += '<div class="wsel-actions">';
-    if(routine) html += '<button type="button" class="btn-add-activity wsel-new" id="routine-edit-btn" aria-label="Editar rutina">✎ Editar</button>';
+    if(routine) html += '<button type="button" class="btn-add-activity wsel-new" id="routine-edit-btn" aria-label="Editar rutina">Editar ✎</button>';
     html += '<button type="button" class="btn-add-activity wsel-new" id="routine-new-btn">+ Nueva</button>';
     html += '</div>';
     html += '</div>';
