@@ -241,6 +241,9 @@
   .item .badge.now{color:var(--accent-ink);background:var(--accent-soft);border-color:var(--accent)}
   .item .badge.confirm{color:var(--ambar);background:var(--ambar-soft);border-color:var(--ambar)}
   .item-trail{display:flex;align-items:center;gap:0.6rem;flex:none}
+  .item-edit-btn{flex:none;width:1.5rem;height:1.5rem;padding:0;border:1px solid var(--rule);
+    background:var(--surface);color:var(--faint);font-size:0.72rem;cursor:pointer}
+  .item-edit-btn:hover{color:var(--accent-ink);border-color:var(--accent)}
   .item-caret{font-size:0.66rem;color:var(--faint);transition:transform .15s ease;flex:none}
   .item-caret.open{transform:rotate(180deg)}
   .item.past{opacity:0.42}
@@ -296,6 +299,18 @@
   .progress-empty b{display:block;color:var(--muted);font-family:Archivo,sans-serif;font-weight:600;
     font-size:1rem;margin-bottom:0.3rem}
 
+  /* ---------------- esqueletos de carga ---------------- */
+  .skel-row{padding:0.5rem 0.9rem;border-bottom:1px solid var(--rule-soft);display:flex;align-items:center}
+  .skel-row:last-child{border-bottom:0}
+  .skel-bar{display:block;width:100%;height:0.9rem;border-radius:2px;
+    background:linear-gradient(90deg, var(--rule-soft) 25%, var(--rule) 37%, var(--rule-soft) 63%);
+    background-size:400% 100%;animation:skel-shimmer 1.4s ease infinite}
+  @keyframes skel-shimmer{0%{background-position:100% 0}100%{background-position:0 0}}
+  @media (prefers-reduced-motion:reduce){.skel-bar{animation:none}}
+  .stat-skel{border:1px solid var(--rule);background:var(--surface)}
+  .heatmap-skel{border:1px solid var(--rule);background:var(--surface);margin-bottom:1.3rem}
+  .hero-skel .skel-bar{margin-bottom:0.6rem}
+
   /* ---------------- pantalla de acceso ---------------- */
   .auth-gate{position:fixed;inset:0;background:var(--ground);z-index:2000;
     display:flex;align-items:center;justify-content:center;padding:1.5rem;overflow-y:auto}
@@ -325,6 +340,48 @@
   .auth-status.err{color:var(--rojo)}
   .auth-foot{margin-top:2rem;font-family:"JetBrains Mono",monospace;font-size:0.68rem;
     color:var(--faint);letter-spacing:0.02em}
+
+  /* ---------------- añadir actividad + modal de edición ---------------- */
+  .btn-add-activity{width:100%;margin-top:0.8rem;padding:0.75rem;
+    font-family:Archivo,sans-serif;font-weight:600;font-size:0.84rem;
+    border:1.5px dashed var(--rule);background:transparent;color:var(--muted)}
+  .btn-add-activity:hover{border-color:var(--accent);color:var(--accent-ink);background:var(--accent-soft)}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(22,25,31,0.5);z-index:1500;
+    display:flex;align-items:flex-end;justify-content:center}
+  @media (min-width:30rem){ .modal-overlay{align-items:center} }
+  .modal-card{width:100%;max-width:26rem;max-height:88vh;overflow-y:auto;
+    background:var(--surface);border-top:1px solid var(--rule)}
+  @media (min-width:30rem){ .modal-card{border:1px solid var(--rule)} }
+  .modal-head{display:flex;align-items:center;justify-content:space-between;
+    padding:1rem 1.2rem;border-bottom:1px solid var(--rule)}
+  .modal-head h2{margin:0;font-size:1.02rem}
+  .modal-close{width:1.8rem;height:1.8rem;border:1px solid var(--rule);background:var(--surface);
+    color:var(--faint);font-size:0.85rem;padding:0}
+  #am-form{padding:1.1rem 1.2rem 1.3rem;display:flex;flex-direction:column;gap:0.9rem}
+  .am-field{display:flex;flex-direction:column;gap:0.4rem;font-family:Archivo,sans-serif;
+    font-size:0.78rem;font-weight:600;color:var(--muted)}
+  .am-field em{font-style:normal;font-weight:400;color:var(--faint)}
+  .am-input{font-family:"Source Serif 4",serif;font-size:0.95rem;padding:0.65rem 0.8rem;
+    border:1.5px solid var(--rule);background:var(--ground);color:var(--ink);width:100%}
+  .am-input:focus{outline:none;border-color:var(--accent)}
+  select.am-input{font-family:Archivo,sans-serif;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%238A919C' stroke-width='1.6'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 0.7rem center}
+  .am-row2{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem}
+  .am-days{display:flex;gap:0.35rem}
+  .am-day-chip{flex:1;text-align:center;padding:0.5rem 0;border:1.5px solid var(--rule);
+    background:var(--ground);color:var(--muted);font-family:"JetBrains Mono",monospace;
+    font-size:0.76rem;font-weight:700;cursor:pointer;user-select:none}
+  .am-day-chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .am-actions{display:flex;justify-content:space-between;align-items:center;margin-top:0.3rem}
+  .am-actions-right{display:flex;gap:0.6rem;margin-left:auto}
+  .btn-danger{font-family:Archivo,sans-serif;font-weight:600;font-size:0.78rem;
+    padding:0.5rem 0.85rem;border:1px solid var(--rojo);background:transparent;color:var(--rojo)}
+  .am-status{margin:0;font-family:"JetBrains Mono",monospace;font-size:0.74rem;color:var(--rojo);min-height:1.1em}
+  .item-detail-actions{display:flex;gap:0.6rem;margin-top:0.8rem;padding-top:0.7rem;border-top:1px solid var(--rule)}
+  .item-detail-actions button{font-family:Archivo,sans-serif;font-weight:600;font-size:0.72rem;
+    padding:0.4rem 0.7rem;border:1px solid var(--rule);background:var(--surface);color:var(--ink)}
+  .item-detail-actions .del{border-color:var(--rojo);color:var(--rojo)}
 
   .item-detail{display:none;padding:0.75rem 0.9rem 0.9rem;background:var(--rule-soft);
     border-bottom:1px solid var(--rule-soft);font-size:0.83rem}
@@ -391,7 +448,7 @@
 
     <!-- ---------------- TAB: RUTINA ---------------- -->
     <section class="panel" data-panel="rutina">
-      <div id="workout-content"><div class="empty-state"><b>Sin rutina hoy</b>Miércoles y sábado no llevan entreno; domingo es descanso completo.</div></div>
+      <div id="workout-content"><div class="skel-row" style="height:5rem"><span class="skel-bar"></span></div></div>
     </section>
 
     <!-- ---------------- TAB: CALENDARIO ---------------- -->
@@ -415,6 +472,7 @@
 
       <h2>Línea de tiempo <span id="tl-daylabel">de hoy</span> <span class="count" id="tl-count"></span></h2>
       <div class="timeline" id="timeline"></div>
+      <button class="btn-add-activity" id="btn-add-activity">+ Añadir actividad</button>
     </section>
 
     <!-- ---------------- TAB: PROGRESO ---------------- -->
@@ -510,6 +568,51 @@
   </nav>
 </div>
 
+<div class="modal-overlay" id="activity-modal" style="display:none">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2 id="am-title">Nueva actividad</h2>
+      <button class="modal-close" id="am-close" aria-label="Cerrar">✕</button>
+    </div>
+    <form id="am-form">
+      <label class="am-field">
+        <span>Nombre</span>
+        <input type="text" id="am-label" class="am-input" placeholder="Ej. Estudiar inglés" required maxlength="60">
+      </label>
+      <label class="am-field">
+        <span>Nombre corto <em>(para la lista, opcional)</em></span>
+        <input type="text" id="am-short" class="am-input" placeholder="Ej. Inglés" maxlength="14">
+      </label>
+      <div class="am-row2">
+        <label class="am-field">
+          <span>Empieza</span>
+          <input type="time" id="am-start" class="am-input" required>
+        </label>
+        <label class="am-field">
+          <span>Termina</span>
+          <input type="time" id="am-end" class="am-input" required>
+        </label>
+      </div>
+      <label class="am-field">
+        <span>Categoría</span>
+        <select id="am-cat" class="am-input"></select>
+      </label>
+      <div class="am-field">
+        <span>Días</span>
+        <div class="am-days" id="am-days"></div>
+      </div>
+      <div class="am-actions">
+        <button type="button" class="btn-danger" id="am-delete" style="display:none">Eliminar</button>
+        <div class="am-actions-right">
+          <button type="button" class="timer-btn" id="am-cancel">Cancelar</button>
+          <button type="submit" class="btn" id="am-save">Guardar</button>
+        </div>
+      </div>
+      <p class="am-status" id="am-status"></p>
+    </form>
+  </div>
+</div>
+
 <div class="auth-gate" id="auth-gate" style="display:none">
   <div class="auth-card">
     <div class="auth-mark"><span class="dot"></span></div>
@@ -535,14 +638,17 @@
   // Días de la semana: 0=domingo, 1=lunes, 2=martes, 3=miércoles, 4=jueves, 5=viernes, 6=sábado
   var ALL        = [0,1,2,3,4,5,6];
   var NO_DOMINGO = [1,2,3,4,5,6];
-  var ENTRENO    = [1,2,4,5]; // lunes, martes, jueves, viernes — fijo, no se toca
+  var ENTRENO_DEFAULT = [1,2,4,5]; // lunes, martes, jueves, viernes — solo para la siembra inicial
 
-  var SCHEDULE = [
+  // ---- Datos por defecto: solo se usan para "sembrar" Supabase la primera vez
+  // que alguien entra, o como último respaldo si no hay conexión y localStorage
+  // tampoco tiene nada. Una vez hay datos reales en Supabase, estos ya no se leen.
+  var DEFAULT_SCHEDULE = [
     { id:"despertar",  start:"08:00", end:"08:15", label:"Despertar + meditar + visualizar", short:"Meditar",   cat:"mentalidad", days:NO_DOMINGO },
     { id:"cocinar",    start:"08:15", end:"08:45", label:"Cocinar (única sesión, 30 min)",    short:"Cocinar",   cat:"nutricion",  days:ALL },
     { id:"toma1",      start:"08:45", end:"09:00", label:"Toma 1 — desayuno",                  short:"Toma 1",    cat:"nutricion",  days:ALL },
     { id:"trading",    start:"09:00", end:"10:00", label:"Trading — estudio",                  short:"Trading",   cat:"trading",    days:NO_DOMINGO },
-    { id:"entreno",    start:"10:30", end:"11:10", label:"Entreno",                             short:"Entreno",   cat:"fisico",     days:ENTRENO },
+    { id:"entreno",    start:"10:30", end:"11:10", label:"Entreno",                             short:"Entreno",   cat:"fisico",     days:ENTRENO_DEFAULT },
     { id:"toma2",      start:"11:30", end:"11:45", label:"Toma 2 — merienda",                   short:"Toma 2",    cat:"nutricion",  days:ALL },
     { id:"toma3",      start:"13:30", end:"14:00", label:"Toma 3 — comida principal",           short:"Toma 3",    cat:"nutricion",  days:ALL },
     { id:"tattoo",     start:"16:00", end:"17:00", label:"Tatuaje — práctica",                  short:"Tatuaje",   cat:"tattoo",     days:NO_DOMINGO },
@@ -557,52 +663,50 @@
     mentalidad:"--c-mentalidad", nutricion:"--c-nutricion", trading:"--c-trading",
     fisico:"--c-fisico", tattoo:"--c-tattoo", neutro:"--c-neutro", principal:"--c-principal"
   };
+  var CAT_LABEL = {
+    mentalidad:"Mentalidad", nutricion:"Nutrición", trading:"Trading",
+    fisico:"Físico", tattoo:"Tatuaje", neutro:"Otro", principal:"Principal"
+  };
   var DAY_LETTERS = ["D","L","M","X","J","V","S"];
   var DOW = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
   var MON = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
 
-  // ---- Rutina de entreno, del informe fisico/2026-09-08.md ----
-  var DAY_ROUTINE = { 1:"torsoA", 2:"piernaA", 4:"torsoB", 5:"piernaB" };
-  var ROUTINE_META = {
-    torsoA:  { title:"Torso A",  sub:"Empuje + tracción horizontal" },
-    piernaA: { title:"Pierna A", sub:"Sentadilla + cadena posterior" },
-    torsoB:  { title:"Torso B",  sub:"Tracción horizontal + empuje secundario" },
-    piernaB: { title:"Pierna B", sub:"Unilateral · progresión hacia pistol" }
-  };
-  var WORKOUTS = {
-    torsoA: [
+  // ---- Rutinas de entreno por defecto (informe fisico/2026-09-08.md), una por
+  // día de la semana. Igual que arriba: solo para sembrar o como respaldo. ----
+  var DEFAULT_ROUTINES = {
+    1: { title:"Torso A",  sub:"Empuje + tracción horizontal", exercises:[
       { group:"Pecho",              name:"Press de suelo con mancuernas",              sets:4, reps:"8–10",       rest:90 },
       { group:"Pecho",              name:"Flexiones",                                   sets:3, reps:"hasta RIR",  rest:90 },
       { group:"Espalda",            name:"Remo a una mano (apoyo en silla)",             sets:4, reps:"10–12/brazo",rest:75 },
       { group:"Hombro",             name:"Elevación lateral",                            sets:3, reps:"12–15",     rest:60 },
       { group:"Hombro / espalda alta", name:"Pájaro / apertura invertida",               sets:3, reps:"12–15",     rest:60 },
       { group:"Core",               name:"Plancha",                                      sets:3, reps:"mantener",  rest:45, hold:true, holdLabel:"30–45s" }
-    ],
-    piernaA: [
+    ]},
+    2: { title:"Pierna A", sub:"Sentadilla + cadena posterior", exercises:[
       { group:"Cuádriceps",         name:"Sentadilla goblet",                            sets:4, reps:"10–12",     rest:90 },
       { group:"Pierna unilateral",  name:"Zancada búlgara (pie en silla)",                sets:3, reps:"10–12/pierna", rest:90 },
       { group:"Isquios / glúteo",   name:"Peso muerto rumano",                            sets:3, reps:"10–12",     rest:90 },
       { group:"Gemelo",             name:"Elevación de talón",                            sets:3, reps:"15–20",     rest:60 },
       { group:"Core",               name:"Dead bug",                                      sets:3, reps:"10/lado",   rest:45 }
-    ],
-    torsoB: [
+    ]},
+    4: { title:"Torso B",  sub:"Tracción horizontal + empuje secundario", exercises:[
       { group:"Espalda",            name:"Remo a dos manos (inclinado)",                  sets:4, reps:"8–10",      rest:90 },
       { group:"Dorsal / pecho",     name:"Pullover con mancuerna",                        sets:3, reps:"10–12",     rest:75 },
       { group:"Tríceps / pecho",    name:"Flexión diamante / press 1 mano alterno",       sets:3, reps:"8–10",      rest:75 },
       { group:"Bíceps",             name:"Curl de bíceps",                                sets:3, reps:"12",        rest:60 },
       { group:"Bíceps / antebrazo", name:"Curl martillo",                                 sets:2, reps:"12",        rest:60 },
       { group:"Core",               name:"Plancha lateral",                               sets:3, reps:"mantener",  rest:30, hold:true, holdLabel:"30s/lado" }
-    ],
-    piernaB: [
+    ]},
+    5: { title:"Pierna B", sub:"Unilateral · progresión hacia pistol", exercises:[
       { group:"Cuádriceps unilateral", name:"Sentadilla a silla, 1 pierna (pistol)",      sets:4, reps:"6–8/pierna",rest:90 },
       { group:"Isquios unilateral", name:"RDL a una pierna",                              sets:3, reps:"8–10/pierna",rest:90 },
       { group:"Pierna",             name:"Zancada",                                       sets:3, reps:"10/pierna", rest:90 },
       { group:"Gemelo",             name:"Elevación de talón a 1 pierna",                 sets:3, reps:"12–15/pierna",rest:60 },
       { group:"Core",               name:"Elevación de piernas tumbado",                  sets:3, reps:"12",        rest:45 }
-    ]
+    ]}
   };
 
-  var FOOD_BY_DAY = {
+  var DEFAULT_FOOD_BY_DAY = {
     0: { p:"Atún (latas)",      c:"Garbanzos (bote)", v:"Brócoli",              g:"Aceite de oliva" },
     1: { p:"Pollo",             c:"Arroz",            v:"Brócoli",              g:"Aguacate" },
     2: { p:"Atún (latas)",      c:"Quinoa",           v:"Guisantes",            g:"Frutos secos" },
@@ -611,7 +715,7 @@
     5: { p:"Pavo",              c:"Arroz",            v:"Zanahoria / judía verde", g:"Aguacate" },
     6: { p:"Pescado blanco",    c:"Quinoa",           v:"Guisantes",            g:"Frutos secos" }
   };
-  var MEAL_INFO = {
+  var DEFAULT_MEAL_SLOTS = {
     toma1: { kcal:380, p:25, c:45,  g:10, ctx:"Antes de trading. Avena con fruta + huevo/atún, o una porción del batch del día." },
     toma2: { kcal:420, p:30, c:60,  g:8,  ctx:"Después del entreno — no es “ventana anabólica”, es una toma más de la distribución." },
     toma3: { kcal:900, p:45, c:120, g:25, ctx:"Comida principal. El único hueco tranquilo del día — la toma más grande." },
@@ -634,8 +738,35 @@
     return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
   }
   function dateKey(d){ return d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate()); }
+  function slugify(s){
+    return s.toLowerCase()
+      .normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "actividad";
+  }
 
-  var sorted = SCHEDULE.slice().sort(function(a,b){ return sortMin(a)-sortMin(b); });
+  // ==================== horario dinámico: estado en vivo ====================
+  // Vacío hasta que llega la respuesta de Supabase (o el respaldo local si no
+  // hay sesión) — mientras tanto la UI muestra esqueletos, no listas vacías.
+  var SCHEDULE = [];
+  var sorted = [];
+  var scheduleLoaded = false;
+  var ROUTINES = {};          // weekday -> {id, title, sub, exercises:[...]}
+  var routinesLoaded = false;
+  var MEAL_INFO = {};         // slot_key -> {kcal,p,c,g,ctx}
+  var FOOD_BY_DAY = {};       // weekday -> {p,c,v,g}
+  var nutritionLoaded = false;
+
+  function findActivity(id){
+    for(var i=0;i<SCHEDULE.length;i++){ if(SCHEDULE[i].id === id) return SCHEDULE[i]; }
+    return null;
+  }
+  function getEntrenoDays(){
+    var e = findActivity("entreno");
+    return e ? e.days : [];
+  }
+  function rebuildSorted(){
+    sorted = SCHEDULE.slice().sort(function(a,b){ return sortMin(a)-sortMin(b); });
+  }
 
   // ==================== tracking de cumplimiento (solo en este navegador) ====================
   // Vive en localStorage, separado de datos/habitos-*.md que lleva el coach
@@ -715,11 +846,18 @@
     hideAuthGate();
     if(accountEmailEl) accountEmailEl.textContent = user.email || "Conectado";
     loadFromSupabase();
+    loadSchedule();
+    loadRoutines();
+    loadNutrition();
   }
   function onSignedOut(){
     currentUser = null;
     if(accountEmailEl) accountEmailEl.textContent = "Sin sesión";
     showAuthGate();
+    // vuelve a esqueleto para la próxima vez que alguien inicie sesión
+    SCHEDULE = []; sorted = []; scheduleLoaded = false;
+    ROUTINES = {}; routinesLoaded = false;
+    MEAL_INFO = {}; FOOD_BY_DAY = {}; nutritionLoaded = false;
   }
 
   if(sb){
@@ -770,6 +908,221 @@
         scheduleAlarms();
         render();
       });
+  }
+
+  // ==================== caché local de horario/rutinas/nutrición ====================
+  // Igual que con el progreso: Supabase manda, pero si no hay conexión la app
+  // sigue funcionando con lo último que se guardó localmente.
+  function loadCache(k){ try{ return JSON.parse(localStorage.getItem("horario:cache:"+k) || "null"); } catch(e){ return null; } }
+  function saveCache(k, v){ try{ localStorage.setItem("horario:cache:"+k, JSON.stringify(v)); } catch(e){} }
+
+  // ==================== horario: cargar, sembrar, CRUD ====================
+  function mapActivityRow(r){
+    var item = {
+      id: r.activity_key, _dbId: r.id, start: r.start_time, end: r.end_time,
+      label: r.label, short: r.short_label, cat: r.category, days: r.days
+    };
+    if(r.is_midnight) item.sortAsMidnight = true;
+    if(r.activity_key === "toma5"){ item.toggle = "tg-toma5"; item.flag = "confirm"; }
+    return item;
+  }
+  function applySchedule(rows){
+    SCHEDULE = rows.map(mapActivityRow);
+    rebuildSorted();
+    scheduleLoaded = true;
+    saveCache("schedule", SCHEDULE);
+    buildTimeline();
+    scheduleAlarms();
+    render();
+    var progPanel = document.querySelector('.panel[data-panel="progreso"]');
+    if(progPanel && progPanel.classList.contains("active")) renderProgress();
+  }
+  function applyScheduleRow(row){
+    var mapped = mapActivityRow(row);
+    var idx = -1;
+    for(var i=0;i<SCHEDULE.length;i++){ if(SCHEDULE[i]._dbId === row.id){ idx = i; break; } }
+    if(idx === -1) SCHEDULE.push(mapped); else SCHEDULE[idx] = mapped;
+    rebuildSorted();
+    saveCache("schedule", SCHEDULE);
+    buildTimeline();
+    renderTimelineStates();
+    scheduleAlarms();
+  }
+
+  function seedActivities(){
+    var rows = DEFAULT_SCHEDULE.map(function(ev, idx){
+      return {
+        user_id: currentUser.id, activity_key: ev.id, label: ev.label, short_label: ev.short,
+        start_time: ev.start, end_time: ev.end, category: ev.cat, days: ev.days,
+        is_midnight: !!ev.sortAsMidnight, is_default: true, sort_order: idx
+      };
+    });
+    sb.from("activities").insert(rows).select().then(function(res){
+      if(res.error || !res.data || !res.data.length){
+        SCHEDULE = DEFAULT_SCHEDULE.slice(); rebuildSorted(); scheduleLoaded = true;
+        buildTimeline(); scheduleAlarms(); render();
+        return;
+      }
+      applySchedule(res.data);
+    });
+  }
+
+  function loadSchedule(){
+    if(!sb || !currentUser) return;
+    sb.from("activities").select("*").eq("user_id", currentUser.id)
+      .then(function(res){
+        if(res.error || !res.data){
+          var cache = loadCache("schedule");
+          if(cache && cache.length){ SCHEDULE = cache; rebuildSorted(); scheduleLoaded = true; buildTimeline(); render(); }
+          return;
+        }
+        if(res.data.length === 0){ seedActivities(); return; }
+        applySchedule(res.data);
+      });
+  }
+
+  // API de edición usada por el formulario de "Añadir/Editar actividad"
+  function createActivity(fields){
+    var key = slugify(fields.label) + "-" + Date.now().toString(36);
+    return sb.from("activities").insert({
+      user_id: currentUser.id, activity_key: key, label: fields.label,
+      short_label: fields.short || fields.label.slice(0,14),
+      start_time: fields.start, end_time: fields.end, category: fields.cat,
+      days: fields.days, is_midnight: false, is_default: false, sort_order: 999
+    }).select().then(function(res){
+      if(!res.error && res.data && res.data[0]) applyScheduleRow(res.data[0]);
+      return res;
+    });
+  }
+  function updateActivity(dbId, fields){
+    return sb.from("activities").update({
+      label: fields.label, short_label: fields.short || fields.label.slice(0,14),
+      start_time: fields.start, end_time: fields.end, category: fields.cat,
+      days: fields.days, updated_at: new Date().toISOString()
+    }).eq("id", dbId).select().then(function(res){
+      if(!res.error && res.data && res.data[0]) applyScheduleRow(res.data[0]);
+      return res;
+    });
+  }
+  function deleteActivity(dbId){
+    return sb.from("activities").delete().eq("id", dbId).then(function(res){
+      if(!res.error){
+        SCHEDULE = SCHEDULE.filter(function(x){ return x._dbId !== dbId; });
+        rebuildSorted();
+        saveCache("schedule", SCHEDULE);
+        buildTimeline();
+        renderTimelineStates();
+        scheduleAlarms();
+      }
+      return res;
+    });
+  }
+
+  // ==================== rutinas de entreno: cargar y sembrar ====================
+  function applyRoutines(routineRows, exerciseRows){
+    ROUTINES = {};
+    routineRows.forEach(function(r){
+      ROUTINES[r.weekday] = { id:r.id, title:r.title, sub:r.sub, exercises:[] };
+    });
+    exerciseRows.slice().sort(function(a,b){ return a.sort_order-b.sort_order; }).forEach(function(ex){
+      for(var wd in ROUTINES){
+        if(ROUTINES[wd].id === ex.routine_id){
+          ROUTINES[wd].exercises.push({
+            group: ex.group_name, name: ex.name, sets: ex.sets, reps: ex.reps,
+            rest: ex.rest_sec, hold: ex.is_hold, holdLabel: ex.hold_label
+          });
+          break;
+        }
+      }
+    });
+    routinesLoaded = true;
+    saveCache("routines", ROUTINES);
+    render();
+  }
+  function seedRoutines(){
+    var weekdays = Object.keys(DEFAULT_ROUTINES);
+    var routineInserts = weekdays.map(function(wd){
+      return { user_id: currentUser.id, weekday: +wd, title: DEFAULT_ROUTINES[wd].title, sub: DEFAULT_ROUTINES[wd].sub };
+    });
+    sb.from("routines").insert(routineInserts).select().then(function(res){
+      if(res.error || !res.data || !res.data.length){
+        ROUTINES = JSON.parse(JSON.stringify(DEFAULT_ROUTINES)); routinesLoaded = true; render();
+        return;
+      }
+      var exerciseInserts = [];
+      res.data.forEach(function(r){
+        (DEFAULT_ROUTINES[r.weekday] ? DEFAULT_ROUTINES[r.weekday].exercises : []).forEach(function(ex, idx){
+          exerciseInserts.push({
+            user_id: currentUser.id, routine_id: r.id, group_name: ex.group, name: ex.name,
+            sets: ex.sets, reps: ex.reps, rest_sec: ex.rest, is_hold: !!ex.hold,
+            hold_label: ex.holdLabel || null, sort_order: idx
+          });
+        });
+      });
+      sb.from("routine_exercises").insert(exerciseInserts).select().then(function(res2){
+        applyRoutines(res.data, res2.data || []);
+      });
+    });
+  }
+  function loadRoutines(){
+    if(!sb || !currentUser) return;
+    sb.from("routines").select("*").eq("user_id", currentUser.id).then(function(res){
+      if(res.error || !res.data){
+        var cache = loadCache("routines");
+        if(cache){ ROUTINES = cache; routinesLoaded = true; render(); }
+        return;
+      }
+      if(res.data.length === 0){ seedRoutines(); return; }
+      var routineRows = res.data;
+      sb.from("routine_exercises").select("*").eq("user_id", currentUser.id).then(function(res2){
+        applyRoutines(routineRows, res2.data || []);
+      });
+    });
+  }
+
+  // ==================== nutrición: cargar y sembrar ====================
+  function applyNutrition(mealRows, foodRows){
+    MEAL_INFO = {};
+    mealRows.forEach(function(m){
+      MEAL_INFO[m.slot_key] = { kcal:m.kcal, p:m.protein_g, c:m.carb_g, g:m.fat_g, ctx:m.context };
+    });
+    FOOD_BY_DAY = {};
+    foodRows.forEach(function(f){
+      FOOD_BY_DAY[f.weekday] = { p:f.protein, c:f.carb, v:f.veg, g:f.fat };
+    });
+    nutritionLoaded = true;
+    saveCache("nutrition", { meals:MEAL_INFO, food:FOOD_BY_DAY });
+    buildTimeline();
+  }
+  function seedNutrition(){
+    var mealInserts = Object.keys(DEFAULT_MEAL_SLOTS).map(function(key, idx){
+      var m = DEFAULT_MEAL_SLOTS[key];
+      return { user_id: currentUser.id, slot_key:key, kcal:m.kcal, protein_g:m.p, carb_g:m.c, fat_g:m.g, context:m.ctx, sort_order: idx };
+    });
+    var foodInserts = Object.keys(DEFAULT_FOOD_BY_DAY).map(function(wd){
+      var f = DEFAULT_FOOD_BY_DAY[wd];
+      return { user_id: currentUser.id, weekday:+wd, protein:f.p, carb:f.c, veg:f.v, fat:f.g };
+    });
+    sb.from("meal_slots").insert(mealInserts).select().then(function(res){
+      sb.from("food_by_day").insert(foodInserts).select().then(function(res2){
+        applyNutrition(res.data || [], res2.data || []);
+      });
+    });
+  }
+  function loadNutrition(){
+    if(!sb || !currentUser) return;
+    sb.from("meal_slots").select("*").eq("user_id", currentUser.id).then(function(res){
+      if(res.error || !res.data){
+        var cache = loadCache("nutrition");
+        if(cache){ MEAL_INFO = cache.meals; FOOD_BY_DAY = cache.food; nutritionLoaded = true; }
+        return;
+      }
+      if(res.data.length === 0){ seedNutrition(); return; }
+      var mealRows = res.data;
+      sb.from("food_by_day").select("*").eq("user_id", currentUser.id).then(function(res2){
+        applyNutrition(mealRows, res2.data || []);
+      });
+    });
   }
 
   function syncDoneToSupabase(key, evId, val){
@@ -986,6 +1339,25 @@
     });
   }
 
+  // ==================== esqueletos de carga ====================
+  // Mientras Supabase responde, en vez de dejar un hueco vacío o parpadear
+  // contenido incorrecto, se muestran estas franjas con brillo animado.
+  function skelRows(n, h){
+    var out = "";
+    for(var i=0;i<n;i++){ out += '<div class="skel-row" style="height:' + (h||"3.4rem") + '"><span class="skel-bar"></span></div>'; }
+    return out;
+  }
+  function timelineSkeletonHTML(){ return skelRows(9, "3.2rem"); }
+  function workoutSkeletonHTML(){
+    var out = '<div class="workout-hd"><div class="skel-bar" style="width:40%;height:1.3rem;margin-bottom:0.5rem"></div><div class="skel-bar" style="width:65%;height:0.85rem"></div></div>';
+    out += skelRows(5, "5rem");
+    return out;
+  }
+  function progressSkeletonHTML(){
+    return '<div class="stat-cards">' + skelRows(4, "4.2rem").replace(/skel-row/g, "skel-row stat-skel") + '</div>' +
+      '<div class="heatmap-skel">' + skelRows(6, "1.6rem") + '</div>';
+  }
+
   // ==================== rutina de entreno (tab dedicada) ====================
   function fmtSec(s){
     s = Math.max(0, Math.round(s));
@@ -1014,21 +1386,24 @@
 
   function renderWorkoutContent(weekday){
     var host = document.getElementById("workout-content");
-    var routineId = DAY_ROUTINE[weekday];
-    if(!routineId){
-      host.innerHTML = '<div class="empty-state"><b>Sin rutina hoy</b>Miércoles y sábado no llevan entreno; domingo es descanso completo.</div>';
+    if(!routinesLoaded){
+      host.innerHTML = workoutSkeletonHTML();
+      return;
+    }
+    var routine = ROUTINES[weekday];
+    if(!routine){
+      host.innerHTML = '<div class="empty-state"><b>Sin rutina hoy</b>Añade una actividad de tipo "Físico" ese día, o entra a Ajustes para ver por qué no hay rutina configurada.</div>';
       timerState = {};
       return;
     }
-    var meta = ROUTINE_META[routineId];
     var isRealToday = (weekday === new Date().getDay());
     var html =
-      '<div class="workout-hd"><h2>' + meta.title + '</h2><div class="wsub">' + meta.sub + '</div>' +
+      '<div class="workout-hd"><h2>' + routine.title + '</h2><div class="wsub">' + (routine.sub||"") + '</div>' +
       (isRealToday ? '' : '<span class="wbrowsing">Viendo ' + DOW[weekday] + '</span>') +
       '</div>';
     timerState = {};
-    WORKOUTS[routineId].forEach(function(ex, idx){
-      var exId = routineId + "-" + idx;
+    routine.exercises.forEach(function(ex, idx){
+      var exId = "r" + weekday + "-" + idx;
       timerState[exId] = { remaining: ex.rest, def: ex.rest, running: false };
       html +=
         '<div class="ex">' +
@@ -1097,7 +1472,7 @@
       if(sameDate(cellDate, selectedDate)) btn.classList.add("selected");
       var dotHTML = "";
       if(wd === 0) dotHTML = '<span class="dot rest"></span>';
-      else if(ENTRENO.indexOf(wd) !== -1) dotHTML = '<span class="dot train"></span>';
+      else if(getEntrenoDays().indexOf(wd) !== -1) dotHTML = '<span class="dot train"></span>';
       btn.innerHTML = d + dotHTML;
       (function(dt){ btn.addEventListener("click", function(){ selectDate(dt); }); })(cellDate);
       grid.appendChild(btn);
@@ -1136,6 +1511,10 @@
     return out;
   }
   function buildDetailHTML(ev, weekday){
+    var isMeal = /^toma\d/.test(ev.id);
+    if((isMeal || ev.id === "cocinar") && !nutritionLoaded){
+      return '<div class="skel-bar" style="width:70%;height:0.85rem"></div>';
+    }
     if(MEAL_INFO[ev.id]){
       var m = MEAL_INFO[ev.id];
       return '<div class="detail-macros">' +
@@ -1146,7 +1525,7 @@
         '</div>' +
         '<p class="detail-note">' + m.ctx + '</p>';
     }
-    if(ev.id === "cocinar"){
+    if(ev.id === "cocinar" && FOOD_BY_DAY[weekday]){
       var f = FOOD_BY_DAY[weekday];
       return '<div class="detail-food">' +
           '<span class="df"><i>Proteína</i>' + f.p + '</span>' +
@@ -1160,6 +1539,7 @@
   }
   function buildTimeline(){
     var timelineEl = document.getElementById("timeline");
+    if(!scheduleLoaded){ timelineEl.innerHTML = timelineSkeletonHTML(); return; }
     var weekday = selectedDate.getDay();
     var key = dateKey(selectedDate);
     var todayMidnight = new Date(); todayMidnight.setHours(0,0,0,0);
@@ -1182,6 +1562,7 @@
         '<span class="item-trail">' +
           '<span class="badge-slot"></span>' +
           checkboxHTML +
+          '<button type="button" class="item-edit-btn" id="edit-' + ev.id + '" aria-label="Editar actividad">✎</button>' +
           '<span class="item-caret" id="caret-' + ev.id + '">' + (ev.id === "entreno" ? "↧" : "▾") + '</span>' +
         '</span>';
       timelineEl.appendChild(row);
@@ -1200,6 +1581,11 @@
         });
       }
 
+      row.querySelector(".item-edit-btn").addEventListener("click", function(e){
+        e.stopPropagation();
+        openActivityModal(ev);
+      });
+
       row.addEventListener("click", function(){
         if(!active) return;
         if(ev.id === "entreno"){
@@ -1214,9 +1600,115 @@
       });
     });
   }
+
+  // ==================== modal de crear/editar actividad ====================
+  var amModal = document.getElementById("activity-modal");
+  var amForm = document.getElementById("am-form");
+  var amTitle = document.getElementById("am-title");
+  var amLabel = document.getElementById("am-label");
+  var amShort = document.getElementById("am-short");
+  var amStart = document.getElementById("am-start");
+  var amEnd = document.getElementById("am-end");
+  var amCat = document.getElementById("am-cat");
+  var amDaysEl = document.getElementById("am-days");
+  var amDelete = document.getElementById("am-delete");
+  var amStatus = document.getElementById("am-status");
+  var amSave = document.getElementById("am-save");
+  var amEditing = null; // null = creando; si no, es el objeto de SCHEDULE que se edita
+
+  Object.keys(CAT_LABEL).forEach(function(key){
+    var opt = document.createElement("option");
+    opt.value = key; opt.textContent = CAT_LABEL[key];
+    amCat.appendChild(opt);
+  });
+  var AM_DAY_LABELS = ["L","M","X","J","V","S","D"];
+  var AM_DAY_VALUES = [1,2,3,4,5,6,0];
+  AM_DAY_VALUES.forEach(function(dv, i){
+    var chip = document.createElement("span");
+    chip.className = "am-day-chip";
+    chip.textContent = AM_DAY_LABELS[i];
+    chip.dataset.day = dv;
+    chip.addEventListener("click", function(){ chip.classList.toggle("on"); });
+    amDaysEl.appendChild(chip);
+  });
+
+  function openActivityModal(ev){
+    amEditing = ev || null;
+    amStatus.textContent = "";
+    if(ev){
+      amTitle.textContent = "Editar actividad";
+      amLabel.value = ev.label;
+      amShort.value = ev.short || "";
+      amStart.value = ev.start;
+      amEnd.value = ev.sortAsMidnight ? ev.start : ev.end;
+      amCat.value = ev.cat;
+      amDelete.style.display = "";
+      Array.prototype.forEach.call(amDaysEl.children, function(chip){
+        chip.classList.toggle("on", ev.days.indexOf(+chip.dataset.day) !== -1);
+      });
+    } else {
+      amTitle.textContent = "Nueva actividad";
+      amForm.reset();
+      amCat.value = "neutro";
+      amDelete.style.display = "none";
+      Array.prototype.forEach.call(amDaysEl.children, function(chip){ chip.classList.remove("on"); });
+    }
+    amModal.style.display = "flex";
+  }
+  function closeActivityModal(){ amModal.style.display = "none"; amEditing = null; }
+
+  document.getElementById("am-close").addEventListener("click", closeActivityModal);
+  document.getElementById("am-cancel").addEventListener("click", closeActivityModal);
+  amModal.addEventListener("click", function(e){ if(e.target === amModal) closeActivityModal(); });
+
+  document.getElementById("btn-add-activity").addEventListener("click", function(){
+    if(!currentUser){ return; }
+    openActivityModal(null);
+  });
+
+  amForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    if(!sb || !currentUser){ amStatus.textContent = "Necesitas sesión iniciada."; return; }
+    var days = [];
+    Array.prototype.forEach.call(amDaysEl.children, function(chip){
+      if(chip.classList.contains("on")) days.push(+chip.dataset.day);
+    });
+    if(days.length === 0){ amStatus.textContent = "Elige al menos un día."; return; }
+    if(toMin(amEnd.value) <= toMin(amStart.value) && !(amEditing && amEditing.sortAsMidnight)){
+      amStatus.textContent = "La hora de fin debe ser después de la de inicio.";
+      return;
+    }
+    var fields = {
+      label: amLabel.value.trim(), short: amShort.value.trim(),
+      start: amStart.value, end: amEnd.value, cat: amCat.value, days: days
+    };
+    amSave.disabled = true;
+    amStatus.textContent = "Guardando...";
+    var op = amEditing ? updateActivity(amEditing._dbId, fields) : createActivity(fields);
+    op.then(function(res){
+      amSave.disabled = false;
+      if(res.error){ amStatus.textContent = res.error.message; return; }
+      closeActivityModal();
+    }).catch(function(){
+      amSave.disabled = false;
+      amStatus.textContent = "No se pudo guardar — revisa tu conexión.";
+    });
+  });
+
+  amDelete.addEventListener("click", function(){
+    if(!amEditing) return;
+    if(!window.confirm('¿Eliminar "' + amEditing.label + '"? Esto no borra el histórico ya marcado.')) return;
+    amDelete.disabled = true;
+    deleteActivity(amEditing._dbId).then(function(res){
+      amDelete.disabled = false;
+      if(res.error){ amStatus.textContent = res.error.message; return; }
+      closeActivityModal();
+    });
+  });
   buildTimeline();
 
   function renderTimelineStates(){
+    if(!scheduleLoaded) return;
     var now = new Date();
     var viewingToday = sameDate(selectedDate, now);
     var weekday = selectedDate.getDay();
@@ -1293,6 +1785,7 @@
 
   function renderProgress(){
     var host = document.getElementById("progress-content");
+    if(!scheduleLoaded){ host.innerHTML = progressSkeletonHTML(); return; }
     if(Object.keys(progressData).length === 0){
       host.innerHTML = '<div class="progress-empty"><b>Todavía no hay nada marcado</b>Ve marcando las casillas en la línea de tiempo (pestaña Calendario) y aquí se va llenando el histórico.</div>';
       return;
@@ -1397,11 +1890,12 @@
       dbIc.textContent = "☀";
       dbTitle.textContent = "Domingo — día de descanso completo";
       dbSub.textContent = "Solo cocina y comidas. Sin meditar, sin trading, sin entreno, sin tatuaje.";
-    } else if(ENTRENO.indexOf(weekday) !== -1){
+    } else if(getEntrenoDays().indexOf(weekday) !== -1){
       dbEl.classList.add("train");
       dbIc.textContent = "●";
       dbTitle.textContent = DOW[weekday].charAt(0).toUpperCase()+DOW[weekday].slice(1) + " — hoy toca entreno";
-      dbSub.textContent = "10:30–11:10 · el resto de la rutina va como siempre.";
+      var eAct = findActivity("entreno");
+      dbSub.textContent = (eAct ? eAct.start + "–" + eAct.end : "Entreno") + " · el resto de la rutina va como siempre.";
     } else {
       dbEl.classList.add("notrain");
       dbIc.textContent = "○";
@@ -1417,12 +1911,25 @@
     dateEl.textContent = DOW[realWeekday] + ", " + now.getDate() + " " + MON[now.getMonth()].slice(0,3);
     updateDayBanner(realWeekday);
 
-    if(workoutBuiltFor !== realWeekday){
+    if(routinesLoaded && workoutBuiltFor !== realWeekday){
       renderWorkoutContent(realWeekday);
       workoutBuiltFor = realWeekday;
       workoutDisplayWeekday = realWeekday;
+    } else if(!routinesLoaded){
+      document.getElementById("workout-content").innerHTML = workoutSkeletonHTML();
     }
     tickTimers();
+
+    if(!scheduleLoaded){
+      heroEl.classList.add("empty");
+      heroTag.textContent = "Cargando";
+      heroLabel.textContent = "";
+      heroRange.textContent = "";
+      heroCount.textContent = ""; heroCountUnit.textContent = "";
+      nextLabel.textContent = ""; nextTime.textContent = "";
+      renderTimelineStates();
+      return;
+    }
 
     var nowMin = now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
     var listReal = sorted.filter(function(ev){ return isActiveOnDay(ev, realWeekday); });
