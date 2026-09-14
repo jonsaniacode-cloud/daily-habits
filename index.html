@@ -1,7 +1,7 @@
 <title>Rutina de Hoy</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" id="theme-color-meta" content="#181B22">
+<meta name="theme-color" id="theme-color-meta" content="#0a0e1a">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -630,22 +630,14 @@
 <script>
   // Aplica el estilo visual guardado ANTES de pintar la app, para que no haya
   // parpadeo (un instante en clásico y luego salto a vívido, o al revés).
-  // También deja lista updateThemeColorMeta(): la barra de estado de Android
-  // lee <meta name="theme-color">, que antes eran dos etiquetas fijas
-  // (blanco/oscuro según el sistema) que nunca se enteraban de que existe
-  // el tema vívido -- por eso se veía blanca arriba aunque el resto de la
-  // app estuviera en oscuro. Ahora es una sola etiqueta que este script
-  // actualiza cada vez que cambia el tema.
+  // updateThemeColorMeta() fija la barra de estado de Android siempre al
+  // mismo azul-negro del fondo (#0a0e1a) -- antes intentaba seguir el modo
+  // claro/oscuro del sistema y se quedaba blanca en algunos casos; más
+  // simple y sin sorpresas: un único color fijo, siempre.
   window.updateThemeColorMeta = function(){
     try{
       var meta = document.getElementById("theme-color-meta");
-      if(!meta) return;
-      if(document.documentElement.getAttribute("data-style") === "vivid"){
-        meta.setAttribute("content", "#0a0e1a");
-        return;
-      }
-      var isDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-      meta.setAttribute("content", isDark ? "#181B22" : "#FFFFFF");
+      if(meta) meta.setAttribute("content", "#0a0e1a");
     }catch(e){}
   };
   (function(){
@@ -655,10 +647,6 @@
       }
     }catch(e){}
     updateThemeColorMeta();
-    if(window.matchMedia){
-      var mq = window.matchMedia("(prefers-color-scheme: dark)");
-      if(mq.addEventListener) mq.addEventListener("change", updateThemeColorMeta);
-    }
   })();
 </script>
 
