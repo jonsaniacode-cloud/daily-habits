@@ -157,10 +157,10 @@
     -webkit-appearance:none;-moz-appearance:none;appearance:none;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%238A919C' stroke-width='1.8'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
     background-repeat:no-repeat;background-position:right 0.75rem center;background-size:1.05rem}
-  /* el lápiz de editar rutina y "+ Nueva" viajan juntos como un grupo,
-     pegados el uno al otro y empujados al borde derecho de la fila (el
-     margin-left:auto va en el primero del grupo, el lápiz, no en el botón) */
-  .wsel-edit{flex:none;margin-left:auto}
+  /* "Editar" y "+ Nueva" van dentro de un mismo contenedor indivisible:
+     si algún día no caben junto al selector en una sola línea, el GRUPO
+     entero baja de línea, pero nunca se separan el uno del otro. */
+  .wsel-actions{display:flex;flex:none;gap:0.5rem;margin-left:auto}
   .wsel-new{width:auto;flex:none;margin-top:0;padding:0.55rem 0.7rem;font-size:0.72rem;
     border-style:solid;white-space:nowrap;box-sizing:border-box}
   .ex{padding:0.85rem 0;border-bottom:1px solid var(--rule-soft);display:grid;gap:0.55rem;min-width:0}
@@ -2058,8 +2058,10 @@
       });
     }
     html += '</select>';
-    if(routine) html += '<button type="button" class="btn-add-activity wsel-new wsel-edit" id="routine-edit-btn" aria-label="Editar rutina">✎ Editar</button>';
+    html += '<div class="wsel-actions">';
+    if(routine) html += '<button type="button" class="btn-add-activity wsel-new" id="routine-edit-btn" aria-label="Editar rutina">✎ Editar</button>';
     html += '<button type="button" class="btn-add-activity wsel-new" id="routine-new-btn">+ Nueva</button>';
+    html += '</div>';
     html += '</div>';
     if(routine) html += '<div class="wsub">' + (routine.sub||"") + '</div>';
     html += (isRealToday ? '' : '<span class="wbrowsing">Viendo ' + DOW[weekday] + '</span>');
