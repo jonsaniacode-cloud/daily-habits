@@ -437,7 +437,119 @@
   .toast b{display:block;font-family:Archivo,sans-serif;font-size:0.7rem;letter-spacing:0.06em;
     text-transform:uppercase;margin-bottom:0.25rem;color:var(--accent)}
   @keyframes slidein{from{transform:translateY(0.5rem);opacity:0}to{transform:translateY(0);opacity:1}}
+
+  /* ==========================================================================
+     TEMA "VÍVIDO" — capa 100% aditiva y reversible.
+     No toca ni una sola regla de arriba: solo añade selectores con el prefijo
+     [data-style="vivid"] que se activan/desactivan con el toggle de Ajustes
+     ("Apariencia" → "Estilo vívido"). Apagarlo devuelve exactamente el
+     estilo clásico de siempre, sin recargar nada ni perder funcionalidad.
+     Inspirado en apps tipo Samsung Health: fondo casi negro, tarjetas muy
+     redondeadas con gradientes de color por categoría, sin bordes finos,
+     tipografía de peso alto, barra de pestañas flotante tipo píldora.
+     ========================================================================== */
+  [data-style="vivid"]{
+    --v-radius-lg:1.6rem; --v-radius-md:1.15rem; --v-radius-sm:0.85rem;
+  }
+  @media (prefers-color-scheme: dark){
+    [data-style="vivid"]:not([data-theme="light"]){
+      --ground:#0A0B0E; --surface:#16181F; --rule:transparent; --rule-soft:#20232C;
+    }
+  }
+  [data-style="vivid"][data-theme="dark"]{ --ground:#0A0B0E; --surface:#16181F; --rule:transparent; --rule-soft:#20232C; }
+
+  [data-style="vivid"] body{font-family:Archivo,sans-serif}
+  [data-style="vivid"] .appbar{border-bottom:none;background:transparent;padding-top:0.9rem}
+  [data-style="vivid"] .appbar .title{font-size:1.3rem}
+  [data-style="vivid"] .panel{padding:0.3rem 1rem 6.5rem}
+
+  /* tarjetas de categoría con degradado — reutiliza los tokens de color que
+     ya existen para cada área (fisico/nutricion/mentalidad/...) */
+  [data-style="vivid"] .daybanner{border:none;border-radius:var(--v-radius-md);padding:1rem 1.2rem;
+    background:linear-gradient(135deg,var(--accent) 0%,var(--accent-ink) 130%);box-shadow:0 8px 24px -10px var(--accent)}
+  [data-style="vivid"] .daybanner .ic{background:rgba(255,255,255,0.22);color:#fff;border:none}
+  [data-style="vivid"] .daybanner b,[data-style="vivid"] .daybanner .sub{color:#fff}
+  [data-style="vivid"] .daybanner.notrain{background:var(--surface);box-shadow:none}
+  [data-style="vivid"] .daybanner.notrain b,[data-style="vivid"] .daybanner.notrain .sub{color:var(--ink)}
+  [data-style="vivid"] .daybanner.rest{background:linear-gradient(135deg,var(--ambar) 0%,#8a4d12 130%);box-shadow:0 8px 24px -10px var(--ambar)}
+
+  [data-style="vivid"] .hero{border:none;border-left:none;border-radius:var(--v-radius-lg);
+    padding:1.5rem 1.5rem 1.7rem;background:linear-gradient(150deg,var(--c-fisico) 0%,#0e3a24 140%);
+    box-shadow:0 14px 34px -16px var(--c-fisico)}
+  [data-style="vivid"] .hero::before{background:radial-gradient(circle at top right,rgba(255,255,255,0.28),transparent 65%)}
+  [data-style="vivid"] .hero .tag,[data-style="vivid"] .hero .label,[data-style="vivid"] .hero .range,
+  [data-style="vivid"] .hero .countdown .n,[data-style="vivid"] .hero .countdown .u{color:#fff}
+  [data-style="vivid"] .hero .tag .dot{background:#fff}
+  [data-style="vivid"] .hero.empty{background:var(--surface);box-shadow:none}
+  [data-style="vivid"] .hero.empty .label,[data-style="vivid"] .hero.empty .tag,[data-style="vivid"] .hero.empty .range{color:var(--faint)}
+
+  [data-style="vivid"] .next{border:none;border-radius:var(--v-radius-md);background:var(--surface);padding:1rem 1.2rem}
+
+  /* tarjetas de estadísticas: grid de píldoras de color, como los mosaicos
+     "Actividad diaria / Sueño / Comida" de las capturas */
+  [data-style="vivid"] .stat-cards{background:transparent;border:none;gap:0.7rem;border-radius:0}
+  [data-style="vivid"] .stat-card{border-radius:var(--v-radius-md);padding:1.1rem 1.2rem;
+    background:linear-gradient(150deg,var(--c-principal) 0%,var(--accent-ink) 140%)}
+  [data-style="vivid"] .stat-card:nth-child(2){background:linear-gradient(150deg,var(--c-nutricion) 0%,#7a3c0a 140%)}
+  [data-style="vivid"] .stat-card:nth-child(3){background:linear-gradient(150deg,var(--c-mentalidad) 0%,#0e4a53 140%)}
+  [data-style="vivid"] .stat-card:nth-child(4){background:linear-gradient(150deg,var(--c-tattoo) 0%,#6e1f47 140%)}
+  [data-style="vivid"] .stat-card .num,[data-style="vivid"] .stat-card .lbl{color:#fff}
+
+  [data-style="vivid"] .calendar,[data-style="vivid"] .heatmap,[data-style="vivid"] .actbars,
+  [data-style="vivid"] .timeline,[data-style="vivid"] .modal-card,[data-style="vivid"] .ep-list{
+    border:none;border-radius:var(--v-radius-md);background:var(--surface);overflow:hidden}
+  [data-style="vivid"] .cal-day.selected{border-radius:50%;background:var(--accent)}
+  [data-style="vivid"] .cal-nav,[data-style="vivid"] .cal-today-btn{border:none;border-radius:999px;background:var(--rule-soft)}
+
+  /* filas de la línea de tiempo: sin líneas divisorias, más aire, punto de
+     categoría convertido en chip redondeado con fondo suave */
+  [data-style="vivid"] .item{border-bottom:none;border-radius:var(--v-radius-sm);margin:0.35rem 0.5rem;padding:0.75rem 0.9rem}
+  [data-style="vivid"] .item:hover,[data-style="vivid"] .item.now{background:var(--rule-soft)}
+  [data-style="vivid"] .item.now{box-shadow:inset 0 0 0 1.5px var(--accent)}
+  [data-style="vivid"] .item .cat{width:0.85rem;height:0.85rem}
+
+  [data-style="vivid"] .ctrl-row{border:none;border-radius:var(--v-radius-sm);margin-bottom:0.6rem}
+  [data-style="vivid"] .ctrl-row + .ctrl-row{margin-top:-0.2rem}
+  [data-style="vivid"] .actbar-row{border-bottom:none}
+  [data-style="vivid"] .actbar-track,[data-style="vivid"] .actbar-fill{border-radius:999px}
+  [data-style="vivid"] .heatmap th,[data-style="vivid"] .heatmap td{border-top:none}
+  [data-style="vivid"] .hcell{border-radius:0.28rem;border:none}
+
+  /* botones y controles: todo a píldora, sin esquinas rectas */
+  [data-style="vivid"] .btn,[data-style="vivid"] .btn-danger,[data-style="vivid"] .timer-btn,
+  [data-style="vivid"] .wsel-new,[data-style="vivid"] .cal-today-btn,[data-style="vivid"] .btn-add-activity,
+  [data-style="vivid"] .auth-btn{border-radius:999px}
+  [data-style="vivid"] .btn{border-color:var(--accent);background:var(--accent);color:#fff}
+  [data-style="vivid"] .am-input,[data-style="vivid"] select.wsel{border-radius:var(--v-radius-sm);border-color:transparent;background:var(--rule-soft)}
+  [data-style="vivid"] .switch{width:2.9rem;height:1.6rem}
+  [data-style="vivid"] .slider{border-radius:999px;border:none;background:var(--rule-soft)}
+  [data-style="vivid"] .slider::before{border-radius:50%;width:1.2rem;height:1.2rem;left:0.14rem;top:0.13rem}
+  [data-style="vivid"] input:checked + .slider::before{transform:translateX(1.3rem)}
+
+  /* barra de pestañas flotante tipo píldora, con el activo resaltado */
+  [data-style="vivid"] .tabbar{position:absolute;left:0.8rem;right:0.8rem;bottom:calc(0.7rem + env(safe-area-inset-bottom,0));
+    border-top:none;border-radius:999px;background:var(--surface);box-shadow:0 10px 30px -8px rgba(0,0,0,0.55);
+    padding:0.35rem 0.35rem}
+  [data-style="vivid"] .tab-btn{border-radius:999px;padding:0.5rem 0}
+  [data-style="vivid"] .tab-btn.active{background:var(--accent-soft);color:var(--accent-ink)}
+  [data-style="vivid"] .app{padding-bottom:0}
+
+  [data-style="vivid"] .auth-mark{box-shadow:0 10px 30px -8px var(--accent)}
+  [data-style="vivid"] .auth-input{border-radius:var(--v-radius-sm);border-color:transparent;background:var(--rule-soft)}
+  [data-style="vivid"] .profile-avatar{border:none;box-shadow:0 6px 16px -6px var(--accent)}
 </style>
+
+<script>
+  // Aplica el estilo visual guardado ANTES de pintar la app, para que no haya
+  // parpadeo (un instante en clásico y luego salto a vívido, o al revés).
+  (function(){
+    try{
+      if(localStorage.getItem("horario:ui-style") === "vivid"){
+        document.documentElement.setAttribute("data-style", "vivid");
+      }
+    }catch(e){}
+  })();
+</script>
 
 <div class="app" id="app">
   <header class="appbar">
@@ -560,6 +672,20 @@
           </div>
           <p class="am-status" id="pf-status"></p>
         </form>
+      </div>
+
+      <p class="eyebrow2">Apariencia</p>
+      <div class="settings-block">
+        <div class="ctrl-row">
+          <div>
+            <div>Estilo vívido</div>
+            <div class="desc">Tarjetas grandes con color y esquinas redondeadas. Apágalo y vuelves al estilo clásico al instante, sin perder nada.</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="tg-vivid-style">
+            <span class="slider"></span>
+          </label>
+        </div>
       </div>
 
       <p class="eyebrow2">Avisos</p>
@@ -1682,6 +1808,23 @@
     setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
     icsStatus.textContent = "Descargado rutina-coach.ics — impórtalo en Google Calendar.";
   });
+
+  // ==================== estilo visual (clásico / vívido) ====================
+  // 100% reversible: solo pone/quita un atributo en <html>. No toca datos ni
+  // estructura — es la misma app, con otra capa de CSS encima.
+  var vividToggle = document.getElementById("tg-vivid-style");
+  if(vividToggle){
+    vividToggle.checked = document.documentElement.getAttribute("data-style") === "vivid";
+    vividToggle.addEventListener("change", function(){
+      if(vividToggle.checked){
+        document.documentElement.setAttribute("data-style", "vivid");
+        try{ localStorage.setItem("horario:ui-style", "vivid"); }catch(e){}
+      } else {
+        document.documentElement.removeAttribute("data-style");
+        try{ localStorage.setItem("horario:ui-style", "clasico"); }catch(e){}
+      }
+    });
+  }
 
   // ==================== notificaciones ====================
   var notifBtn = document.getElementById("btn-notif");
