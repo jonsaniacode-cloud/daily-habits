@@ -472,13 +472,14 @@
   [data-style="vivid"][data-theme="dark"]{ --ground:#0d0a13; --surface:#1b1626; --rule:transparent; --rule-soft:#251f34; }
 
   [data-style="vivid"] body{font-family:Archivo,sans-serif}
-  /* fondo degradado oscuro (no negro plano): navy/negro arriba, virando a
-     morado-vino abajo, como en las capturas de referencia */
+  /* fondo degradado oscuro (no negro plano), con el mismo azul de la paleta
+     (--accent / --c-principal) en vez de morado-vino inventado, para que
+     encaje con el color de acento que ya se usa en el resto de la app */
   [data-style="vivid"] .app{
     background:
-      radial-gradient(ellipse 120% 55% at 15% 0%, rgba(120,70,200,0.30), transparent 60%),
-      radial-gradient(ellipse 110% 60% at 100% 100%, rgba(170,30,90,0.28), transparent 65%),
-      linear-gradient(180deg, #0c0a16 0%, #120c1c 40%, #1c0f1e 100%);
+      radial-gradient(ellipse 120% 55% at 15% 0%, rgba(127,160,242,0.30), transparent 60%),
+      radial-gradient(ellipse 110% 60% at 100% 100%, rgba(47,95,208,0.30), transparent 65%),
+      linear-gradient(180deg, #0a0e1a 0%, #0c111c 40%, #0e1420 100%);
   }
   [data-style="vivid"] .appbar{border-bottom:none;background:transparent;padding-top:0.9rem}
   [data-style="vivid"] .appbar .title{font-size:1.3rem}
