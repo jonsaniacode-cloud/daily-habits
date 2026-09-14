@@ -140,27 +140,28 @@
   .wbrowsing{display:inline-block;margin-top:0.5rem;font-family:Archivo,sans-serif;
     font-size:0.62rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--accent-ink);
     background:var(--accent-soft);border:1px solid var(--accent);padding:0.15rem 0.45rem}
-  /* flex-wrap de seguridad: si algún día el nombre de rutina + el lápiz de
-     editar + "+ Nueva" no caben en una sola línea (pantallas muy estrechas),
-     el botón baja a una segunda línea en vez de quedar cortado o invisible. */
-  .wsel-row{display:flex;align-items:center;gap:0.5rem 0.6rem;flex-wrap:wrap;min-width:0}
+  /* Selector y botones ya no comparten fila -- eso fue la causa de todos los
+     bugs anteriores (se truncaban, se separaban, uno desaparecía): al
+     compartir espacio con flex-shrink/flex-wrap, el resultado dependía del
+     ancho de pantalla y del nombre de la rutina en curso. Ahora son DOS
+     filas independientes dentro de .wsel-row: el selector solo arriba (con
+     todo el ancho para sí, nunca compite por espacio) y "Editar" + "+ Nueva"
+     solos debajo, alineados a la derecha. Ninguna de las dos filas puede
+     robarle espacio a la otra ni obligar a la otra a esconderse. */
+  .wsel-row{display:flex;flex-direction:column;gap:0.55rem;min-width:0}
+  .wsel-top{display:flex;min-width:0}
   /* el select se ciñe a su propio contenido (nombre + flecha pegados), en vez
      de estirarse a todo el ancho de la fila -- así el nombre queda justo
-     delante de la flecha y no hay un hueco vacío entre ambos. min-width
-     garantiza que SIEMPRE se vea algo de texto: sin él, el select podía
-     encogerse hasta dejar solo la flecha visible y el nombre desaparecía
-     del todo (el bug reportado). flex-shrink sigue activo para que, si el
-     nombre es largo, se trunque con "…" en vez de desbordar. */
-  select.wsel{flex:0 1 auto;min-width:6.5rem;max-width:100%;font-family:Archivo,sans-serif;font-weight:700;font-size:1rem;
+     delante de la flecha y no hay un hueco vacío entre ambos. */
+  select.wsel{flex:0 1 auto;min-width:0;max-width:100%;font-family:Archivo,sans-serif;font-weight:700;font-size:1rem;
     padding:0.6rem 2.1rem 0.6rem 0.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink);
     border:1.5px solid var(--rule);background-color:var(--surface);
     -webkit-appearance:none;-moz-appearance:none;appearance:none;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%238A919C' stroke-width='1.8'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
     background-repeat:no-repeat;background-position:right 0.75rem center;background-size:1.05rem}
-  /* "Editar" y "+ Nueva" van dentro de un mismo contenedor indivisible:
-     si algún día no caben junto al selector en una sola línea, el GRUPO
-     entero baja de línea, pero nunca se separan el uno del otro. */
-  .wsel-actions{display:flex;flex:none;gap:0.5rem;margin-left:auto}
+  /* "Editar" y "+ Nueva" en su propia fila, sin nadie más con quien
+     repartirse el ancho -- alineados a la derecha, ambos siempre visibles */
+  .wsel-actions{display:flex;justify-content:flex-end;gap:0.5rem}
   .wsel-new{width:auto;flex:none;margin-top:0;padding:0.55rem 0.7rem;font-size:0.72rem;
     border-style:solid;white-space:nowrap;box-sizing:border-box}
   .ex{padding:0.85rem 0;border-bottom:1px solid var(--rule-soft);display:grid;gap:0.55rem;min-width:0}
@@ -2049,7 +2050,7 @@
     workoutDisplayWeekday = weekday;
 
     var html = '<div class="workout-hd"><div class="wsel-row">';
-    html += '<select class="am-input wsel" id="routine-select">';
+    html += '<div class="wsel-top"><select class="am-input wsel" id="routine-select">';
     if(ROUTINES_LIST.length === 0){
       html += '<option value="">Sin rutinas todavía</option>';
     } else {
@@ -2057,7 +2058,7 @@
         html += '<option value="' + r.id + '"' + (routine && routine.id===r.id ? ' selected' : '') + '>' + r.title + '</option>';
       });
     }
-    html += '</select>';
+    html += '</select></div>';
     html += '<div class="wsel-actions">';
     if(routine) html += '<button type="button" class="btn-add-activity wsel-new" id="routine-edit-btn" aria-label="Editar rutina">✎ Editar</button>';
     html += '<button type="button" class="btn-add-activity wsel-new" id="routine-new-btn">+ Nueva</button>';
