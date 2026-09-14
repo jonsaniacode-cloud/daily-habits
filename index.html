@@ -550,16 +550,18 @@
 
   /* tarjetas de estadísticas: grid de mosaicos de color con icono grande,
      como "Actividad diaria / Sueño / Comida / Salud cardiovascular" */
+  /* orden real de las 4 tarjetas (ver renderProgressTab): 1 Hoy, 2 Últimos
+     7 días, 3 Racha de días perfectos, 4 Actividades cumplidas (7d) */
   [data-style="vivid"] .stat-cards{background:transparent;border:none;gap:0.7rem;border-radius:0}
   [data-style="vivid"] .stat-card{border-radius:var(--v-radius-md);padding:1.1rem 1.2rem;overflow:hidden;
     background:linear-gradient(150deg,var(--c-principal) 0%,var(--accent-ink) 140%)}
-  [data-style="vivid"] .stat-card::after{content:"🔥"}
+  [data-style="vivid"] .stat-card::after{content:"☀️"}
   [data-style="vivid"] .stat-card:nth-child(2){background:linear-gradient(150deg,var(--c-nutricion) 0%,#7a3c0a 140%)}
-  [data-style="vivid"] .stat-card:nth-child(2)::after{content:"🍊"}
+  [data-style="vivid"] .stat-card:nth-child(2)::after{content:"⏱️"}
   [data-style="vivid"] .stat-card:nth-child(3){background:linear-gradient(150deg,var(--c-mentalidad) 0%,#0e4a53 140%)}
-  [data-style="vivid"] .stat-card:nth-child(3)::after{content:"🌙"}
+  [data-style="vivid"] .stat-card:nth-child(3)::after{content:"🔥"}
   [data-style="vivid"] .stat-card:nth-child(4){background:linear-gradient(150deg,#4C7FF0 0%,#0f1f52 140%)}
-  [data-style="vivid"] .stat-card:nth-child(4)::after{content:"❤️"}
+  [data-style="vivid"] .stat-card:nth-child(4)::after{content:"🗒️"}
   [data-style="vivid"] .stat-card .num,[data-style="vivid"] .stat-card .lbl{color:#fff}
 
   [data-style="vivid"] .calendar,[data-style="vivid"] .heatmap,[data-style="vivid"] .actbars,
