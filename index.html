@@ -1368,6 +1368,12 @@
   }
 
   function onSignedIn(user){
+    // sb.auth.getSession() (más abajo) y onAuthStateChange se disparan los
+    // dos con la sesión inicial al cargar la página -- sin esta guarda,
+    // loadProfile() y el resto de cargas se lanzaban duplicadas en
+    // paralelo justo en el momento del login, lo que podía retrasar o
+    // pisar la primera respuesta con la segunda.
+    if(currentUser && currentUser.id === user.id){ hideAuthGate(); return; }
     currentUser = user;
     hideAuthGate();
     loadFromSupabase();
@@ -1457,21 +1463,35 @@
     ahoraProfileMeta.textContent = bits.length ? bits.join(" · ") : "Completa tu perfil en Ajustes";
   }
 
+  function applyProfileData(p){
+    pfName.value = (p && p.full_name) ? p.full_name : "";
+    pfBirth.value = (p && p.birth_date) ? p.birth_date : "";
+    pfWeight.value = (p && p.weight_kg != null) ? p.weight_kg : "";
+    pfHeight.value = (p && p.height_cm != null) ? p.height_cm : "";
+    currentAvatarUrl = (p && p.avatar_url) ? p.avatar_url : null;
+    updateAvatarDisplay(currentAvatarUrl, pfName.value);
+    pfNamePreview.textContent = pfName.value || "Sin nombre todavía";
+    renderAhoraProfileSummary();
+  }
+
   function loadProfile(){
     if(!sb || !currentUser) return;
     pfEmail.value = currentUser.email || "";
+    // aplica primero lo que haya en caché (mismo patrón de tres niveles que
+    // ya usan el cronograma/rutinas/nutrición) para que nombre y foto
+    // aparezcan al instante en el momento del login, en vez de quedarse en
+    // "Sin nombre todavía" durante el viaje de ida y vuelta a la red; la
+    // respuesta real de Supabase llega un momento después y confirma o
+    // corrige lo que se veía desde la caché.
+    var cacheKey = "profile:" + currentUser.id;
+    var cached = loadCache(cacheKey);
+    if(cached) applyProfileData(cached);
     sb.from("profiles").select("*").eq("user_id", currentUser.id).maybeSingle()
       .then(function(res){
         if(res.error) return;
         var p = res.data;
-        pfName.value = (p && p.full_name) ? p.full_name : "";
-        pfBirth.value = (p && p.birth_date) ? p.birth_date : "";
-        pfWeight.value = (p && p.weight_kg != null) ? p.weight_kg : "";
-        pfHeight.value = (p && p.height_cm != null) ? p.height_cm : "";
-        currentAvatarUrl = (p && p.avatar_url) ? p.avatar_url : null;
-        updateAvatarDisplay(currentAvatarUrl, pfName.value);
-        pfNamePreview.textContent = pfName.value || "Sin nombre todavía";
-        renderAhoraProfileSummary();
+        applyProfileData(p);
+        saveCache(cacheKey, p || {});
       });
   }
 
@@ -1494,6 +1514,10 @@
         });
       }).then(function(){
         pfStatus.textContent = "Foto actualizada.";
+        var cacheKey = "profile:" + currentUser.id;
+        var cached = loadCache(cacheKey) || {};
+        cached.avatar_url = currentAvatarUrl;
+        saveCache(cacheKey, cached);
       }).catch(function(){
         pfStatus.textContent = "No se pudo subir la foto — revisa tu conexión.";
       });
@@ -1524,6 +1548,13 @@
       pfNamePreview.textContent = pfName.value.trim() || "Sin nombre todavía";
       updateAvatarDisplay(currentAvatarUrl, pfName.value);
       renderAhoraProfileSummary();
+      saveCache("profile:" + currentUser.id, {
+        full_name: pfName.value.trim() || null,
+        birth_date: pfBirth.value || null,
+        weight_kg: pfWeight.value ? +pfWeight.value : null,
+        height_cm: pfHeight.value ? +pfHeight.value : null,
+        avatar_url: currentAvatarUrl
+      });
       pfStatus.textContent = emailChanged
         ? "Guardado. Revisa tu correo nuevo para confirmar el cambio — hasta entonces sigues entrando con el actual."
         : "Perfil guardado.";
