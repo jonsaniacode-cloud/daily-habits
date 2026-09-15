@@ -1368,11 +1368,9 @@
   }
 
   function onSignedIn(user){
-    // sb.auth.getSession() (más abajo) y onAuthStateChange se disparan los
-    // dos con la sesión inicial al cargar la página -- sin esta guarda,
-    // loadProfile() y el resto de cargas se lanzaban duplicadas en
-    // paralelo justo en el momento del login, lo que podía retrasar o
-    // pisar la primera respuesta con la segunda.
+    // Guarda defensiva: onAuthStateChange puede disparar más de una vez
+    // para el mismo usuario (p.ej. TOKEN_REFRESHED) -- sin esto, loadProfile()
+    // y el resto de cargas se relanzarían de más cada vez que eso pase.
     if(currentUser && currentUser.id === user.id){ hideAuthGate(); return; }
     currentUser = user;
     hideAuthGate();
@@ -1565,11 +1563,18 @@
   });
 
   if(sb){
-    sb.auth.getSession().then(function(res){
-      var session = res.data && res.data.session;
-      if(session && session.user) onSignedIn(session.user); else showAuthGate();
-    }).catch(function(){ showAuthGate(); });
-
+    // Antes también se llamaba a sb.auth.getSession() por separado, en
+    // paralelo con este listener. Los dos comprueban la sesión al cargar
+    // la página, pero no hay garantía de en qué orden resuelven -- con el
+    // enlace mágico, la sesión se detecta de forma asíncrona desde la URL,
+    // así que si getSession() resolvía DESPUÉS de que onAuthStateChange ya
+    // hubiera mostrado la app correctamente, su "else showAuthGate()"
+    // volvía a tapar la app con la pantalla de login por encima, aunque el
+    // login sí había funcionado. Con una sola fuente de verdad (este
+    // listener, que en supabase-js v2 siempre dispara una vez al
+    // registrarse con la sesión que haya en ese momento, y de nuevo ante
+    // cualquier cambio) esa carrera ya no puede pasar.
+    showAuthGate();
     sb.auth.onAuthStateChange(function(_event, session){
       if(session && session.user) onSignedIn(session.user);
       else onSignedOut();
