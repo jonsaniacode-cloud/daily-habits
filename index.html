@@ -394,6 +394,22 @@
   .modal-head h2{margin:0;font-size:1.02rem}
   .modal-close{width:1.8rem;height:1.8rem;border:1px solid var(--rule);background:var(--surface);
     color:var(--faint);font-size:0.85rem;padding:0}
+
+  /* ---------------- tutorial de bienvenida (primera vez) ---------------- */
+  .ob-card{max-width:23rem}
+  .ob-body{padding:2rem 1.4rem 0.6rem;text-align:center}
+  .ob-icon{display:block;font-size:2.8rem;line-height:1;margin-bottom:0.9rem}
+  .ob-title{font-family:Archivo,sans-serif;font-weight:800;font-size:1.25rem;
+    letter-spacing:-0.01em;margin:0 0 0.6rem}
+  .ob-text{color:var(--muted);font-size:0.9rem;line-height:1.6;margin:0}
+  .ob-text b{color:var(--ink)}
+  .ob-foot{padding:1.3rem 1.2rem 1.4rem}
+  .ob-dots{display:flex;justify-content:center;gap:0.4rem;margin-bottom:1.1rem}
+  .ob-dots span{width:0.45rem;height:0.45rem;border-radius:50%;background:var(--rule-soft);
+    display:inline-block}
+  .ob-dots span.on{background:var(--accent);width:1.1rem;border-radius:999px}
+  .ob-actions{display:flex;align-items:center;justify-content:space-between;gap:0.8rem}
+  .ob-actions-right{display:flex;gap:0.6rem}
   /* .modal-form: compartida por los tres formularios dentro de modales
      (actividad, rutina, editar ejercicio) para que todos tengan el mismo
      aire interior -- antes solo #am-form la tenía y los otros dos formularios
@@ -859,6 +875,17 @@
         </form>
       </div>
 
+      <p class="eyebrow2">Ayuda</p>
+      <div class="settings-block">
+        <div class="ctrl-row">
+          <div>
+            <div>Tutorial de bienvenida</div>
+            <div class="desc">Perfil, la pestaña Ahora, cómo armar el cronograma y crear rutinas</div>
+          </div>
+          <button class="btn" id="btn-onboarding-replay" type="button">Ver de nuevo</button>
+        </div>
+      </div>
+
       <p class="eyebrow2">Avisos</p>
       <div class="settings-block">
         <div class="ctrl-row">
@@ -1092,6 +1119,26 @@
       </div>
       <p class="am-status" id="ee-status"></p>
     </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="onboarding-modal" style="display:none">
+  <div class="modal-card ob-card">
+    <div class="ob-body">
+      <span class="ob-icon" id="ob-icon">👋</span>
+      <h2 class="ob-title" id="ob-title">Bienvenido</h2>
+      <p class="ob-text" id="ob-text"></p>
+    </div>
+    <div class="ob-foot">
+      <div class="ob-dots" id="ob-dots"></div>
+      <div class="ob-actions">
+        <button type="button" class="auth-link" id="ob-skip">Saltar</button>
+        <div class="ob-actions-right">
+          <button type="button" class="timer-btn" id="ob-back" style="display:none">Atrás</button>
+          <button type="button" class="btn" id="ob-next">Siguiente</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1501,6 +1548,7 @@
     loadRoutines();
     loadNutrition();
     loadProfile();
+    maybeShowOnboarding();
   }
   function onSignedOut(){
     currentUser = null;
@@ -2232,6 +2280,75 @@
     setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
     icsStatus.textContent = "Descargado rutina-coach.ics — impórtalo en Google Calendar.";
   });
+
+  // ==================== tutorial de bienvenida (primera vez) ====================
+  // Se muestra una sola vez por cuenta (la marca queda en localStorage, por
+  // dispositivo -- si entra desde otro móvil lo vuelve a ver, lo cual está
+  // bien: es justo la clase de aviso que no molesta repetir). También se
+  // puede reabrir a mano desde Ajustes con "Ver tutorial de nuevo".
+  var ONBOARDING_STEPS = [
+    { icon:"👋", title:"Bienvenido a Daily Habits",
+      text:"Antes de arrancar, un repaso rápido de cuatro cosas: tu perfil, la pestaña <b>Ahora</b>, cómo armar tu cronograma y cómo crear tus rutinas de entreno. Menos de un minuto." },
+    { icon:"🧑", title:"Completa tu perfil",
+      text:"Ve a <b>Ajustes → Perfil</b>. Sube una foto, tu nombre, fecha de nacimiento, peso y altura. Esos datos aparecen arriba de todo en la pestaña Ahora, y quedan guardados en tu cuenta — te acompañan aunque entres desde otro dispositivo." },
+    { icon:"☀️", title:"La pestaña Ahora",
+      text:"Es tu pantalla de entrada. El banner de arriba dice si hoy toca entreno o descanso. La tarjeta grande muestra la actividad en curso y cuánto le queda; debajo, <b>\"Después\"</b> adelanta la siguiente. Si no hay nada programado, también te lo dice." },
+    { icon:"🗓️", title:"Arma tu cronograma",
+      text:"Tu calendario empieza vacío a propósito. Ve a <b>Calendario → \"+ Añadir actividad\"</b> y crea cada bloque de tu día: nombre, hora de inicio y fin, categoría, y en qué días de la semana se repite. Toca cualquier fila de la línea de tiempo para editarla o borrarla." },
+    { icon:"🏋️", title:"Crea tus rutinas de entreno",
+      text:"En <b>Rutina</b>, usa <b>\"+ Nueva\"</b> para crear una rutina (nombre y, si quieres, un día fijo de la semana). Dentro de ella, <b>\"+ Añadir ejercicio\"</b> te deja elegir de tu biblioteca o crear uno con sus series, repeticiones y descanso. \"Editar\" renombra o borra la rutina activa." }
+  ];
+  var obModal = document.getElementById("onboarding-modal");
+  var obIcon = document.getElementById("ob-icon");
+  var obTitle = document.getElementById("ob-title");
+  var obText = document.getElementById("ob-text");
+  var obDots = document.getElementById("ob-dots");
+  var obBack = document.getElementById("ob-back");
+  var obNext = document.getElementById("ob-next");
+  var obSkip = document.getElementById("ob-skip");
+  var obStep = 0;
+
+  function renderOnboardingStep(){
+    var s = ONBOARDING_STEPS[obStep];
+    obIcon.textContent = s.icon;
+    obTitle.textContent = s.title;
+    obText.innerHTML = s.text;
+    obDots.innerHTML = ONBOARDING_STEPS.map(function(_, i){
+      return '<span class="' + (i === obStep ? "on" : "") + '"></span>';
+    }).join("");
+    obBack.style.display = obStep === 0 ? "none" : "";
+    obNext.textContent = (obStep === ONBOARDING_STEPS.length - 1) ? "Empezar" : "Siguiente";
+  }
+  function openOnboarding(){
+    obStep = 0;
+    renderOnboardingStep();
+    obModal.style.display = "flex";
+  }
+  function closeOnboarding(){
+    obModal.style.display = "none";
+    if(currentUser){
+      try{ localStorage.setItem("horario:onboarding-seen:" + currentUser.id, "1"); }catch(e){}
+    }
+  }
+  if(obNext) obNext.addEventListener("click", function(){
+    if(obStep === ONBOARDING_STEPS.length - 1){ closeOnboarding(); return; }
+    obStep++; renderOnboardingStep();
+  });
+  if(obBack) obBack.addEventListener("click", function(){
+    if(obStep === 0) return;
+    obStep--; renderOnboardingStep();
+  });
+  if(obSkip) obSkip.addEventListener("click", closeOnboarding);
+
+  function maybeShowOnboarding(){
+    if(!currentUser) return;
+    var seen = false;
+    try{ seen = localStorage.getItem("horario:onboarding-seen:" + currentUser.id) === "1"; }catch(e){}
+    if(!seen) openOnboarding();
+  }
+
+  var btnOnboardingReplay = document.getElementById("btn-onboarding-replay");
+  if(btnOnboardingReplay) btnOnboardingReplay.addEventListener("click", openOnboarding);
 
   // ==================== notificaciones ====================
   var notifBtn = document.getElementById("btn-notif");
