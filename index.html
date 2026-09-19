@@ -839,6 +839,26 @@
         </form>
       </div>
 
+      <p class="eyebrow2">Contraseña</p>
+      <div class="settings-block">
+        <form id="pw-form" class="profile-form">
+          <label class="am-field">
+            <span>Contraseña nueva</span>
+            <input type="password" id="pw-new" class="am-input" placeholder="Mínimo 6 caracteres" minlength="6" autocomplete="new-password">
+          </label>
+          <label class="am-field">
+            <span>Repetir contraseña nueva</span>
+            <input type="password" id="pw-confirm" class="am-input" placeholder="Vuelve a escribirla" minlength="6" autocomplete="new-password">
+          </label>
+          <div class="am-actions">
+            <div class="am-actions-right">
+              <button type="submit" class="btn" id="pw-save">Cambiar contraseña</button>
+            </div>
+          </div>
+          <p class="am-status" id="pw-status"></p>
+        </form>
+      </div>
+
       <p class="eyebrow2">Avisos</p>
       <div class="settings-block">
         <div class="ctrl-row">
@@ -1486,6 +1506,7 @@
     currentUser = null;
     showAuthGate();
     pfForm.reset();
+    if(pwForm){ pwForm.reset(); pwStatus.textContent = ""; }
     currentAvatarUrl = null;
     updateAvatarDisplay(null, "");
     pfNamePreview.textContent = "Sin nombre todavía";
@@ -1663,6 +1684,47 @@
       pfStatus.textContent = "No se pudo guardar — revisa tu conexión.";
     });
   });
+
+  // ==================== cambiar contraseña (con sesión ya iniciada) ====================
+  // Distinto del flujo de "olvidé mi contraseña" de la pantalla de acceso:
+  // aquí el usuario ya tiene sesión válida, así que updateUser() con la
+  // contraseña nueva es todo lo que hace falta -- Supabase no exige repetir
+  // la contraseña actual para este caso.
+  var pwForm = document.getElementById("pw-form");
+  var pwNew = document.getElementById("pw-new");
+  var pwConfirm = document.getElementById("pw-confirm");
+  var pwSave = document.getElementById("pw-save");
+  var pwStatus = document.getElementById("pw-status");
+  if(pwForm){
+    pwForm.addEventListener("submit", function(e){
+      e.preventDefault();
+      if(!sb || !currentUser) return;
+      var newPassword = pwNew.value;
+      var confirmPassword = pwConfirm.value;
+      if(!newPassword || newPassword.length < 6){
+        pwStatus.textContent = "La contraseña debe tener al menos 6 caracteres.";
+        return;
+      }
+      if(newPassword !== confirmPassword){
+        pwStatus.textContent = "Las dos contraseñas no coinciden.";
+        return;
+      }
+      pwSave.disabled = true;
+      pwStatus.textContent = "Guardando...";
+      sb.auth.updateUser({ password: newPassword }).then(function(res){
+        pwSave.disabled = false;
+        if(res.error){
+          pwStatus.textContent = res.error.message;
+          return;
+        }
+        pwForm.reset();
+        pwStatus.textContent = "Contraseña actualizada.";
+      }).catch(function(){
+        pwSave.disabled = false;
+        pwStatus.textContent = "No se pudo cambiar — revisa tu conexión.";
+      });
+    });
+  }
 
   if(sb){
     // Antes también se llamaba a sb.auth.getSession() por separado, en
