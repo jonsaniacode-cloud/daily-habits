@@ -482,11 +482,12 @@
   @keyframes slidein{from{transform:translateY(0.5rem);opacity:0}to{transform:translateY(0);opacity:1}}
 
   /* ==========================================================================
-     TEMA "VÍVIDO" — capa 100% aditiva y reversible.
-     No toca ni una sola regla de arriba: solo añade selectores con el prefijo
-     [data-style="vivid"] que se activan/desactivan con el toggle de Ajustes
-     ("Apariencia" → "Estilo vívido"). Apagarlo devuelve exactamente el
-     estilo clásico de siempre, sin recargar nada ni perder funcionalidad.
+     TEMA "VÍVIDO" — único estilo de la app.
+     Ya no es una opción alternable: [data-style="vivid"] se fija siempre en
+     <html> desde el script de arranque, incondicionalmente. El CSS "clásico"
+     de arriba se queda en el archivo sin usar (no molesta: estos selectores
+     tienen más especificidad y ganan siempre la cascada), por si algún día
+     se quisiera recuperar como opción o servir de referencia.
      Inspirado en apps tipo Samsung Health: tarjetas muy redondeadas con
      gradientes de color por categoría, sin bordes finos, tipografía de peso
      alto, barra de pestañas flotante tipo píldora.
@@ -669,18 +670,17 @@
 </style>
 
 <script>
-  // Aplica el estilo visual guardado ANTES de pintar la app, para que no haya
-  // parpadeo (un instante en clásico y luego salto a vívido, o al revés).
+  // El estilo vívido ya no es una opción -- es el único estilo de la app.
+  // Antes se activaba condicionalmente según localStorage ("horario:ui-style")
+  // con un switch en Ajustes; ahora se fija siempre, incondicionalmente, antes
+  // de pintar nada. El CSS clásico se queda en el archivo sin usar (no hace
+  // daño dejarlo: [data-style="vivid"] tiene más especificidad y gana
+  // siempre), por si algún día se quisiera recuperar como opción.
   //
-  // updateThemeColorMeta() ya no intenta ADIVINAR qué color toca combinando
-  // a mano clásico/vívido × claro/oscuro (eso fue lo que se rompía cada vez
-  // que se añadía una combinación nueva). En vez de eso, lee el valor YA
-  // calculado de --ground directamente del CSS con getComputedStyle -- el
-  // mismo motor que decide qué fondo pintar decide también qué color le
-  // pasamos a la barra de estado, así que es imposible que se desincronicen:
-  // funciona automáticamente para clásico claro, clásico oscuro, vívido
-  // claro y vívido oscuro, y para cualquier combinación futura, sin tocar
-  // este código nunca más.
+  // updateThemeColorMeta() no intenta ADIVINAR qué color toca a mano --
+  // lee el valor YA calculado de --ground directamente del CSS con
+  // getComputedStyle, el mismo motor que decide qué fondo pintar, así que
+  // es imposible que se desincronice con lo que se ve en pantalla.
   window.updateThemeColorMeta = function(){
     try{
       var meta = document.getElementById("theme-color-meta");
@@ -690,11 +690,7 @@
     }catch(e){}
   };
   (function(){
-    try{
-      if(localStorage.getItem("horario:ui-style") === "vivid"){
-        document.documentElement.setAttribute("data-style", "vivid");
-      }
-    }catch(e){}
+    document.documentElement.setAttribute("data-style", "vivid");
     updateThemeColorMeta();
     if(window.matchMedia){
       var mq = window.matchMedia("(prefers-color-scheme: dark)");
@@ -835,20 +831,6 @@
           </div>
           <p class="am-status" id="pf-status"></p>
         </form>
-      </div>
-
-      <p class="eyebrow2">Apariencia</p>
-      <div class="settings-block">
-        <div class="ctrl-row">
-          <div>
-            <div>Estilo vívido</div>
-            <div class="desc">Tarjetas grandes con color y esquinas redondeadas, en claro u oscuro según tu teléfono. Apágalo y vuelves al estilo clásico al instante, sin perder nada.</div>
-          </div>
-          <label class="switch">
-            <input type="checkbox" id="tg-vivid-style">
-            <span class="slider"></span>
-          </label>
-        </div>
       </div>
 
       <p class="eyebrow2">Avisos</p>
@@ -2059,24 +2041,6 @@
     setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
     icsStatus.textContent = "Descargado rutina-coach.ics — impórtalo en Google Calendar.";
   });
-
-  // ==================== estilo visual (clásico / vívido) ====================
-  // 100% reversible: solo pone/quita un atributo en <html>. No toca datos ni
-  // estructura — es la misma app, con otra capa de CSS encima.
-  var vividToggle = document.getElementById("tg-vivid-style");
-  if(vividToggle){
-    vividToggle.checked = document.documentElement.getAttribute("data-style") === "vivid";
-    vividToggle.addEventListener("change", function(){
-      if(vividToggle.checked){
-        document.documentElement.setAttribute("data-style", "vivid");
-        try{ localStorage.setItem("horario:ui-style", "vivid"); }catch(e){}
-      } else {
-        document.documentElement.removeAttribute("data-style");
-        try{ localStorage.setItem("horario:ui-style", "clasico"); }catch(e){}
-      }
-      if(window.updateThemeColorMeta) window.updateThemeColorMeta();
-    });
-  }
 
   // ==================== notificaciones ====================
   var notifBtn = document.getElementById("btn-notif");
