@@ -377,14 +377,6 @@
   .auth-forgot{display:block;margin:0.7rem auto 0;font-family:Archivo,sans-serif;
     font-size:0.78rem;color:var(--faint);background:none;border:none;cursor:pointer;
     text-decoration:underline;text-underline-offset:0.15em}
-  .auth-google{width:100%;padding:0.75rem;font-family:Archivo,sans-serif;font-weight:600;
-    font-size:0.85rem;border:1.5px solid var(--rule);background:var(--surface);color:var(--ink);
-    display:flex;align-items:center;justify-content:center;gap:0.6rem;margin-bottom:1.1rem}
-  .auth-google svg{width:1.1rem;height:1.1rem;flex:none}
-  .auth-divider{display:flex;align-items:center;gap:0.7rem;margin:0 0 1.1rem;
-    font-family:"JetBrains Mono",monospace;font-size:0.7rem;color:var(--faint);
-    text-transform:uppercase;letter-spacing:0.06em}
-  .auth-divider::before,.auth-divider::after{content:"";flex:1;height:1px;background:var(--rule)}
 
   /* ---------------- añadir actividad + modal de edición ---------------- */
   .btn-add-activity{width:100%;margin-top:0.8rem;padding:0.75rem;
@@ -680,8 +672,6 @@
 
   [data-style="vivid"] .auth-mark{box-shadow:0 10px 30px -8px var(--accent)}
   [data-style="vivid"] .auth-input{border-radius:var(--v-radius-sm);border-color:transparent;background:var(--rule-soft)}
-  [data-style="vivid"] .auth-google{border:none;border-radius:var(--v-radius-sm);background:var(--rule-soft)}
-  [data-style="vivid"] .auth-divider::before,[data-style="vivid"] .auth-divider::after{background:var(--rule-soft)}
   [data-style="vivid"] .profile-avatar{border:none;box-shadow:0 6px 16px -6px var(--accent)}
 </style>
 
@@ -1094,12 +1084,6 @@
 
     <!-- vista normal: login / crear cuenta -->
     <div id="auth-view-normal">
-      <button type="button" class="auth-google" id="auth-google-btn">
-        <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4c-7.6 0-14.1 4.3-17.4 10.7z"/><path fill="#4CAF50" d="M24 44c5.4 0 10.3-2.1 14-5.5l-6.5-5.5c-2 1.4-4.6 2.3-7.5 2.3-5.3 0-9.7-3.4-11.3-8.1l-6.6 5.1C9.8 39.6 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.2 4.2-4.1 5.6l6.5 5.5C41.5 36 44 30.5 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
-        Continuar con Google
-      </button>
-      <div class="auth-divider"><span>o con tu correo</span></div>
-
       <form id="auth-form">
         <input type="email" id="auth-email" class="auth-input" placeholder="tu@correo.com" required autocomplete="email">
         <input type="password" id="auth-password" class="auth-input" placeholder="Contraseña" required minlength="6" autocomplete="current-password">
@@ -1359,7 +1343,6 @@
   var authPassword = document.getElementById("auth-password");
   var authSubmit = document.getElementById("auth-submit");
   var authStatus = document.getElementById("auth-status");
-  var authGoogleBtn = document.getElementById("auth-google-btn");
   var authForgotBtn = document.getElementById("auth-forgot-btn");
   var authToggleBtn = document.getElementById("auth-toggle-btn");
   var authToggleText = document.getElementById("auth-toggle-text");
@@ -1444,15 +1427,6 @@
         authSubmit.disabled = false;
         setAuthStatus("No se pudo completar — revisa tu conexión.", "err");
       });
-    });
-  }
-
-  if(authGoogleBtn){
-    authGoogleBtn.addEventListener("click", function(){
-      if(!sb){ setAuthStatus("No se pudo cargar el inicio de sesión — revisa tu conexión.", "err"); return; }
-      setAuthStatus("Abriendo Google...");
-      sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.href } })
-        .then(function(res){ if(res.error) setAuthStatus(res.error.message, "err"); });
     });
   }
 
