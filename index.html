@@ -1669,7 +1669,16 @@
           if(cache && cache.length){ SCHEDULE = cache; rebuildSorted(); scheduleLoaded = true; buildTimeline(); render(); }
           return;
         }
-        if(res.data.length === 0){ seedActivities(); return; }
+        // Usuario nuevo (tabla vacía): calendario en blanco de verdad, para
+        // que arme su propio cronograma desde "+ Añadir actividad" en vez de
+        // partir de una plantilla ajena. seedActivities()/DEFAULT_SCHEDULE se
+        // quedan en el código sin usar, por si algún día se quiere ofrecer
+        // "cargar actividades de ejemplo" como acción explícita del usuario.
+        if(res.data.length === 0){
+          SCHEDULE = []; rebuildSorted(); scheduleLoaded = true;
+          buildTimeline(); scheduleAlarms(); render();
+          return;
+        }
         applySchedule(res.data);
       });
   }
@@ -2438,6 +2447,11 @@
   function buildTimeline(){
     var timelineEl = document.getElementById("timeline");
     if(!scheduleLoaded){ timelineEl.innerHTML = timelineSkeletonHTML(); return; }
+    if(sorted.length === 0){
+      timelineEl.innerHTML = '<div class="empty-state"><b>Todavía no tienes actividades</b>' +
+        'Usa "+ Añadir actividad" abajo para armar tu propio cronograma.</div>';
+      return;
+    }
     var weekday = selectedDate.getDay();
     var key = dateKey(selectedDate);
     var todayMidnight = new Date(); todayMidnight.setHours(0,0,0,0);
@@ -3000,6 +3014,17 @@
 
   function updateDayBanner(weekday){
     dbEl.className = "daybanner";
+    if(scheduleLoaded && SCHEDULE.length === 0){
+      // Calendario recién estrenado, sin ninguna actividad todavía -- el
+      // resto de este bloque asume la plantilla clásica (domingo de
+      // descanso, entreno con días fijos), que no tiene sentido mostrar
+      // hasta que el usuario haya añadido algo de verdad.
+      dbEl.classList.add("notrain");
+      dbIc.textContent = "○";
+      dbTitle.textContent = "Aún no hay nada programado";
+      dbSub.textContent = "Añade tu primera actividad desde la pestaña Calendario.";
+      return;
+    }
     if(weekday === 0){
       dbEl.classList.add("rest");
       dbIc.textContent = "☀";
